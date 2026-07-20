@@ -141,6 +141,19 @@ function App() {
   const activeLabels = appConfig.languages[language];
 
   useEffect(() => {
+    const sortProducts = (list) => {
+      if (!list || !Array.isArray(list)) return [];
+      return [...list].sort((a, b) => {
+        const valA = a.numorden !== undefined ? a.numorden : a.numOrden;
+        const valB = b.numorden !== undefined ? b.numorden : b.numOrden;
+        const numA = Number(valA);
+        const numB = Number(valB);
+        const orderA = (valA !== undefined && valA !== null && valA !== '' && !isNaN(numA)) ? numA : Infinity;
+        const orderB = (valB !== undefined && valB !== null && valB !== '' && !isNaN(numB)) ? numB : Infinity;
+        return orderA - orderB;
+      });
+    };
+
     const fetchData = async () => {
       // Check cache first
       try {
@@ -152,7 +165,7 @@ function App() {
           const cachedNotices = localStorage.getItem('byangels_notices');
 
           if (cachedProducts && cachedMusics && cachedNotices) {
-            const parsedProducts = JSON.parse(cachedProducts);
+            const parsedProducts = sortProducts(JSON.parse(cachedProducts));
             const parsedMusics = JSON.parse(cachedMusics);
             const parsedNotices = JSON.parse(cachedNotices);
 
@@ -190,7 +203,7 @@ function App() {
         // Fetch clothing articles
         const resShop = await fetch(`${apiBaseUrl}/api/shopreel`, { headers: tunnelHeaders });
         if (!resShop.ok) throw new Error('API server returned error code');
-        const shopData = await resShop.json();
+        const shopData = sortProducts(await resShop.json());
         setProducts(shopData);
         
         if (shopData.length > 0) {
@@ -274,10 +287,11 @@ function App() {
 
       } catch (err) {
         console.warn('⚠️ API Connection failed. Running on local frontend safety fallback mock database.');
-        setProducts(LOCAL_FALLBACK_PRODUCTS);
+        const fallbackProducts = sortProducts(LOCAL_FALLBACK_PRODUCTS);
+        setProducts(fallbackProducts);
         setMusics(LOCAL_FALLBACK_MUSICS);
         setNotices(LOCAL_FALLBACK_NOTICES);
-        setSelectedProductId(LOCAL_FALLBACK_PRODUCTS[0].id);
+        setSelectedProductId(fallbackProducts[0].id);
         if (LOCAL_FALLBACK_MUSICS.length > 0) {
           const randomIdx = Math.floor(Math.random() * LOCAL_FALLBACK_MUSICS.length);
           setCurrentTrackIndex(randomIdx);
