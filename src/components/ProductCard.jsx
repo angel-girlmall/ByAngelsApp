@@ -38,6 +38,14 @@ function ProductCard({
     if (onViewDetail) onViewDetail();
   };
 
+  const getOptimizedPinterestUrl = (url, size = '236x') => {
+    if (!url) return '';
+    if (url.includes('pinimg.com') && url.includes('/736x/')) {
+      return url.replace('/736x/', `/${size}/`);
+    }
+    return url;
+  };
+
   return (
     <div 
       className={`product-card ${isActive ? 'active' : ''}`}
@@ -49,7 +57,7 @@ function ProductCard({
       
       <div className="card-img-container">
         <img 
-          src={imageSource} 
+          src={getOptimizedPinterestUrl(imageSource, '236x')} 
           alt={text} 
           className="card-img" 
           loading="lazy"

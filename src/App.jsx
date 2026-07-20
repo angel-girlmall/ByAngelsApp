@@ -142,6 +142,42 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Check cache first
+      try {
+        const cachedTimestamp = localStorage.getItem('byangels_cache_timestamp');
+        const now = Date.now();
+        if (cachedTimestamp && (now - parseInt(cachedTimestamp, 10) < 10 * 60 * 1000)) {
+          const cachedProducts = localStorage.getItem('byangels_products');
+          const cachedMusics = localStorage.getItem('byangels_musics');
+          const cachedNotices = localStorage.getItem('byangels_notices');
+
+          if (cachedProducts && cachedMusics && cachedNotices) {
+            const parsedProducts = JSON.parse(cachedProducts);
+            const parsedMusics = JSON.parse(cachedMusics);
+            const parsedNotices = JSON.parse(cachedNotices);
+
+            console.log('⚡ Using cached API data from localStorage');
+            setProducts(parsedProducts);
+            setMusics(parsedMusics);
+            setNotices(parsedNotices);
+            
+            if (parsedProducts.length > 0) {
+              setSelectedProductId(parsedProducts[0].id);
+            }
+            if (parsedMusics.length > 0) {
+              const randomIdx = Math.floor(Math.random() * parsedMusics.length);
+              setCurrentTrackIndex(randomIdx);
+            }
+
+            setLoading(false);
+            setNoticesLoading(false);
+            return; // Cache is valid and loaded, skip actual fetches!
+          }
+        }
+      } catch (cacheErr) {
+        console.warn('⚠️ Error reading from cache storage, falling back to network:', cacheErr);
+      }
+
       try {
         setLoading(true);
         setNoticesLoading(true);
@@ -157,6 +193,7 @@ function App() {
         }
 
         // Fetch tracks
+        let finalMusicData = [];
         const resMusic = await fetch(`${apiBaseUrl}/api/Musics`);
         if (resMusic.ok) {
           const musicData = await resMusic.json();
@@ -174,12 +211,14 @@ function App() {
               url: correctUrl
             };
           });
+          finalMusicData = mappedMusicData;
           setMusics(mappedMusicData);
           if (mappedMusicData.length > 0) {
             const randomIdx = Math.floor(Math.random() * mappedMusicData.length);
             setCurrentTrackIndex(randomIdx);
           }
         } else {
+          finalMusicData = LOCAL_FALLBACK_MUSICS;
           setMusics(LOCAL_FALLBACK_MUSICS);
           if (LOCAL_FALLBACK_MUSICS.length > 0) {
             const randomIdx = Math.floor(Math.random() * LOCAL_FALLBACK_MUSICS.length);
@@ -188,6 +227,7 @@ function App() {
         }
 
         // Fetch weekly news/notices
+        let finalNoticeData = [];
         const resNotice = await fetch(`${apiBaseUrl}/api/notice`);
         if (resNotice.ok) {
           const noticeData = await resNotice.json();
@@ -209,10 +249,24 @@ function App() {
               return numA - numB;
             });
           }
-          setNotices(extractedUrls.map(item => item.url));
+          finalNoticeData = extractedUrls.map(item => item.url);
+          setNotices(finalNoticeData);
         } else {
+          finalNoticeData = LOCAL_FALLBACK_NOTICES;
           setNotices(LOCAL_FALLBACK_NOTICES);
         }
+
+        // Store new data in localStorage cache
+        try {
+          localStorage.setItem('byangels_products', JSON.stringify(shopData));
+          localStorage.setItem('byangels_musics', JSON.stringify(finalMusicData));
+          localStorage.setItem('byangels_notices', JSON.stringify(finalNoticeData));
+          localStorage.setItem('byangels_cache_timestamp', Date.now().toString());
+          console.log('⚡ Saved fetched API data to cache (localStorage)');
+        } catch (saveErr) {
+          console.warn('⚠️ Failed to save data to localStorage cache:', saveErr);
+        }
+
       } catch (err) {
         console.warn('⚠️ API Connection failed. Running on local frontend safety fallback mock database.');
         setProducts(LOCAL_FALLBACK_PRODUCTS);

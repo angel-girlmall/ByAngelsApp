@@ -1,6 +1,14 @@
 import React from 'react';
 
 export default function NoticeModal({ visible, onClose, reels = [], loading = false }) {
+  const getOptimizedPinterestUrl = (url, size = '474x') => {
+    if (!url) return '';
+    if (url.includes('pinimg.com') && url.includes('/736x/')) {
+      return url.replace('/736x/', `/${size}/`);
+    }
+    return url;
+  };
+
   if (!visible) return null;
 
   return (
@@ -24,7 +32,7 @@ export default function NoticeModal({ visible, onClose, reels = [], loading = fa
               {reels.map((url, index) => (
                 <div key={index} className="notice-reel-slide">
                   <div className="notice-reel-badge">Reel {index + 1}</div>
-                  <img src={url} alt={`Noticia Reel ${index + 1}`} className="notice-reel-img" />
+                  <img src={getOptimizedPinterestUrl(url, '474x')} alt={`Noticia Reel ${index + 1}`} className="notice-reel-img" />
                 </div>
               ))}
               

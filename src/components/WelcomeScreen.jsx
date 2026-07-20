@@ -9,6 +9,20 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
 
   useEffect(() => {
     const fetchWelcomeImage = async () => {
+      // Check cache first
+      try {
+        const cachedTimestamp = localStorage.getItem('byangels_welcome_cache_timestamp');
+        const cachedImage = localStorage.getItem('byangels_welcome_image');
+        const now = Date.now();
+        if (cachedTimestamp && cachedImage && (now - parseInt(cachedTimestamp, 10) < 10 * 60 * 1000)) {
+          console.log('⚡ Using cached Welcome Screen media URL from localStorage');
+          setImageUrl(cachedImage);
+          return;
+        }
+      } catch (cacheErr) {
+        console.warn('⚠️ Error reading Welcome cache:', cacheErr);
+      }
+
       try {
         const base = apiUrl || 'http://localhost:5000';
         const res = await fetch(`${base}/api/inicio`);
@@ -20,6 +34,13 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
             const url = doc.UrlInicio || doc.url || doc.imagen || doc.imageUrl || doc.img || doc.urlN0;
             if (url) {
               setImageUrl(url);
+              // Save to cache
+              try {
+                localStorage.setItem('byangels_welcome_image', url);
+                localStorage.setItem('byangels_welcome_cache_timestamp', Date.now().toString());
+              } catch (saveErr) {
+                console.warn('⚠️ Failed to save Welcome image to cache:', saveErr);
+              }
               return;
             }
           }
@@ -28,7 +49,8 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
         console.warn('Could not load Welcome image from backend, using fallback.', err);
       }
       // Fallback Pinterest URL
-      setImageUrl('https://i.pinimg.com/736x/89/3e/a5/893ea5e4b77f98d75225c5d012431718.jpg');
+      const fallbackUrl = 'https://i.pinimg.com/736x/89/3e/a5/893ea5e4b77f98d75225c5d012431718.jpg';
+      setImageUrl(fallbackUrl);
     };
 
     fetchWelcomeImage();
@@ -43,6 +65,8 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
     
     video.muted = true; // Video background is completely silent now
     
+    let hlsInstance = null;
+    
     if (isHls) {
       const base = apiUrl || 'http://localhost:5000';
       // Strip v1.pinimg.com domain if present to construct path-based proxy URL
@@ -51,6 +75,7 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
       
       if (Hls.isSupported()) {
         const hls = new Hls();
+        hlsInstance = hls;
         hls.loadSource(proxiedUrl);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -63,19 +88,18 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
             setLoading(false);
           }
         });
-        return () => {
-          hls.destroy();
-        };
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         // Native HLS support (Safari / iOS)
         video.src = proxiedUrl;
-        video.addEventListener('loadedmetadata', () => {
+        const playHandler = () => {
           video.play().catch(e => console.log("Play failed:", e));
           setLoading(false);
-        });
-        video.addEventListener('error', () => {
+        };
+        const errorHandler = () => {
           setLoading(false);
-        });
+        };
+        video.addEventListener('loadedmetadata', playHandler);
+        video.addEventListener('error', errorHandler);
       } else {
         console.error("HLS is not supported in this browser");
         setLoading(false);
@@ -84,18 +108,50 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
       // Normal video URL
       video.src = imageUrl;
       video.load();
-      video.addEventListener('loadedmetadata', () => {
+      const playHandler = () => {
         video.play().catch(e => console.log("Play failed:", e));
         setLoading(false);
-      });
-      video.addEventListener('error', () => {
+      };
+      const errorHandler = () => {
         setLoading(false);
-      });
+      };
+      video.addEventListener('loadedmetadata', playHandler);
+      video.addEventListener('error', errorHandler);
     }
-  }, [imageUrl]);
+
+    // Cleanup resources to ensure video stops immediately when unmounted
+    return () => {
+      if (hlsInstance) {
+        try {
+          hlsInstance.destroy();
+        } catch (e) {
+          console.error("Error destroying HLS:", e);
+        }
+      }
+      try {
+        video.pause();
+        video.src = "";
+        video.removeAttribute("src");
+        video.load();
+      } catch (err) {
+        // Ignore unmount error
+      }
+    };
+  }, [imageUrl, apiUrl]);
 
   const handleEnterClick = (e) => {
     setFadeOut(true);
+    // Pause video and clear source to release resources immediately
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+        videoRef.current.src = "";
+        videoRef.current.removeAttribute("src");
+        videoRef.current.load();
+      } catch (err) {
+        console.warn("Error releasing video resources on click:", err);
+      }
+    }
     // Let the animation finish before calling onEnter
     setTimeout(() => {
       onEnter();

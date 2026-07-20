@@ -1424,8 +1424,29 @@ select {
   /* 1. Disable infinite floating animations to save CPU/GPU cycles */
   .pose-rotator-overlay > button,
   .music-toggle-btn,
-  .music-toggle-btn.playing {
+  .music-toggle-btn.playing,
+  .btn-buy-floating,
+  .btn-buy-floating.has-items,
+  .notice-swipe-hint {
     animation: none !important;
+  }
+
+  /* Disable neon glow text animation and drop shadow filters on mobile */
+  .brand-neon {
+    animation: none !important;
+    text-shadow: 0 2px 8px var(--color-neon-pink) !important; /* static simple shadow */
+  }
+
+  .model-image {
+    filter: none !important; /* disable heavy drop-shadow filter on large image */
+  }
+
+  .model-container {
+    box-shadow: inset 0 -60px 100px rgba(61, 34, 26, 0.3) !important; /* fast hardware-accelerated overlay */
+  }
+
+  .product-card {
+    transition: none !important; /* disable all transitions for cards on mobile scrolling */
   }
 
   /* 2. Disable heavy backdrop-filters on mobile devices (Safari/Android WebViews) */
