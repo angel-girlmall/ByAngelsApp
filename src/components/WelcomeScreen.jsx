@@ -25,7 +25,12 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
 
       try {
         const base = apiUrl || 'http://localhost:5000';
-        const res = await fetch(`${base}/api/inicio`);
+        const res = await fetch(`${base}/api/inicio`, {
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           // Extract Pinterest url from the collection documents
@@ -74,7 +79,12 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
       const proxiedUrl = `${base}/api/proxy-video/${cleanPath}`;
       
       if (Hls.isSupported()) {
-        const hls = new Hls();
+        const hls = new Hls({
+          xhrSetup: (xhr, url) => {
+            xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'true');
+            xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
+          }
+        });
         hlsInstance = hls;
         hls.loadSource(proxiedUrl);
         hls.attachMedia(video);

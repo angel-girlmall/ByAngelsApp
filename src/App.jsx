@@ -182,8 +182,13 @@ function App() {
         setLoading(true);
         setNoticesLoading(true);
         
+        const tunnelHeaders = {
+          'Bypass-Tunnel-Reminder': 'true',
+          'ngrok-skip-browser-warning': 'true'
+        };
+
         // Fetch clothing articles
-        const resShop = await fetch(`${apiBaseUrl}/api/shopreel`);
+        const resShop = await fetch(`${apiBaseUrl}/api/shopreel`, { headers: tunnelHeaders });
         if (!resShop.ok) throw new Error('API server returned error code');
         const shopData = await resShop.json();
         setProducts(shopData);
@@ -194,7 +199,7 @@ function App() {
 
         // Fetch tracks
         let finalMusicData = [];
-        const resMusic = await fetch(`${apiBaseUrl}/api/Musics`);
+        const resMusic = await fetch(`${apiBaseUrl}/api/Musics`, { headers: tunnelHeaders });
         if (resMusic.ok) {
           const musicData = await resMusic.json();
           const mappedMusicData = musicData.map((song) => {
@@ -228,7 +233,7 @@ function App() {
 
         // Fetch weekly news/notices
         let finalNoticeData = [];
-        const resNotice = await fetch(`${apiBaseUrl}/api/notice`);
+        const resNotice = await fetch(`${apiBaseUrl}/api/notice`, { headers: tunnelHeaders });
         if (resNotice.ok) {
           const noticeData = await resNotice.json();
           const extractedUrls = [];
