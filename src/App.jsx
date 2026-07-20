@@ -286,6 +286,57 @@ function App() {
     fetchData();
   }, []);
 
+  // Global click listener to play water drop sound when pressing bubble buttons
+  useEffect(() => {
+    const playWaterDropSound = () => {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const ctx = new AudioContextClass();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sine';
+        const now = ctx.currentTime;
+        
+        // Water drop sound frequency sweep: fast low-to-high pitch
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        
+        // Decay envelope
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.3, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 0.13);
+      } catch (e) {
+        console.warn('Audio synthesis blocked or failed:', e);
+      }
+    };
+
+    const handleGlobalClick = (event) => {
+      const target = event.target;
+      if (!target) return;
+      
+      // Check if target or any ancestor matches bubble button classes
+      const bubbleButton = target.closest(
+        '.common-button--rotate-icon, .common-button--lang-icon, .btn-buy-floating, .btn-ctrl, .music-toggle-btn'
+      );
+      if (bubbleButton) {
+        playWaterDropSound();
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick, true);
+    return () => {
+      document.removeEventListener('click', handleGlobalClick, true);
+    };
+  }, []);
+
   // Sync Selected Product changes to model poses array
   const activeProduct = products.find(p => p.id === selectedProductId) || products[0];
 
