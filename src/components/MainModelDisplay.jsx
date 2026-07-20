@@ -24,8 +24,8 @@ function MainModelDisplay({
   skinToneMode = 'clara',
   onSkinToneToggle
 }) {
-  // Fallback boutique background image
-  const boutiqueBgUrl = 'https://images.unsplash.com/photo-1567401893930-7bec7b3b497f?w=1200&auto=format&fit=crop';
+  // Fallback boutique background image optimized for mobile/desktop performance
+  const boutiqueBgUrl = 'https://images.unsplash.com/photo-1567401893930-7bec7b3b497f?w=800&q=75&auto=format&fit=crop';
 
   // Selected pose image
   const activeImage = (images && images.length > 0) ? images[currentPoseIndex % images.length] : null;

@@ -766,12 +766,23 @@ select {
   bottom: 60px;
   left: 0;
   width: 240px;
-  background: rgba(97, 64, 55, 0.9);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.85) 30%,
+    rgba(255, 240, 245, 0.65) 60%,
+    rgba(255, 96, 173, 0.15) 85%,
+    rgba(166, 227, 233, 0.35) 100%
+  );
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(253, 245, 242, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: var(--radius-md);
   padding: 16px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 
+    inset -2px -2px 6px rgba(255, 96, 173, 0.2),
+    inset 2px 2px 6px rgba(166, 227, 233, 0.25),
+    inset 0 6px 8px rgba(255, 255, 255, 0.8),
+    var(--shadow-lg);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -779,7 +790,41 @@ select {
   transform: translateY(10px) scale(0.95);
   pointer-events: none;
   transition: var(--transition-smooth);
-  color: var(--color-accent-light);
+  color: var(--color-text-primary);
+  overflow: visible;
+}
+
+.music-player-panel::before {
+  content: '';
+  position: absolute;
+  top: 4%;
+  left: 6%;
+  width: 45%;
+  height: 12%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+  transform: rotate(-3deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.music-player-panel::after {
+  content: '';
+  position: absolute;
+  bottom: 4%;
+  right: 6%;
+  width: 15%;
+  height: 6%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  transform: rotate(35deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.music-player-panel > * {
+  position: relative;
+  z-index: 2;
 }
 
 .music-player-panel.active {
@@ -814,33 +859,100 @@ select {
 }
 
 .btn-ctrl {
-  background: transparent;
-  border: none;
-  color: var(--color-accent-light);
-  font-size: 1.1rem;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  display: flex;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.85) 30%,
+    rgba(255, 240, 245, 0.6) 60%,
+    rgba(255, 96, 173, 0.15) 85%,
+    rgba(166, 227, 233, 0.35) 100%
+  ) !important;
+  color: var(--color-accent-dark) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: var(--transition-smooth);
+  border-radius: 50% !important;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 
+    inset -1px -1px 3px rgba(255, 96, 173, 0.2),
+    inset 1px 1px 3px rgba(166, 227, 233, 0.25),
+    inset 0 3px 4px rgba(255, 255, 255, 0.8),
+    var(--shadow-sm) !important;
+  backdrop-filter: blur(2px);
+  position: relative;
+  overflow: visible;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              box-shadow 0.4s ease, 
+              background 0.4s ease !important;
 }
 
-.btn-ctrl:hover {
-  background: rgba(253, 245, 242, 0.2);
+.btn-ctrl::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 18%;
+  width: 32%;
+  height: 16%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-ctrl::after {
+  content: '';
+  position: absolute;
+  bottom: 12%;
+  right: 18%;
+  width: 18%;
+  height: 9%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  transform: rotate(35deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-ctrl:hover:not(:disabled) {
+  transform: scale(1.18) translateY(-2px) !important;
+  box-shadow: 
+    inset -1px -1px 3px rgba(255, 96, 173, 0.3),
+    inset 1px 1px 3px rgba(166, 227, 233, 0.4),
+    inset 0 3px 4px rgba(255, 255, 255, 0.9),
+    0 6px 12px rgba(255, 96, 173, 0.2),
+    0 2px 6px rgba(97, 64, 55, 0.1) !important;
+  background: radial-gradient(
+    circle at 25% 25%,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.9) 30%,
+    rgba(255, 240, 245, 0.7) 55%,
+    rgba(255, 96, 173, 0.25) 80%,
+    rgba(166, 227, 233, 0.45) 100%
+  ) !important;
+}
+
+.btn-ctrl:active {
+  transform: scale(0.92) translateY(1px) !important;
+  box-shadow: 
+    inset -1px -1px 2px rgba(255, 96, 173, 0.25),
+    inset 1px 1px 2px rgba(166, 227, 233, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    0 2px 4px rgba(97, 64, 55, 0.08) !important;
 }
 
 .btn-ctrl.play-pause {
-  background: var(--color-accent-light);
-  color: var(--color-accent-dark);
-  font-size: 1rem;
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
 }
 
-.btn-ctrl.play-pause:hover {
-  transform: scale(1.1);
-  background: #fff;
+.btn-ctrl.play-pause:hover:not(:disabled) {
+  transform: scale(1.18) translateY(-2px) !important;
 }
 
 
@@ -1118,6 +1230,22 @@ select {
   transform: translateY(-2px);
 }
 
+/* GPU Hardware Acceleration for smooth mobile transitions */
+.modal-content {
+  will-change: transform;
+}
+.cart-drawer {
+  will-change: right;
+}
+.music-player-panel {
+  will-change: transform, opacity;
+}
+.common-button--rotate-icon,
+.common-button--lang-icon,
+.btn-ctrl {
+  will-change: transform, box-shadow;
+}
+
 /* ====================================================
    MOBILE VIEWPORT ADAPTATIONS (MAX-WIDTH: 767px)
    ==================================================== */
@@ -1290,6 +1418,43 @@ select {
     top: 4px !important;
     right: 4px !important;
     border-radius: 3px !important;
+  }
+
+  /* Mobile performance optimization rules */
+  /* 1. Disable infinite floating animations to save CPU/GPU cycles */
+  .pose-rotator-overlay > button,
+  .music-toggle-btn,
+  .music-toggle-btn.playing {
+    animation: none !important;
+  }
+
+  /* 2. Disable heavy backdrop-filters on mobile devices (Safari/Android WebViews) */
+  .modal-overlay {
+    backdrop-filter: none !important;
+    background: rgba(61, 34, 26, 0.88) !important;
+  }
+
+  .cart-drawer-overlay {
+    backdrop-filter: none !important;
+    background: rgba(61, 34, 26, 0.55) !important;
+  }
+
+  .music-player-panel {
+    backdrop-filter: none !important;
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.96) 30%,
+      rgba(255, 240, 245, 0.9) 60%,
+      rgba(255, 96, 173, 0.2) 85%,
+      rgba(166, 227, 233, 0.4) 100%
+    ) !important;
+  }
+
+  .common-button--rotate-icon,
+  .common-button--lang-icon,
+  .btn-ctrl {
+    backdrop-filter: none !important;
   }
 }
 

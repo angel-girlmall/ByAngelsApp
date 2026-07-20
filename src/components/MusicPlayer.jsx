@@ -216,7 +216,7 @@ function MusicPlayer({
                     cursor: 'pointer', 
                     padding: '2px 4px', 
                     borderRadius: '4px',
-                    background: idx === currentTrackIndex ? 'rgba(253,245,242,0.2)' : 'transparent',
+                    background: idx === currentTrackIndex ? 'rgba(97, 64, 55, 0.15)' : 'transparent',
                     fontWeight: idx === currentTrackIndex ? 'bold' : 'normal',
                     display: 'flex',
                     justifyContent: 'space-between'
