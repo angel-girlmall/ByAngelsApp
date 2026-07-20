@@ -365,6 +365,15 @@ function App() {
   const getFilteredProducts = () => {
     let result = [...products];
 
+    // Sort products: priority to 'numorden' (ascending), other items go to the end
+    result.sort((a, b) => {
+      const numA = Number(a.numorden);
+      const numB = Number(b.numorden);
+      const orderA = (a.numorden !== undefined && a.numorden !== null && a.numorden !== '' && !isNaN(numA)) ? numA : Infinity;
+      const orderB = (b.numorden !== undefined && b.numorden !== null && b.numorden !== '' && !isNaN(numB)) ? numB : Infinity;
+      return orderA - orderB;
+    });
+
     // Filter by styles categories
     if (styleFilter !== '') {
       const filter = styleFilter.toLowerCase();
