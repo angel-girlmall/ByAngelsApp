@@ -24,7 +24,7 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
       }
 
       try {
-        const base = apiUrl !== undefined ? apiUrl : (import.meta.env.DEV ? 'http://localhost:5000' : '');
+        const base = apiUrl || 'http://localhost:5000';
         const res = await fetch(`${base}/api/inicio`, {
           headers: {
             'Bypass-Tunnel-Reminder': 'true',
@@ -72,7 +72,7 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
     let hlsInstance = null;
     
     if (isHls) {
-      const base = apiUrl !== undefined ? apiUrl : (import.meta.env.DEV ? 'http://localhost:5000' : '');
+      const base = apiUrl || 'http://localhost:5000';
       // Strip v1.pinimg.com domain if present to construct path-based proxy URL
       const cleanPath = imageUrl.replace('https://v1.pinimg.com/videos/', '');
       const proxiedUrl = `${base}/api/proxy-video/${cleanPath}`;

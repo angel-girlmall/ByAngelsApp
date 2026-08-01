@@ -17,9 +17,7 @@ function App() {
   const [noticesLoading, setNoticesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL !== undefined 
-    ? import.meta.env.VITE_API_URL 
-    : (import.meta.env.DEV ? (appConfig.apiUrl || 'http://localhost:5000') : '');
+  const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
 
   // Welcome Screen and Notice Modal state
   const [showWelcome, setShowWelcome] = useState(true);
