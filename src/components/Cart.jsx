@@ -150,7 +150,7 @@ function Cart({
     const encodedText = encodeURIComponent(fullMessage);
 
     // Consult Database (Firestore / API) for rotated contact document
-    let targetWhatsappNumber = whatsappNumber || '51900962934';
+    let targetWhatsappNumber = null;
     try {
       const targetApiUrl = apiBaseUrl || 'http://localhost:5000';
       const res = await fetch(`${targetApiUrl}/api/contacto/next`, {
@@ -164,17 +164,40 @@ function Cart({
         const data = await res.json();
         if (data && data.whatsappNumber) {
           targetWhatsappNumber = data.whatsappNumber;
-          console.log(`📱 [Checkout] WhatsApp rotated to number: ${targetWhatsappNumber}`);
+          console.log(`📱 [Checkout API] WhatsApp rotated to number: ${targetWhatsappNumber}`);
         }
+      } else {
+        console.warn(`⚠️ Contact API returned status ${res.status}, activating client rotation fallback.`);
       }
     } catch (err) {
-      console.warn('⚠️ Could not connect to contact rotation API, using client fallback rotation:', err);
+      console.warn('⚠️ Could not connect to contact rotation API, activating client rotation fallback:', err);
+    }
+
+    // Fallback rotation if API is not available, offline, or not yet deployed to remote server
+    if (!targetWhatsappNumber) {
       const fallbackNumbers = ['51900962934', '51931248203', '51928391496'];
+      let currentIdx = 0;
       try {
-        const currentIdx = parseInt(localStorage.getItem('byangels_wa_rot_idx') || '0', 10);
-        targetWhatsappNumber = fallbackNumbers[currentIdx % fallbackNumbers.length];
-        localStorage.setItem('byangels_wa_rot_idx', ((currentIdx + 1) % fallbackNumbers.length).toString());
+        const savedIdx = localStorage.getItem('byangels_wa_rot_idx');
+        if (savedIdx !== null && savedIdx !== undefined) {
+          const parsed = parseInt(savedIdx, 10);
+          if (!isNaN(parsed)) {
+            currentIdx = parsed;
+          }
+        }
+      } catch (lsErr) {
+        currentIdx = 0;
+      }
+
+      const safeIndex = (currentIdx % fallbackNumbers.length + fallbackNumbers.length) % fallbackNumbers.length;
+      targetWhatsappNumber = fallbackNumbers[safeIndex];
+      const nextIndex = (safeIndex + 1) % fallbackNumbers.length;
+
+      try {
+        localStorage.setItem('byangels_wa_rot_idx', nextIndex.toString());
       } catch (lsErr) {}
+
+      console.log(`📱 [Checkout Local Rotation] Assigned WhatsApp number: ${targetWhatsappNumber} (Index: ${safeIndex} -> Next: ${nextIndex})`);
     }
 
     // Redirects to WhatsApp API
