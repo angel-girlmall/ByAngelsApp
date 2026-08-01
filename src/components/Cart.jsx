@@ -117,9 +117,41 @@ function Cart({
 
   const { originalTotal, discountedTotal, discountAmount } = calculateTotals();
 
+  // Helper to generate a unique, cryptographically unguessable Order Code based on Date/Time + Random Entropy
+  const generateOrderCode = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    // High entropy random string (excluding ambiguous characters like 0, O, I, 1)
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let randomChars = '';
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const randomValues = new Uint8Array(4);
+      window.crypto.getRandomValues(randomValues);
+      for (let i = 0; i < 4; i++) {
+        randomChars += alphabet[randomValues[i] % alphabet.length];
+      }
+    } else {
+      for (let i = 0; i < 4; i++) {
+        randomChars += alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+    }
+
+    return `BYA-${year}${month}${day}-${hours}${minutes}${seconds}-${randomChars}`;
+  };
+
   // Triggers WhatsApp API with formatted order template text after consulting rotated number from database
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
+
+    const orderCode = generateOrderCode();
+    const now = new Date();
+    const formattedDate = `${now.toLocaleDateString(language === 'es' ? 'es-PE' : 'en-US')} ${now.toLocaleTimeString(language === 'es' ? 'es-PE' : 'en-US')}`;
 
     let itemsText = '';
     cartItems.forEach((item, index) => {
@@ -137,6 +169,8 @@ function Cart({
 
     const header = labels.whatsappMessage || 'Hola, quiero realizar el siguiente pedido:';
 
+    const orderHeader = `🛍️ *BYANGELS E-COMMERCE* 🛍️\n📌 *${language === 'es' ? 'Código de Pedido' : 'Order Code'}:* \`${orderCode}\`\n🕒 *${language === 'es' ? 'Fecha y Hora' : 'Date & Time'}:* ${formattedDate}\n`;
+
     let summaryText = `\n----------------------------\n`;
     if (discountAmount > 0) {
       summaryText += `❌ *${labels.originalTotal || 'Original Total'}:* S/. ${originalTotal}\n`;
@@ -145,8 +179,9 @@ function Cart({
     } else {
       summaryText += `✅ *${labels.total || 'Total'}:* S/. ${originalTotal}\n`;
     }
+    summaryText += `📌 *${language === 'es' ? 'Código Único' : 'Unique Code'}:* \`${orderCode}\`\n`;
 
-    const fullMessage = `🛍️ *BYANGELS E-COMMERCE* 🛍️\n${header}\n${itemsText}${summaryText}`;
+    const fullMessage = `${orderHeader}\n${header}\n${itemsText}${summaryText}`;
     const encodedText = encodeURIComponent(fullMessage);
 
     // Consult Database (Firestore / API) for rotated contact document
