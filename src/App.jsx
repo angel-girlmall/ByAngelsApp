@@ -472,9 +472,6 @@ function App() {
         >
           <i className="fa-solid fa-cart-shopping"></i>
           <span>{language === 'es' ? 'Comprar' : 'Buy'}</span>
-          {cartTotalQuantity > 0 && (
-            <span className="buy-badge">{cartTotalQuantity}</span>
-          )}
         </button>
       )}
 
