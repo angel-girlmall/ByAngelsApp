@@ -109,11 +109,16 @@ function MainModelDisplay({
 
           {/* Cart toggle button */}
           <Button
-            onClick={onCartClick}
+            onClick={() => {
+              if (cartBadgeCount > 0 && onCartClick) {
+                onCartClick();
+              }
+            }}
             title={language === 'es' ? 'Ver Carrito' : 'View Cart'}
             icon="fa-solid fa-cart-shopping"
             variant="rotate-icon"
             badge={cartBadgeCount}
+            className={cartBadgeCount > 0 ? 'cart-has-items-green' : ''}
             style={{ position: 'relative' }}
           />
 

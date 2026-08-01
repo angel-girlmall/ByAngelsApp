@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 /**
  * Cart Component
@@ -23,6 +23,34 @@ function Cart({
   onRemove,
   onClose
 }) {
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchCurrentX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    if (!e.targetTouches || e.targetTouches.length === 0) return;
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchStartY.current = e.targetTouches[0].clientY;
+    touchCurrentX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!e.targetTouches || e.targetTouches.length === 0) return;
+    touchCurrentX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    const endX = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : touchCurrentX.current;
+    const endY = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientY : touchStartY.current;
+    
+    const diffX = endX - touchStartX.current;
+    const diffY = Math.abs(endY - touchStartY.current);
+
+    // Swipe left-to-right (diffX > 50px) closes the drawer in mobile view
+    if (diffX > 50 && diffX > diffY) {
+      if (onClose) onClose();
+    }
+  };
 
   // Dynamic Programming Pricing Engine
   // Computes the absolute minimum cost by grouping garments into the available bundles
@@ -133,10 +161,18 @@ function Cart({
         onClick={onClose}
       />
 
-      {/* Cart Drawer Box */}
-      <div className={`cart-drawer ${visible ? 'visible' : ''}`}>
+      {/* Cart Drawer Box with Swipe-to-Close Gesture */}
+      <div 
+        className={`cart-drawer ${visible ? 'visible' : ''}`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="cart-header">
           <h2 className="cart-title">🛍️ {labels.cartTitle || 'Shopping Cart'}</h2>
+          <div className="cart-swipe-hint">
+            <span>Desliza &rarr;</span>
+          </div>
           <button
             type="button"
             className="btn-close-drawer"

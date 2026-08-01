@@ -2380,11 +2380,46 @@ select {
     rgba(166, 227, 233, 0.25) 100%
   ) !important;
   color: var(--color-accent-dark) !important;
+  cursor: default !important;
   box-shadow: 
     inset -2px -2px 6px rgba(255, 96, 173, 0.15),
     inset 2px 2px 6px rgba(166, 227, 233, 0.2),
     inset 0 6px 8px rgba(255, 255, 255, 0.85),
     var(--shadow-md) !important;
+}
+
+.btn-buy-floating .buy-badge {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  color: #1e6b38 !important;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+.cart-has-items-green {
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #c8e6c9 50%, #4caf50 100%) !important;
+  color: #1b5e20 !important;
+}
+
+/* Mobile Swipe-to-Close Hint in Cart Drawer */
+.cart-swipe-hint {
+  display: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.65;
+  margin-left: auto;
+  margin-right: 8px;
+  color: var(--color-accent-dark);
+}
+
+@media (max-width: 767px) {
+  .cart-swipe-hint {
+    display: inline-block;
+  }
 }
 
 .btn-buy-floating.empty:hover {

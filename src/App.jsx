@@ -464,10 +464,17 @@ function App() {
         <button
           type="button"
           className={`btn-buy-floating ${cart.length === 0 ? 'empty' : 'has-items'}`}
-          onClick={() => setCartVisible(true)}
+          onClick={() => {
+            if (cart.length > 0) {
+              setCartVisible(true);
+            }
+          }}
         >
           <i className="fa-solid fa-cart-shopping"></i>
           <span>{language === 'es' ? 'Comprar' : 'Buy'}</span>
+          {cartTotalQuantity > 0 && (
+            <span className="buy-badge">{cartTotalQuantity}</span>
+          )}
         </button>
       )}
 
