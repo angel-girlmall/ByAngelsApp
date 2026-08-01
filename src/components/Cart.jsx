@@ -19,6 +19,7 @@ function Cart({
   language = 'es',
   labels = {},
   whatsappNumber = '51900962934',
+  apiBaseUrl = '',
   onQuantityChange,
   onRemove,
   onClose
@@ -116,8 +117,8 @@ function Cart({
 
   const { originalTotal, discountedTotal, discountAmount } = calculateTotals();
 
-  // Triggers WhatsApp API with formatted order template text
-  const handleCheckout = () => {
+  // Triggers WhatsApp API with formatted order template text after consulting rotated number from database
+  const handleCheckout = async () => {
     if (cartItems.length === 0) return;
 
     let itemsText = '';
@@ -148,8 +149,36 @@ function Cart({
     const fullMessage = `🛍️ *BYANGELS E-COMMERCE* 🛍️\n${header}\n${itemsText}${summaryText}`;
     const encodedText = encodeURIComponent(fullMessage);
 
+    // Consult Database (Firestore / API) for rotated contact document
+    let targetWhatsappNumber = whatsappNumber || '51900962934';
+    try {
+      const targetApiUrl = apiBaseUrl || 'http://localhost:5000';
+      const res = await fetch(`${targetApiUrl}/api/contacto/next`, {
+        method: 'GET',
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.whatsappNumber) {
+          targetWhatsappNumber = data.whatsappNumber;
+          console.log(`📱 [Checkout] WhatsApp rotated to number: ${targetWhatsappNumber}`);
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ Could not connect to contact rotation API, using client fallback rotation:', err);
+      const fallbackNumbers = ['51900962934', '51931248203', '51928391496'];
+      try {
+        const currentIdx = parseInt(localStorage.getItem('byangels_wa_rot_idx') || '0', 10);
+        targetWhatsappNumber = fallbackNumbers[currentIdx % fallbackNumbers.length];
+        localStorage.setItem('byangels_wa_rot_idx', ((currentIdx + 1) % fallbackNumbers.length).toString());
+      } catch (lsErr) {}
+    }
+
     // Redirects to WhatsApp API
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
+    const whatsappUrl = `https://wa.me/${targetWhatsappNumber}?text=${encodedText}`;
     window.open(whatsappUrl, '_blank');
   };
 

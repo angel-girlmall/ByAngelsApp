@@ -494,6 +494,7 @@ function App() {
         language={language}
         labels={activeLabels}
         whatsappNumber={appConfig.whatsappNumber}
+        apiBaseUrl={apiBaseUrl}
         onQuantityChange={handleCartQuantityChange}
         onRemove={handleRemoveFromCart}
         onClose={() => setCartVisible(false)}

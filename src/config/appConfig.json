@@ -1,6 +1,11 @@
 {
   "apiUrl": "https://by-angels-apis-jt2j.vercel.app",
   "whatsappNumber": "51900962934",
+  "whatsappNumbers": [
+    "51900962934",
+    "51931248203",
+    "51928391496"
+  ],
   "languages": {
     "es": {
       "searchPlaceholder": "Buscar...",
