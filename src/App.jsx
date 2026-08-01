@@ -203,13 +203,31 @@ function App() {
     fetchData();
   }, []);
 
-  // Global click listener to play water drop sound when pressing bubble buttons
+  // Global click listener to play water drop sound when pressing any interactive button
   useEffect(() => {
-    const playWaterDropSound = () => {
+    let globalAudioCtx = null;
+
+    const getAudioContext = () => {
       try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return;
-        const ctx = new AudioContextClass();
+        if (!AudioContextClass) return null;
+        if (!globalAudioCtx) {
+          globalAudioCtx = new AudioContextClass();
+        }
+        if (globalAudioCtx.state === 'suspended') {
+          globalAudioCtx.resume().catch(() => {});
+        }
+        return globalAudioCtx;
+      } catch (e) {
+        return null;
+      }
+    };
+
+    const playWaterDropSound = () => {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         
@@ -217,19 +235,19 @@ function App() {
         const now = ctx.currentTime;
         
         // Water drop sound frequency sweep: fast low-to-high pitch
-        osc.frequency.setValueAtTime(200, now);
-        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
         
         // Decay envelope
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.3, now + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
         
         osc.connect(gain);
         gain.connect(ctx.destination);
         
         osc.start(now);
-        osc.stop(now + 0.13);
+        osc.stop(now + 0.11);
       } catch (e) {
         console.warn('Audio synthesis blocked or failed:', e);
       }
@@ -239,11 +257,11 @@ function App() {
       const target = event.target;
       if (!target) return;
       
-      // Check if target or any ancestor matches bubble button classes
-      const bubbleButton = target.closest(
-        '.common-button--rotate-icon, .common-button--lang-icon, .btn-buy-floating, .btn-ctrl, .music-toggle-btn'
+      // Matches any button, role=button, or custom action element
+      const interactiveButton = target.closest(
+        'button, .btn, .btn-buy-floating, .btn-ctrl, .music-toggle-btn, [role="button"], .common-button'
       );
-      if (bubbleButton) {
+      if (interactiveButton) {
         playWaterDropSound();
       }
     };
@@ -251,6 +269,11 @@ function App() {
     document.addEventListener('click', handleGlobalClick, true);
     return () => {
       document.removeEventListener('click', handleGlobalClick, true);
+      if (globalAudioCtx) {
+        try {
+          globalAudioCtx.close();
+        } catch (e) {}
+      }
     };
   }, []);
 
