@@ -16,6 +16,7 @@ function MainModelDisplay({
   currentPoseIndex = 0,
   brandName = 'Angel Girl',
   language = 'es',
+  loading = false,
   onPoseChange,
   onCartClick,
   cartBadgeCount = 0,
@@ -73,10 +74,14 @@ function MainModelDisplay({
             alt={`Model pose ${currentPoseIndex + 1}`}
             className="model-image"
           />
-        ) : (
+        ) : loading ? (
           <div className="model-loading-placeholder">
             <span className="spinner">⌛</span>
             <p>{language === 'es' ? 'Cargando Modelo...' : 'Loading Model...'}</p>
+          </div>
+        ) : (
+          <div className="model-loading-placeholder">
+            <p style={{ opacity: 0.7 }}>{language === 'es' ? 'Sin modelo disponible' : 'No model available'}</p>
           </div>
         )}
       </div>

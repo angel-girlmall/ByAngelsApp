@@ -9,101 +9,6 @@ import Cart from './components/Cart';
 import WelcomeScreen from './components/WelcomeScreen';
 import NoticeModal from './components/NoticeModal';
 
-// Frontend double safety net - local fallback database if backend API is unreachable
-const LOCAL_FALLBACK_PRODUCTS = [
-  {
-    id: "prod_1",
-    Nombre: "Conjunto Urbano 1",
-    Categoria: "Casual",
-    Color: "Crema",
-    Precio: 40,
-    Nuevo: true,
-    Tendencia: true,
-    imgReel0: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
-    imgReel1: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop",
-    imgReel2: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=600&auto=format&fit=crop",
-    imgReel3: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop",
-    imgReel4: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop",
-    imgReel5: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&auto=format&fit=crop",
-    imgReel6: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&auto=format&fit=crop"
-  },
-  {
-    id: "prod_2",
-    Nombre: "Polera Streetwear Negra",
-    Categoria: "Streetwear",
-    Color: "Negro",
-    Precio: 38,
-    Nuevo: false,
-    Tendencia: true,
-    imgReel0: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&auto=format&fit=crop",
-    imgReel1: "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=600&auto=format&fit=crop",
-    imgReel2: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop",
-    imgReel3: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
-    imgReel4: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop",
-    imgReel5: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop",
-    imgReel6: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&auto=format&fit=crop"
-  },
-  {
-    id: "prod_3",
-    Nombre: "Conjunto Deportivo Athleisure",
-    Categoria: "Athleisure",
-    Color: "Plomo",
-    Precio: 40,
-    Nuevo: true,
-    Tendencia: false,
-    imgReel0: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&auto=format&fit=crop",
-    imgReel1: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=600&auto=format&fit=crop",
-    imgReel2: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop",
-    imgReel3: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop",
-    imgReel4: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
-    imgReel5: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop",
-    imgReel6: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=600&auto=format&fit=crop"
-  },
-  {
-    id: "prod_4",
-    Nombre: "Vestido Ribbed Knit",
-    Categoria: "Casual",
-    Color: "Marrón",
-    Precio: 38,
-    Nuevo: false,
-    Tendencia: false,
-    imgReel0: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop",
-    imgReel1: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop",
-    imgReel2: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
-    imgReel3: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop",
-    imgReel4: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=600&auto=format&fit=crop",
-    imgReel5: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&auto=format&fit=crop",
-    imgReel6: "https://images.unsplash.com/photo-1509319117193-57bab727e09d?w=600&auto=format&fit=crop"
-  }
-];
-
-const LOCAL_FALLBACK_MUSICS = [
-  {
-    id: "song_1",
-    title: "Mientestanbonito Sin Voz",
-    artist: "ByAngels Boutique",
-    url: "https://raw.githubusercontent.com/naguilardavidflores/mi-musica-web/main/MientestanbonitoSinVoz.mp3"
-  },
-  {
-    id: "song_2",
-    title: "Lofi Dreams",
-    artist: "ByAngels Chill",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-  },
-  {
-    id: "song_3",
-    title: "Vibrant Street",
-    artist: "ByAngels Beats",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-  }
-];
-
-const LOCAL_FALLBACK_NOTICES = [
-  'https://i.pinimg.com/736x/cb/c9/28/cbc928d11c002235c3c04b46c6530669.jpg',
-  'https://i.pinimg.com/736x/43/3e/49/433e49be9d2de6b7cbe3bebf78b278ec.jpg',
-  'https://i.pinimg.com/736x/cf/e6/78/cfe678d49a37c95e0c52bb744cf2fbdc.jpg'
-];
-
 function App() {
   const [language, setLanguage] = useState('es'); // Default is Spanish
   const [products, setProducts] = useState([]);
@@ -112,7 +17,9 @@ function App() {
   const [noticesLoading, setNoticesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
+  const apiBaseUrl = import.meta.env.VITE_API_URL !== undefined 
+    ? import.meta.env.VITE_API_URL 
+    : (import.meta.env.DEV ? (appConfig.apiUrl || 'http://localhost:5000') : '');
 
   // Welcome Screen and Notice Modal state
   const [showWelcome, setShowWelcome] = useState(true);
@@ -208,6 +115,8 @@ function App() {
         
         if (shopData.length > 0) {
           setSelectedProductId(shopData[0].id);
+        } else {
+          setSelectedProductId(null);
         }
 
         // Fetch tracks
@@ -236,12 +145,8 @@ function App() {
             setCurrentTrackIndex(randomIdx);
           }
         } else {
-          finalMusicData = LOCAL_FALLBACK_MUSICS;
-          setMusics(LOCAL_FALLBACK_MUSICS);
-          if (LOCAL_FALLBACK_MUSICS.length > 0) {
-            const randomIdx = Math.floor(Math.random() * LOCAL_FALLBACK_MUSICS.length);
-            setCurrentTrackIndex(randomIdx);
-          }
+          finalMusicData = [];
+          setMusics([]);
         }
 
         // Fetch weekly news/notices
@@ -270,8 +175,8 @@ function App() {
           finalNoticeData = extractedUrls.map(item => item.url);
           setNotices(finalNoticeData);
         } else {
-          finalNoticeData = LOCAL_FALLBACK_NOTICES;
-          setNotices(LOCAL_FALLBACK_NOTICES);
+          finalNoticeData = [];
+          setNotices([]);
         }
 
         // Store new data in localStorage cache
@@ -286,16 +191,11 @@ function App() {
         }
 
       } catch (err) {
-        console.warn('⚠️ API Connection failed. Running on local frontend safety fallback mock database.');
-        const fallbackProducts = sortProducts(LOCAL_FALLBACK_PRODUCTS);
-        setProducts(fallbackProducts);
-        setMusics(LOCAL_FALLBACK_MUSICS);
-        setNotices(LOCAL_FALLBACK_NOTICES);
-        setSelectedProductId(fallbackProducts[0].id);
-        if (LOCAL_FALLBACK_MUSICS.length > 0) {
-          const randomIdx = Math.floor(Math.random() * LOCAL_FALLBACK_MUSICS.length);
-          setCurrentTrackIndex(randomIdx);
-        }
+        console.warn('⚠️ API Connection failed:', err);
+        setProducts([]);
+        setMusics([]);
+        setNotices([]);
+        setSelectedProductId(null);
       } finally {
         setLoading(false);
         setNoticesLoading(false);
@@ -477,6 +377,7 @@ function App() {
         currentPoseIndex={selectedPoseIndex}
         brandName="Angel Girl"
         language={language}
+        loading={loading}
         onPoseChange={(newPose) => setSelectedPoseIndex(newPose)}
         onCartClick={() => setCartVisible(true)}
         cartBadgeCount={cartTotalQuantity}
