@@ -41,6 +41,23 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+*:focus,
+*:active,
+*:focus-visible,
+button:focus,
+button:active,
+button:focus-visible,
+a:focus,
+a:active,
+input:focus,
+select:focus,
+[role="button"]:focus,
+[role="button"]:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 html {
@@ -62,6 +79,7 @@ select {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Scrollbar Customization */
