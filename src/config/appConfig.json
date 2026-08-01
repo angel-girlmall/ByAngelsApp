@@ -31,7 +31,9 @@
         "tendencia": "Tendencia",
         "casual": "Casual",
         "streetwear": "Streetwear",
-        "athleisure": "Athleisure"
+        "athleisure": "Athleisure",
+        "precio_asc": "Precio: Menor a Mayor ⬆️",
+        "precio_desc": "Precio: Mayor a Menor ⬇️"
       }
     },
     "en": {
@@ -58,7 +60,9 @@
         "tendencia": "Trending",
         "casual": "Casual",
         "streetwear": "Streetwear",
-        "athleisure": "Athleisure"
+        "athleisure": "Athleisure",
+        "precio_asc": "Price: Low to High ⬆️",
+        "precio_desc": "Price: High to Low ⬇️"
       }
     }
   },

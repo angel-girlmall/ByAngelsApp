@@ -300,17 +300,8 @@ function App() {
   const getFilteredProducts = () => {
     let result = [...products];
 
-    // Sort products: priority to 'numorden' (ascending), other items go to the end
-    result.sort((a, b) => {
-      const numA = Number(a.numorden);
-      const numB = Number(b.numorden);
-      const orderA = (a.numorden !== undefined && a.numorden !== null && a.numorden !== '' && !isNaN(numA)) ? numA : Infinity;
-      const orderB = (b.numorden !== undefined && b.numorden !== null && b.numorden !== '' && !isNaN(numB)) ? numB : Infinity;
-      return orderA - orderB;
-    });
-
-    // Filter by styles categories
-    if (styleFilter !== '') {
+    // Filter by styles categories (if it is a category/flag filter)
+    if (styleFilter !== '' && styleFilter !== 'precio_asc' && styleFilter !== 'precio_desc') {
       const filter = styleFilter.toLowerCase();
       if (filter === 'nuevo') {
         result = result.filter(p => 
@@ -333,6 +324,23 @@ function App() {
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(p => p.Nombre && p.Nombre.toLowerCase().includes(q));
+    }
+
+    // Sort products based on price or priority 'numorden'
+    if (styleFilter === 'precio_asc' || styleFilter === 'precio-asc') {
+      result.sort((a, b) => (Number(a.Precio) || 0) - (Number(b.Precio) || 0));
+    } else if (styleFilter === 'precio_desc' || styleFilter === 'precio-desc') {
+      result.sort((a, b) => (Number(b.Precio) || 0) - (Number(a.Precio) || 0));
+    } else {
+      result.sort((a, b) => {
+        const valA = a.numorden !== undefined ? a.numorden : a.numOrden;
+        const valB = b.numorden !== undefined ? b.numorden : b.numOrden;
+        const numA = Number(valA);
+        const numB = Number(valB);
+        const orderA = (valA !== undefined && valA !== null && valA !== '' && !isNaN(numA)) ? numA : Infinity;
+        const orderB = (valB !== undefined && valB !== null && valB !== '' && !isNaN(numB)) ? numB : Infinity;
+        return orderA - orderB;
+      });
     }
 
     return result;
