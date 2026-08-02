@@ -214,25 +214,14 @@ function ProductModal({
               className="btn-add-cart-large"
               onClick={handleAddToCart}
             >
-              🛒 {labels.cartAdd || 'Add to Cart'}
+              🛒 {labels.cartAdd || 'Agregar al Carrito'}
             </button>
-            {onVideoClick && (
-              <button 
-                type="button" 
-                className="btn-add-cart-large"
-                style={{ background: 'linear-gradient(135deg, var(--color-accent-dark) 0%, #1a0f0a 100%)', border: '1px solid var(--color-gold)', color: 'var(--color-gold)' }}
-                onClick={() => onVideoClick(product)}
-                title="Ver Video de Pasarela"
-              >
-                🎬 {language === 'es' ? 'Pasarela' : 'Catwalk'}
-              </button>
-            )}
             <button 
               type="button" 
               className="btn-close-modal"
               onClick={onClose}
             >
-              {labels.closeButton || 'Close'}
+              {labels.closeButton || 'Cerrar'}
             </button>
           </div>
         </div>

@@ -689,21 +689,29 @@ select {
 
 .modal-action-row {
   display: flex;
+  align-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 14px;
 }
 
 .btn-add-cart-large {
-  flex: 1;
+  flex: 2;
+  height: 48px;
   background: var(--color-accent-dark);
   color: var(--color-accent-light);
   border: none;
-  padding: 14px;
+  padding: 0 18px;
   border-radius: var(--radius-md);
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .btn-add-cart-large:hover {
@@ -713,14 +721,21 @@ select {
 }
 
 .btn-close-modal {
+  flex: 1;
+  height: 48px;
   background: rgba(97, 64, 55, 0.1);
   color: var(--color-accent-dark);
-  border: none;
-  padding: 14px 20px;
+  border: 1px solid rgba(97, 64, 55, 0.2);
+  padding: 0 16px;
   border-radius: var(--radius-md);
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .btn-close-modal:hover {
