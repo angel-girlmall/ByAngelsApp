@@ -10,6 +10,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import NoticeModal from './components/NoticeModal';
 import CountdownTimer from './components/CountdownTimer';
 import PullToRefresh from './components/PullToRefresh';
+import PasarelaModal from './components/PasarelaModal';
 
 function App() {
   const [language, setLanguage] = useState('es'); // Default is Spanish
@@ -21,9 +22,10 @@ function App() {
 
   const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
 
-  // Welcome Screen and Notice Modal state
+  // Welcome Screen, Notice Modal, and Pasarela Modal state
   const [showWelcome, setShowWelcome] = useState(true);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [showPasarelaModal, setShowPasarelaModal] = useState(false);
 
   // Filter & Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -427,6 +429,7 @@ function App() {
         cartBadgeCount={cartTotalQuantity}
         onLanguageToggle={() => setLanguage(language === 'es' ? 'en' : 'es')}
         onNoticeClick={() => setShowNoticeModal(true)}
+        onVideoClick={() => setShowPasarelaModal(true)}
         skinToneMode={skinToneMode}
         onSkinToneToggle={handleSkinToneToggle}
       />
@@ -541,6 +544,10 @@ function App() {
         labels={activeLabels}
         onClose={() => setDetailProduct(null)}
         onCartAdded={handleAddToCart}
+        onVideoClick={(prod) => {
+          if (prod) setDetailProduct(prod);
+          setShowPasarelaModal(true);
+        }}
       />
 
       {/* News/Notice Reels Modal */}
@@ -549,6 +556,14 @@ function App() {
         reels={notices}
         loading={noticesLoading}
         onClose={() => setShowNoticeModal(false)}
+      />
+
+      {/* Pasarela Virtual Video Modal */}
+      <PasarelaModal
+        visible={showPasarelaModal}
+        product={detailProduct || selectedProduct}
+        language={language}
+        onClose={() => setShowPasarelaModal(false)}
       />
 
       {/* Fullscreen Entry Screen */}

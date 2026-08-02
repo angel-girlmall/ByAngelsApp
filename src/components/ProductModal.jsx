@@ -25,7 +25,8 @@ function ProductModal({
   language = 'es',
   labels = {},
   onClose,
-  onCartAdded
+  onCartAdded,
+  onVideoClick
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedSize, setSelectedSize] = useState('M');
@@ -215,6 +216,17 @@ function ProductModal({
             >
               🛒 {labels.cartAdd || 'Add to Cart'}
             </button>
+            {onVideoClick && (
+              <button 
+                type="button" 
+                className="btn-add-cart-large"
+                style={{ background: 'linear-gradient(135deg, var(--color-accent-dark) 0%, #1a0f0a 100%)', border: '1px solid var(--color-gold)', color: 'var(--color-gold)' }}
+                onClick={() => onVideoClick(product)}
+                title="Ver Video de Pasarela"
+              >
+                🎬 {language === 'es' ? 'Pasarela' : 'Catwalk'}
+              </button>
+            )}
             <button 
               type="button" 
               className="btn-close-modal"

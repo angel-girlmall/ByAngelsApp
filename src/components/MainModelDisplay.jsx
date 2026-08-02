@@ -22,6 +22,7 @@ function MainModelDisplay({
   cartBadgeCount = 0,
   onLanguageToggle,
   onNoticeClick,
+  onVideoClick,
   skinToneMode = 'clara',
   onSkinToneToggle
 }) {
@@ -62,6 +63,20 @@ function MainModelDisplay({
         style={{ backgroundImage: `url(${boutiqueBgUrl})` }}
       />
       <div className="boutique-overlay" />
+
+      {/* Hanging Bubble Video Button (Swinging & Rotating on its Axis) */}
+      <div 
+        className="hanging-video-bubble-container" 
+        onClick={onVideoClick} 
+        title={language === 'es' ? 'Ver Pasarela / Video' : 'Watch Catwalk Video'}
+      >
+        <div className="hanging-thread"></div>
+        <div className="hanging-bubble-button">
+          <i className="fa-solid fa-video"></i>
+          <span className="hanging-bubble-glow"></span>
+        </div>
+        <span className="hanging-bubble-label">PASARELA</span>
+      </div>
 
       {/* Brand logo - Sacramento Neon */}
       <h1 className="brand-neon">{brandName}</h1>
