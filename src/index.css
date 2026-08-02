@@ -2685,13 +2685,19 @@ select {
   .timer-unit-value {
     font-size: 0.85rem;
   }
+  .hanging-video-bubble-container {
+    left: 16px;
+  }
+  .hanging-thread {
+    height: 75px;
+  }
 }
 
 /* Hanging Bubble Video Button (Swinging and Rotating on Y-Axis) */
 .hanging-video-bubble-container {
   position: absolute;
   top: 0;
-  left: 24px;
+  left: 28px;
   z-index: 30;
   display: flex;
   flex-direction: column;
@@ -2702,7 +2708,7 @@ select {
 
 .hanging-thread {
   width: 2px;
-  height: 42px;
+  height: 95px;
   background: linear-gradient(to bottom, rgba(212, 175, 55, 0.9), rgba(253, 245, 242, 0.7));
   box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
   transform-origin: top center;
