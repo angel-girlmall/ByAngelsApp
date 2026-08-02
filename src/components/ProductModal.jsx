@@ -42,13 +42,18 @@ function ProductModal({
 
   if (!visible || !product) return null;
 
-  // Retrieve imgReel0 and imgReel7 (or fallback to imgReel1/imgReel6 if imgReel7 is not set yet)
-  const secondaryImage = (product.imgReel7 && typeof product.imgReel7 === 'string' && product.imgReel7.trim()) 
-    ? product.imgReel7.trim() 
-    : (product.imgReel1 || product.imgReel6 || product.imgReel2 || '');
+  // Retrieve imgReel0 and imgReel7 (or fallback to secondary reel image if imgReel7 is not set yet)
+  const img0 = (product.imgReel0 || product.imgreel0 || '').trim();
+  const img7 = (product.imgReel7 || product.imgreel7 || '').trim();
+  const fallbackSec = (product.imgReel1 || product.imgReel6 || product.imgReel2 || '').trim();
 
-  const rawImages = [product.imgReel0, secondaryImage].filter(img => Boolean(img && typeof img === 'string' && img.trim()));
-  const images = Array.from(new Set(rawImages));
+  const secImg = img7 || fallbackSec;
+
+  const images = [];
+  if (img0) images.push(img0);
+  if (secImg && (secImg !== img0 || img7 !== '')) {
+    images.push(secImg);
+  }
 
   // Fallback if no images found
   if (images.length === 0) {

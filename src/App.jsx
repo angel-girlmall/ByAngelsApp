@@ -76,46 +76,44 @@ function App() {
     };
 
     const fetchData = async () => {
-      // Check cache first
+      // 1. Render cached data immediately for 0-second instant loading
+      let hasCachedData = false;
       try {
-        const cachedTimestamp = localStorage.getItem('byangels_cache_timestamp');
-        const now = Date.now();
-        if (cachedTimestamp && (now - parseInt(cachedTimestamp, 10) < 10 * 60 * 1000)) {
-          const cachedProducts = localStorage.getItem('byangels_products');
-          const cachedMusics = localStorage.getItem('byangels_musics');
-          const cachedNotices = localStorage.getItem('byangels_notices');
+        const cachedProducts = localStorage.getItem('byangels_products');
+        const cachedMusics = localStorage.getItem('byangels_musics');
+        const cachedNotices = localStorage.getItem('byangels_notices');
 
-          if (cachedProducts && cachedMusics && cachedNotices) {
-            const parsedProducts = sortProducts(JSON.parse(cachedProducts));
-            const parsedMusics = JSON.parse(cachedMusics);
-            const parsedNotices = JSON.parse(cachedNotices);
+        if (cachedProducts && cachedMusics && cachedNotices) {
+          const parsedProducts = sortProducts(JSON.parse(cachedProducts));
+          const parsedMusics = JSON.parse(cachedMusics);
+          const parsedNotices = JSON.parse(cachedNotices);
 
-            console.log('⚡ Using cached API data from localStorage');
-            setProducts(parsedProducts);
-            setMusics(parsedMusics);
-            setNotices(parsedNotices);
-            
-            if (parsedProducts.length > 0) {
-              setSelectedProductId(parsedProducts[0].id);
-            }
-            if (parsedMusics.length > 0) {
-              const randomIdx = Math.floor(Math.random() * parsedMusics.length);
-              setCurrentTrackIndex(randomIdx);
-            }
-
-            setLoading(false);
-            setNoticesLoading(false);
-            return; // Cache is valid and loaded, skip actual fetches!
+          setProducts(parsedProducts);
+          setMusics(parsedMusics);
+          setNotices(parsedNotices);
+          
+          if (parsedProducts.length > 0) {
+            setSelectedProductId(parsedProducts[0].id);
           }
+          if (parsedMusics.length > 0) {
+            const randomIdx = Math.floor(Math.random() * parsedMusics.length);
+            setCurrentTrackIndex(randomIdx);
+          }
+
+          setLoading(false);
+          setNoticesLoading(false);
+          hasCachedData = true;
         }
       } catch (cacheErr) {
-        console.warn('⚠️ Error reading from cache storage, falling back to network:', cacheErr);
+        console.warn('⚠️ Error reading cache storage:', cacheErr);
+      }
+
+      if (!hasCachedData) {
+        setLoading(true);
+        setNoticesLoading(true);
       }
 
       try {
-        setLoading(true);
-        setNoticesLoading(true);
-        
         const tunnelHeaders = {
           'Bypass-Tunnel-Reminder': 'true',
           'ngrok-skip-browser-warning': 'true'
