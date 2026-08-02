@@ -2793,23 +2793,45 @@ select {
   100% { transform: rotateY(395deg) rotateZ(-2deg); }
 }
 
+@keyframes pasarelaPopFromBubble {
+  0% {
+    opacity: 0;
+    transform: scale(0.05) translate(-200px, -250px) rotate(-12deg);
+    filter: blur(12px);
+    border-radius: 50%;
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(1.04) translate(0, 0) rotate(1deg);
+    filter: blur(0);
+    border-radius: var(--radius-lg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translate(0, 0) rotate(0deg);
+    filter: blur(0);
+    border-radius: var(--radius-lg);
+  }
+}
+
 /* PasarelaModal Styling */
 .pasarela-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 11000;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.25s ease;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .pasarela-modal-card {
   background: linear-gradient(135deg, rgba(61, 34, 26, 0.95) 0%, rgba(30, 15, 10, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.45);
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 540px;
@@ -2818,7 +2840,9 @@ select {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.3);
+  transform-origin: 15% 25%;
+  animation: pasarelaPopFromBubble 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
 }
 
 .pasarela-modal-header {
