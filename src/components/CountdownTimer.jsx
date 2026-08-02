@@ -3,14 +3,20 @@ import React, { useState, useEffect } from 'react';
 /**
  * CountdownTimer Component for ByAngelsApp
  * Displays a luxury top-right countdown clock showing time remaining
- * until the next Order Closing deadline configured in ByAngelsAdmin.
+ * until the next Order Closing deadline (supports 2 weekly cycles: Ciclo 1 & Ciclo 2).
  */
 function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
   const [config, setConfig] = useState({
-    diaInicio: 'Lunes',
-    horaInicio: '08:00',
-    diaFin: 'Viernes',
-    horaFin: '23:59',
+    diaInicio1: 'Lunes',
+    horaInicio1: '08:00',
+    diaFin1: 'Miércoles',
+    horaFin1: '23:59',
+
+    diaInicio2: 'Jueves',
+    horaInicio2: '08:00',
+    diaFin2: 'Sábado',
+    horaFin2: '23:59',
+
     titulo: 'Cierre de Pedidos',
     activo: true
   });
@@ -55,7 +61,7 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
         });
         if (res.ok) {
           const data = await res.json();
-          setConfig(data);
+          setConfig(prev => ({ ...prev, ...data }));
           try {
             localStorage.setItem('byangels_cierre_config', JSON.stringify(data));
           } catch (saveErr) {}
@@ -68,25 +74,36 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
     fetchConfig();
   }, [apiUrl]);
 
-  // Calculate target date for the upcoming order deadline
-  const getTargetDate = () => {
+  // Calculate nearest upcoming target date from either Cycle 1 or Cycle 2
+  const getNearestTargetDate = () => {
     const now = new Date();
-    const targetDayIndex = dayNameToIndex[(config.diaFin || 'viernes').toLowerCase()] ?? 5;
-    const [targetHour, targetMin] = (config.horaFin || '23:59').split(':').map(Number);
 
-    const result = new Date(now);
-    result.setHours(targetHour || 23, targetMin || 59, 59, 999);
+    const getCycleTarget = (diaFin, horaFin) => {
+      const targetDayIndex = dayNameToIndex[(diaFin || 'viernes').toLowerCase()] ?? 5;
+      const [targetHour, targetMin] = (horaFin || '23:59').split(':').map(Number);
 
-    const currentDayIndex = now.getDay();
-    let daysUntilTarget = targetDayIndex - currentDayIndex;
+      const candidate = new Date(now);
+      candidate.setHours(targetHour || 23, targetMin || 59, 59, 999);
 
-    // If deadline day is today but time has passed, or deadline day is earlier in week
-    if (daysUntilTarget < 0 || (daysUntilTarget === 0 && now > result)) {
-      daysUntilTarget += 7;
-    }
+      const currentDayIndex = now.getDay();
+      let daysUntil = targetDayIndex - currentDayIndex;
 
-    result.setDate(now.getDate() + daysUntilTarget);
-    return result;
+      if (daysUntil < 0 || (daysUntil === 0 && now > candidate)) {
+        daysUntil += 7;
+      }
+
+      candidate.setDate(now.getDate() + daysUntil);
+      return candidate;
+    };
+
+    // Candidate 1 (Ciclo 1)
+    const target1 = getCycleTarget(config.diaFin1 || config.diaFin || 'Miércoles', config.horaFin1 || config.horaFin || '23:59');
+
+    // Candidate 2 (Ciclo 2)
+    const target2 = getCycleTarget(config.diaFin2 || 'Sábado', config.horaFin2 || '23:59');
+
+    // Return whichever upcoming deadline is closer in time
+    return target1.getTime() < target2.getTime() ? target1 : target2;
   };
 
   // Timer Tick Interval
@@ -95,7 +112,7 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
 
     const updateTimer = () => {
       const now = new Date();
-      const target = getTargetDate();
+      const target = getNearestTargetDate();
       const diff = target.getTime() - now.getTime();
 
       if (diff <= 0) {
