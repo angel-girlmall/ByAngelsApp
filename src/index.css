@@ -2518,3 +2518,117 @@ select {
     left: calc(12px + env(safe-area-inset-left)) !important;
   }
 }
+
+/* Top-Right Luxury Order Closing Countdown Timer Widget */
+.countdown-timer-widget {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 500;
+  background: rgba(18, 18, 28, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.15);
+  border-radius: 16px;
+  padding: 10px 16px;
+  color: #f5f5f7;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.countdown-timer-widget:hover {
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.25);
+  transform: translateY(-2px);
+}
+
+.countdown-timer-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.countdown-icon-glow {
+  color: #d4af37;
+  font-size: 0.85rem;
+  animation: pulseGlow 2s infinite alternate;
+}
+
+.countdown-timer-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #d4af37;
+}
+
+.countdown-timer-units {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timer-unit-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-unit-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: monospace, sans-serif;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.timer-unit-value.accent {
+  color: #ff4081;
+}
+
+.timer-unit-label {
+  font-size: 0.58rem;
+  color: #9a9ab0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 1px;
+}
+
+.timer-colon {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #d4af37;
+  margin-bottom: 8px;
+}
+
+.countdown-timer-finished {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ff5252;
+  letter-spacing: 0.5px;
+}
+
+@keyframes pulseGlow {
+  from { opacity: 0.7; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+@media (max-width: 767px) {
+  .countdown-timer-widget {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+  }
+  .countdown-timer-title {
+    font-size: 0.65rem;
+  }
+  .timer-unit-value {
+    font-size: 0.85rem;
+  }
+}

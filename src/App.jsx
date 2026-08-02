@@ -8,6 +8,7 @@ import MusicPlayer from './components/MusicPlayer';
 import Cart from './components/Cart';
 import WelcomeScreen from './components/WelcomeScreen';
 import NoticeModal from './components/NoticeModal';
+import CountdownTimer from './components/CountdownTimer';
 
 function App() {
   const [language, setLanguage] = useState('es'); // Default is Spanish
@@ -494,6 +495,11 @@ function App() {
       />
 
 
+
+      {/* Floating Order Closing Countdown Timer Widget */}
+      {!showWelcome && (
+        <CountdownTimer apiUrl={apiBaseUrl} />
+      )}
 
       {/* Slide-In Shopping Cart Drawer */}
       <Cart
