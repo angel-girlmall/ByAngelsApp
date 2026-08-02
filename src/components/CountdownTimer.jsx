@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 /**
  * CountdownTimer Component for ByAngelsApp
- * Displays a luxury top-right countdown clock showing time remaining
- * until the next Order Closing deadline (supports 2 weekly cycles: Ciclo 1 & Ciclo 2).
+ * Displays a luxury top-right countdown clock showing total remaining hours,
+ * minutes, and seconds until the next Order Closing deadline (supports 2 weekly cycles: Ciclo 1 & Ciclo 2).
  */
 function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
   const [config, setConfig] = useState({
@@ -22,7 +22,6 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
   });
 
   const [timeLeft, setTimeLeft] = useState({
-    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
@@ -48,7 +47,12 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
       try {
         const cached = localStorage.getItem('byangels_cierre_config');
         if (cached) {
-          setConfig(JSON.parse(cached));
+          const parsed = JSON.parse(cached);
+          // Remove "Semanal" if present in cached title
+          if (parsed.titulo && parsed.titulo.includes('Semanal')) {
+            parsed.titulo = parsed.titulo.replace(/\s*Semanal\s*/i, '').trim();
+          }
+          setConfig(parsed);
         }
       } catch (e) {}
 
@@ -61,6 +65,9 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
         });
         if (res.ok) {
           const data = await res.json();
+          if (data.titulo && data.titulo.includes('Semanal')) {
+            data.titulo = data.titulo.replace(/\s*Semanal\s*/i, '').trim();
+          }
           setConfig(prev => ({ ...prev, ...data }));
           try {
             localStorage.setItem('byangels_cierre_config', JSON.stringify(data));
@@ -106,7 +113,7 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
     return target1.getTime() < target2.getTime() ? target1 : target2;
   };
 
-  // Timer Tick Interval
+  // Timer Tick Interval - Converts days directly into total hours (e.g. 48h + 5h = 53h)
   useEffect(() => {
     if (config.activo === false) return;
 
@@ -116,16 +123,16 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
       const diff = target.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isFinished: true });
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isFinished: true });
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      // Sum all days into total hours
+      const totalHours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      setTimeLeft({ days, hours, minutes, seconds, isFinished: false });
+      setTimeLeft({ hours: totalHours, minutes, seconds, isFinished: false });
     };
 
     updateTimer();
@@ -135,11 +142,14 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
 
   if (config.activo === false) return null;
 
+  // Clean title text removing "Semanal" if present
+  const displayTitle = (config.titulo || 'Cierre de Pedidos').replace(/\s*Semanal\s*/i, '').trim();
+
   return (
     <div className="countdown-timer-widget">
       <div className="countdown-timer-header">
         <i className="fa-solid fa-clock-rotate-left countdown-icon-glow"></i>
-        <span className="countdown-timer-title">{config.titulo || 'Cierre de Pedidos'}</span>
+        <span className="countdown-timer-title">{displayTitle || 'Cierre de Pedidos'}</span>
       </div>
 
       {timeLeft.isFinished ? (
@@ -148,11 +158,6 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
         </div>
       ) : (
         <div className="countdown-timer-units">
-          <div className="timer-unit-box">
-            <span className="timer-unit-value">{String(timeLeft.days).padStart(2, '0')}</span>
-            <span className="timer-unit-label">Días</span>
-          </div>
-          <span className="timer-colon">:</span>
           <div className="timer-unit-box">
             <span className="timer-unit-value">{String(timeLeft.hours).padStart(2, '0')}</span>
             <span className="timer-unit-label">Hs</span>
