@@ -2689,7 +2689,7 @@ select {
     left: 16px;
   }
   .hanging-thread {
-    height: 75px;
+    height: 150px;
   }
 }
 
@@ -2708,7 +2708,7 @@ select {
 
 .hanging-thread {
   width: 2px;
-  height: 95px;
+  height: 190px;
   background: linear-gradient(to bottom, rgba(212, 175, 55, 0.9), rgba(253, 245, 242, 0.7));
   box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
   transform-origin: top center;
