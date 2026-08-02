@@ -5,10 +5,12 @@ import appConfig from '../config/appConfig.json';
  * PasarelaModal Component
  * Displays catwalk video for selected product.
  * Automatically extracts direct MP4 video streams for Pinterest links, Google Drive Videos, YouTube, Shorts, and direct MP4s.
+ * Includes native social media share capability.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   const [extractedPinterestMp4, setExtractedPinterestMp4] = useState('');
   const [loadingPinterest, setLoadingPinterest] = useState(false);
+  const [copiedToast, setCopiedToast] = useState(false);
 
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
   const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
@@ -16,6 +18,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   useEffect(() => {
     if (!visible || !videoUrl) {
       setExtractedPinterestMp4('');
+      setCopiedToast(false);
       return;
     }
 
@@ -37,6 +40,43 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   }, [visible, videoUrl, apiBaseUrl]);
 
   if (!visible) return null;
+
+  // Social Media Share Handler (Native OS Share menu on mobile, Clipboard/WhatsApp fallback)
+  const handleShareVideo = async () => {
+    if (!videoUrl) return;
+
+    const shareTitle = `Pasarela ByAngels: ${product?.Nombre || 'Colección Exclusiva'}`;
+    const shareText = `¡Mira la pasarela virtual de ${product?.Nombre || 'esta prenda'} en ByAngels Boutique! 🎬✨`;
+    const shareUrl = videoUrl;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.warn('Native share failed, using clipboard fallback:', err);
+        } else {
+          return;
+        }
+      }
+    }
+
+    // Clipboard Fallback
+    try {
+      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+      setCopiedToast(true);
+      setTimeout(() => setCopiedToast(false), 3000);
+    } catch (clipErr) {
+      // WhatsApp Direct Share Fallback
+      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
+      window.open(waUrl, '_blank');
+    }
+  };
 
   // Converts Google Drive, YouTube, and Pinterest URLs into working iframe embed URLs
   const getEmbedUrl = (url) => {
@@ -102,21 +142,26 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
           </div>
           <div className="pasarela-header-actions">
             {videoUrl && (
-              <a 
-                href={videoUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <button 
+                type="button" 
                 className="btn-open-external-pill"
-                title={language === 'es' ? 'Abrir enlace externo' : 'Open external link'}
+                onClick={handleShareVideo}
+                title={language === 'es' ? 'Compartir video por redes sociales' : 'Share video link'}
               >
-                <i className="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
+                <i className="fa-solid fa-share-nodes"></i>
+              </button>
             )}
             <button className="pasarela-modal-close" onClick={onClose} aria-label="Close modal">
               &times;
             </button>
           </div>
         </header>
+
+        {copiedToast && (
+          <div className="pasarela-copied-toast">
+            <i className="fa-solid fa-check-circle"></i> ¡Enlace del video copiado para compartir! 📋
+          </div>
+        )}
 
         <div className="pasarela-modal-body">
           {!videoUrl ? (
@@ -155,9 +200,9 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
           ) : (
             <div className="pasarela-empty-state">
               <p>{language === 'es' ? 'No se pudo cargar el reproductor de video.' : 'Could not load video player.'}</p>
-              <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="btn-open-external">
-                🔗 {language === 'es' ? 'Abrir Video en Nueva Pestaña' : 'Open Video in New Tab'}
-              </a>
+              <button type="button" onClick={handleShareVideo} className="btn-open-external">
+                🔗 {language === 'es' ? 'Compartir Enlace del Video' : 'Share Video Link'}
+              </button>
             </div>
           )}
         </div>
