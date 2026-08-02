@@ -42,8 +42,27 @@ function ProductModal({
 
   if (!visible || !product) return null;
 
-  // Retrieve only the first image (imgReel0) for static display as requested
-  const images = [product.imgReel0].filter(img => !!img);
+  // Retrieve all non-empty reel images (imgReel0 through imgReel7)
+  const images = [
+    product.imgReel0,
+    product.imgReel1,
+    product.imgReel2,
+    product.imgReel3,
+    product.imgReel4,
+    product.imgReel5,
+    product.imgReel6,
+    product.imgReel7
+  ].filter(img => Boolean(img && typeof img === 'string' && img.trim()));
+
+  // Fallback if no images found
+  if (images.length === 0) {
+    images.push('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600');
+  }
+
+  // Format price according to selected language (USD for 'en', Soles for 'es')
+  const displayPrice = language === 'en'
+    ? `$ ${product.precioDolares || product.PrecioDolares || (Number(product.Precio) / 3.7).toFixed(2)} USD`
+    : `S/. ${product.Precio}`;
 
   const handlePrevSlide = () => {
     setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -162,7 +181,7 @@ function ProductModal({
             </div>
             <div className="meta-item">
               <div className="meta-label">{labels.priceLabel || 'Price'}</div>
-              <div className="meta-value">S/. {product.Precio}</div>
+              <div className="meta-value">{displayPrice}</div>
             </div>
           </div>
 

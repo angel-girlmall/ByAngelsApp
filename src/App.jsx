@@ -445,6 +445,8 @@ function App() {
                 key={productItem.id}
                 text={productItem.Nombre}
                 price={productItem.Precio}
+                precioDolares={productItem.precioDolares || productItem.PrecioDolares}
+                language={language}
                 imageSource={productItem.imgReel0} // Uses 1st image for catalog card representation
                 isActive={productItem.id === selectedProductId}
                 isNew={productItem.Nuevo === true || productItem.Nuevo === 'true'}

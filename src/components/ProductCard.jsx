@@ -18,6 +18,8 @@ import React from 'react';
 function ProductCard({
   text = '',
   price = 40,
+  precioDolares = '',
+  language = 'es',
   imageSource = '',
   visible = true,
   isActive = false,
@@ -28,6 +30,10 @@ function ProductCard({
   onViewDetail
 }) {
   if (!visible) return null;
+
+  const displayPriceStr = language === 'en'
+    ? `$ ${precioDolares || (Number(price) / 3.7).toFixed(2)}`
+    : `S/. ${price}`;
 
   const handleCardClick = () => {
     if (onClick) onClick();
@@ -65,7 +71,7 @@ function ProductCard({
       </div>
 
       <div className="card-info-bar">
-        <span className="card-price">S/. {price}</span>
+        <span className="card-price">{displayPriceStr}</span>
         <button 
           type="button" 
           className="btn-view"

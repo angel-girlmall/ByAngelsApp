@@ -93,7 +93,20 @@ function Cart({
   // Helper to calculate total count of all garments in cart
   const totalGarmentsInCart = (cartItems || []).reduce((acc, curr) => acc + (Number(curr.quantity) || 0), 0);
 
-  // Helper function to calculate effective unit price for any cart item
+  // Currency Formatter Helper
+  const formatMoney = (amount, prod = null) => {
+    if (language === 'en') {
+      if (prod && (prod.precioDolares || prod.PrecioDolares)) {
+        const customUsd = Number(prod.precioDolares || prod.PrecioDolares);
+        if (!isNaN(customUsd) && customUsd > 0) {
+          return `$ ${(customUsd * (amount / (Number(prod.Precio) || 1))).toFixed(2)}`;
+        }
+      }
+      return `$ ${(Number(amount) / 3.7).toFixed(2)}`;
+    }
+    return `S/. ${amount}`;
+  };
+
   const getItemEffectivePrice = (item) => {
     const basePrice = Number(item.product.Precio || item.product.precio || 0);
 
@@ -102,7 +115,6 @@ function Cart({
       : [];
 
     if (activeRules.length > 0) {
-      // Find matching price range rule based on garment base price
       const matchedRule = activeRules.find(r => {
         const min = Number(r.rangoInicio || 0);
         const max = Number(r.rangoFin || Infinity);
@@ -110,12 +122,10 @@ function Cart({
       });
 
       if (matchedRule && Array.isArray(matchedRule.escalones) && matchedRule.escalones.length > 0) {
-        // Sort tiers descending by quantity requirement
         const escalones = [...matchedRule.escalones].sort(
           (a, b) => Number(b.cantidadMinima) - Number(a.cantidadMinima)
         );
 
-        // Match tier based on TOTAL GARMENTS in cart!
         const matchedTier = escalones.find(t => totalGarmentsInCart >= Number(t.cantidadMinima));
 
         if (matchedTier && Number(matchedTier.precioOferta) > 0) {
@@ -153,7 +163,6 @@ function Cart({
         discountedTotal += effectiveUnitPrice * qty;
       });
     } else {
-      // Fallback DP Pricing Engine if no rules configured
       const garmentPrices = [];
       cartItems.forEach(item => {
         const priceVal = Number(item.product.Precio) || 40;
@@ -371,11 +380,11 @@ function Cart({
                         const { basePrice, effectiveUnitPrice, hasDiscount } = getItemEffectivePrice(item);
                         return hasDiscount ? (
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ textDecoration: 'line-through', color: '#a0a0b0', fontSize: '0.78rem' }}>S/. {basePrice}</span>
-                            <span className="cart-item-price" style={{ color: '#00e676', fontWeight: 'bold' }}>S/. {effectiveUnitPrice}</span>
+                            <span style={{ textDecoration: 'line-through', color: '#a0a0b0', fontSize: '0.78rem' }}>{formatMoney(basePrice, item.product)}</span>
+                            <span className="cart-item-price" style={{ color: '#00e676', fontWeight: 'bold' }}>{formatMoney(effectiveUnitPrice, item.product)}</span>
                           </div>
                         ) : (
-                          <span className="cart-item-price">S/. {basePrice}</span>
+                          <span className="cart-item-price">{formatMoney(basePrice, item.product)}</span>
                         );
                       })()}
 
@@ -420,11 +429,11 @@ function Cart({
               <>
                 <div className="summary-row">
                   <span>{labels.originalTotal || 'Original Total'}:</span>
-                  <span>S/. {originalTotal}</span>
+                  <span>{formatMoney(originalTotal)}</span>
                 </div>
                 <div className="summary-row discount">
                   <span>{labels.discount || 'Discount'}:</span>
-                  <span>- S/. {discountAmount}</span>
+                  <span>- {formatMoney(discountAmount)}</span>
                 </div>
               </>
             )}
@@ -433,9 +442,9 @@ function Cart({
               <span>{labels.total || 'Total'}:</span>
               <span>
                 {discountAmount > 0 && (
-                  <span className="price-original-crossed">S/. {originalTotal}</span>
+                  <span className="price-original-crossed">{formatMoney(originalTotal)}</span>
                 )}
-                S/. {discountedTotal}
+                {formatMoney(discountedTotal)}
               </span>
             </div>
 
