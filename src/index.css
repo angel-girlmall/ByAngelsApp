@@ -2797,8 +2797,9 @@ select {
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
+  max-width: 540px;
+  height: 80vh;
+  height: 80dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2812,6 +2813,7 @@ select {
   padding: 18px 22px;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .pasarela-badge {
@@ -2857,19 +2859,19 @@ select {
   align-items: center;
   justify-content: center;
   background: #000000;
-  min-height: 380px;
+  height: 100%;
   overflow: hidden;
 }
 
 .pasarela-video-player {
   width: 100%;
-  max-height: 70vh;
+  height: 100%;
   object-fit: contain;
 }
 
 .pasarela-iframe-player {
   width: 100%;
-  height: 480px;
+  height: 100%;
   border: none;
 }
 
