@@ -1,14 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import appConfig from '../config/appConfig.json';
 
 /**
  * PasarelaModal Component
  * Displays catwalk video for selected product.
- * Supports Google Drive Videos (file/d/ID/preview), YouTube, YouTube Shorts, Pinterest Pins, and direct MP4 files.
+ * Automatically extracts direct MP4 video streams for Pinterest links, Google Drive Videos, YouTube, Shorts, and direct MP4s.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
-  if (!visible) return null;
+  const [extractedPinterestMp4, setExtractedPinterestMp4] = useState('');
+  const [loadingPinterest, setLoadingPinterest] = useState(false);
 
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
+  const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
+
+  useEffect(() => {
+    if (!visible || !videoUrl) {
+      setExtractedPinterestMp4('');
+      return;
+    }
+
+    // Check if it's a Pinterest pin URL
+    if (videoUrl.includes('pinterest.com/pin/')) {
+      setLoadingPinterest(true);
+      fetch(`${apiBaseUrl}/api/pinterest-video?url=${encodeURIComponent(videoUrl)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.videoUrl) {
+            setExtractedPinterestMp4(data.videoUrl);
+          }
+        })
+        .catch(err => console.error('Error extracting Pinterest video:', err))
+        .finally(() => setLoadingPinterest(false));
+    } else {
+      setExtractedPinterestMp4('');
+    }
+  }, [visible, videoUrl, apiBaseUrl]);
+
+  if (!visible) return null;
 
   // Converts Google Drive, YouTube, and Pinterest URLs into working iframe embed URLs
   const getEmbedUrl = (url) => {
@@ -32,7 +60,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
       }
     }
 
-    // Pinterest Pin Video Link (pinterest.com/pin/PIN_ID)
+    // Pinterest Pin Video Link (fallback embed if backend extraction isn't ready)
     if (trimmed.includes('pinterest.com/pin/')) {
       const matchPin = trimmed.match(/\/pin\/([0-9]+)/);
       if (matchPin && matchPin[1]) {
@@ -57,6 +85,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
 
   const embedUrl = getEmbedUrl(videoUrl);
   const isDirectMp4 = (videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?')) && !videoUrl.includes('drive.google.com');
+  const activeMp4Source = extractedPinterestMp4 || (isDirectMp4 ? videoUrl : '');
 
   return (
     <div className="pasarela-modal-overlay" onClick={onClose}>
@@ -96,22 +125,28 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               <h3>{language === 'es' ? 'Próximamente Video de Pasarela' : 'Catwalk Video Coming Soon'}</h3>
               <p>{language === 'es' ? 'El video de esta prenda se agregará muy pronto en el catálogo.' : 'The video for this garment will be added soon to the catalog.'}</p>
             </div>
-          ) : isDirectMp4 ? (
+          ) : activeMp4Source ? (
+            /* Pure HTML5 Native MP4 Video Player (No Pinterest buttons, No redirects, Fullscreen controls!) */
             <video 
-              key={videoUrl}
-              src={videoUrl} 
+              key={activeMp4Source}
+              src={activeMp4Source} 
               controls 
               autoPlay 
               loop 
               playsInline 
               className="pasarela-video-player"
             />
+          ) : loadingPinterest ? (
+            <div className="pasarela-empty-state">
+              <span className="spinner" style={{ fontSize: '2.5rem', display: 'block', marginBottom: '12px' }}>⏳</span>
+              <p>{language === 'es' ? 'Cargando video HD de Pinterest...' : 'Loading HD Pinterest video...'}</p>
+            </div>
           ) : embedUrl ? (
             <iframe 
               key={embedUrl}
               src={embedUrl} 
               title="Pasarela Video" 
-              className="pasarela-iframe-player" 
+              className="pasarela-iframe-player pasarela-pinterest-iframe"
               scrolling="no"
               style={{ border: 0, overflow: 'hidden' }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
