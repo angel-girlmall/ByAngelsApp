@@ -234,10 +234,12 @@ function Cart({
       discountedTotal = dp[totalCount];
     }
 
-    const discountAmount = Math.max(0, originalTotal - discountedTotal);
+    const roundedOriginalTotal = Math.round(originalTotal);
+    const roundedDiscountedTotal = Math.round(discountedTotal);
+    const discountAmount = Math.max(0, roundedOriginalTotal - roundedDiscountedTotal);
     return {
-      originalTotal,
-      discountedTotal,
+      originalTotal: roundedOriginalTotal,
+      discountedTotal: roundedDiscountedTotal,
       discountAmount
     };
   };
