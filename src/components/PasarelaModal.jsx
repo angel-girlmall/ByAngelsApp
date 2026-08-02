@@ -2,39 +2,35 @@ import React from 'react';
 
 /**
  * PasarelaModal Component
- * Renders catwalk video for selected product.
- * Uses direct HTML5 media streams for Google Drive (lh3.googleusercontent.com/d/ID)
- * and youtube-nocookie.com for YouTube to prevent play.google.com/log telemetry errors.
+ * Displays catwalk video for selected product.
+ * Supports Google Drive Videos (file/d/ID/preview), YouTube, YouTube Shorts, Pinterest Pins, and direct MP4 files.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   if (!visible) return null;
 
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
 
-  // Parse Google Drive File ID from any Drive link format
-  const getGoogleDriveId = (url) => {
-    if (!url || typeof url !== 'string') return null;
-    const trimmed = url.trim();
-    if (!trimmed.includes('drive.google.com') && !trimmed.includes('googleusercontent.com')) return null;
-
-    const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
-    if (matchD && matchD[1]) return matchD[1];
-
-    const matchId = trimmed.match(/[?&]id=([^&]+)/);
-    if (matchId && matchId[1]) return matchId[1];
-
-    const matchLh = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (matchLh && matchLh[1]) return matchLh[1];
-
-    return null;
-  };
-
-  const driveId = getGoogleDriveId(videoUrl);
-
-  // Converts YouTube watch/shorts and Pinterest URLs into nocookie embed URLs
+  // Converts Google Drive, YouTube, and Pinterest URLs into working embed URLs
   const getEmbedUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
+
+    // Google Drive Video Link (file/d/FILE_ID/view or open?id=FILE_ID)
+    if (trimmed.includes('drive.google.com')) {
+      let fileId = '';
+      const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
+      if (matchD && matchD[1]) {
+        fileId = matchD[1];
+      } else {
+        const matchId = trimmed.match(/[?&]id=([^&]+)/);
+        if (matchId && matchId[1]) {
+          fileId = matchId[1];
+        }
+      }
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
 
     // Pinterest Pin Video Link (pinterest.com/pin/PIN_ID)
     if (trimmed.includes('pinterest.com/pin/')) {
@@ -44,7 +40,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
       }
     }
 
-    // YouTube Shorts (Using youtube-nocookie to block telemetry tracking)
+    // YouTube Shorts (youtube-nocookie for privacy)
     const shortsMatch = trimmed.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
     if (shortsMatch && shortsMatch[1]) {
       return `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}?autoplay=1&rel=0`;
@@ -87,23 +83,6 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               <h3>{language === 'es' ? 'Próximamente Video de Pasarela' : 'Catwalk Video Coming Soon'}</h3>
               <p>{language === 'es' ? 'El video de esta prenda se agregará muy pronto en el catálogo.' : 'The video for this garment will be added soon to the catalog.'}</p>
             </div>
-          ) : driveId ? (
-            /* Pure HTML5 Direct Media Stream from lh3.googleusercontent.com (No iframe JS, No play.google.com/log) */
-            <video
-              key={driveId}
-              src={`https://lh3.googleusercontent.com/d/${driveId}`}
-              controls
-              autoPlay
-              loop
-              playsInline
-              className="pasarela-video-player"
-              onError={(e) => {
-                // Fallback to drive download stream if lh3 CDN is cold
-                if (e.target.src !== `https://drive.google.com/uc?export=download&id=${driveId}`) {
-                  e.target.src = `https://drive.google.com/uc?export=download&id=${driveId}`;
-                }
-              }}
-            />
           ) : isDirectMp4 ? (
             <video 
               key={videoUrl}
