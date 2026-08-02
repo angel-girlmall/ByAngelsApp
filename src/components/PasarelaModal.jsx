@@ -10,10 +10,35 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
 
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
 
-  // Converts YouTube watch/shorts URLs into embed URLs
+  // Converts YouTube watch/shorts, Google Drive, and Pinterest URLs into embed URLs
   const getEmbedUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
+
+    // Google Drive Video Link (file/d/FILE_ID/view or open?id=FILE_ID)
+    if (trimmed.includes('drive.google.com')) {
+      let fileId = '';
+      const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
+      if (matchD && matchD[1]) {
+        fileId = matchD[1];
+      } else {
+        const matchId = trimmed.match(/[?&]id=([^&]+)/);
+        if (matchId && matchId[1]) {
+          fileId = matchId[1];
+        }
+      }
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
+
+    // Pinterest Pin Video Link (pinterest.com/pin/PIN_ID)
+    if (trimmed.includes('pinterest.com/pin/')) {
+      const matchPin = trimmed.match(/\/pin\/([0-9]+)/);
+      if (matchPin && matchPin[1]) {
+        return `https://assets.pinterest.com/ext/embed.html?id=${matchPin[1]}`;
+      }
+    }
 
     // YouTube Shorts
     const shortsMatch = trimmed.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
@@ -25,14 +50,6 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
     const ytMatch = trimmed.match(/(?:v=|\/embed\/|\/watch\?v=|\/v\/|https:\/\/youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch && ytMatch[1]) {
       return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`;
-    }
-
-    // Google Drive video link
-    if (trimmed.includes('drive.google.com')) {
-      const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
-      if (matchD && matchD[1]) {
-        return `https://drive.google.com/file/d/${matchD[1]}/preview`;
-      }
     }
 
     return trimmed;

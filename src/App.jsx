@@ -561,7 +561,7 @@ function App() {
       {/* Pasarela Virtual Video Modal */}
       <PasarelaModal
         visible={showPasarelaModal}
-        product={detailProduct || selectedProduct}
+        product={detailProduct || (products.find(p => p.id === selectedProductId) || products[0] || null)}
         language={language}
         onClose={() => setShowPasarelaModal(false)}
       />
