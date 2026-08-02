@@ -53,61 +53,127 @@ function Cart({
     }
   };
 
-  // Dynamic Programming Pricing Engine
-  // Computes the absolute minimum cost by grouping garments into the available bundles
-  const calculateTotals = () => {
-    // 1. Flatten all garments in the cart into a list of individual prices
-    const garmentPrices = [];
-    cartItems.forEach(item => {
-      const priceVal = Number(item.product.Precio) || 40;
-      for (let i = 0; i < item.quantity; i++) {
-        garmentPrices.push(priceVal);
+  const [descuentosRules, setDescuentosRules] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchRules = async () => {
+      try {
+        const cached = localStorage.getItem('byangels_descuentos_rules');
+        if (cached) {
+          setDescuentosRules(JSON.parse(cached));
+        }
+      } catch (e) {}
+
+      if (!apiBaseUrl) return;
+
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/descuentos`, {
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setDescuentosRules(data);
+            try {
+              localStorage.setItem('byangels_descuentos_rules', JSON.stringify(data));
+            } catch (saveErr) {}
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ Could not fetch descuentos config for Cart:', err.message);
       }
+    };
+
+    fetchRules();
+  }, [apiBaseUrl]);
+
+  // Dynamic Price-Range Volume Discount Pricing Engine
+  const calculateTotals = () => {
+    let originalTotal = 0;
+    let discountedTotal = 0;
+
+    if (!cartItems || cartItems.length === 0) {
+      return { originalTotal: 0, discountedTotal: 0, discountAmount: 0 };
+    }
+
+    // 1. Calculate original total sum without discount
+    cartItems.forEach(item => {
+      const priceVal = Number(item.product.Precio || item.product.precio || 0);
+      originalTotal += priceVal * item.quantity;
     });
 
-    const totalCount = garmentPrices.length;
+    // 2. Filter active rules configured from ByAngelsAdmin
+    const activeRules = (descuentosRules && descuentosRules.length > 0)
+      ? descuentosRules.filter(r => r.activo !== false)
+      : [];
 
-    // Calculate original sum
-    const originalTotal = garmentPrices.reduce((sum, p) => sum + p, 0);
+    if (activeRules.length > 0) {
+      const rangeGroups = {};
 
-    if (totalCount === 0) {
-      return { originalTotal, discountedTotal: 0, discountAmount: 0 };
+      cartItems.forEach(item => {
+        const priceVal = Number(item.product.Precio || item.product.precio || 0);
+        const matchedRule = activeRules.find(r => {
+          const min = Number(r.rangoInicio || 0);
+          const max = Number(r.rangoFin || Infinity);
+          return priceVal >= min && priceVal <= max;
+        });
+
+        if (matchedRule) {
+          const rId = matchedRule.id || `${matchedRule.rangoInicio}_${matchedRule.rangoFin}`;
+          if (!rangeGroups[rId]) {
+            rangeGroups[rId] = { rule: matchedRule, totalQty: 0, items: [] };
+          }
+          rangeGroups[rId].totalQty += item.quantity;
+          rangeGroups[rId].items.push({ item, priceVal });
+        } else {
+          discountedTotal += priceVal * item.quantity;
+        }
+      });
+
+      Object.values(rangeGroups).forEach(group => {
+        const { rule, totalQty, items } = group;
+        const escalones = Array.isArray(rule.escalones) 
+          ? [...rule.escalones].sort((a, b) => Number(b.cantidadMinima) - Number(a.cantidadMinima)) 
+          : [];
+
+        const matchedTier = escalones.find(t => totalQty >= Number(t.cantidadMinima));
+
+        if (matchedTier) {
+          const offerPrice = Number(matchedTier.precioOferta);
+          discountedTotal += offerPrice * totalQty;
+        } else {
+          items.forEach(({ item, priceVal }) => {
+            discountedTotal += priceVal * item.quantity;
+          });
+        }
+      });
+    } else {
+      // Fallback DP Pricing Engine if no rules configured
+      const garmentPrices = [];
+      cartItems.forEach(item => {
+        const priceVal = Number(item.product.Precio) || 40;
+        for (let i = 0; i < item.quantity; i++) {
+          garmentPrices.push(priceVal);
+        }
+      });
+      const totalCount = garmentPrices.length;
+      const dp = new Array(totalCount + 1).fill(0);
+      dp[0] = 0;
+      for (let i = 1; i <= totalCount; i++) {
+        let minVal = dp[i - 1] + garmentPrices[i - 1];
+        if (i >= 3) minVal = Math.min(minVal, dp[i - 3] + 100);
+        if (i >= 5) minVal = Math.min(minVal, dp[i - 5] + 155);
+        if (i >= 6) minVal = Math.min(minVal, dp[i - 6] + 185);
+        if (i >= 12) minVal = Math.min(minVal, dp[i - 12] + 330);
+        dp[i] = minVal;
+      }
+      discountedTotal = dp[totalCount];
     }
 
-    // Sort prices descending (applying bundles to more expensive garments first yields maximum discount)
-    garmentPrices.sort((a, b) => b - a);
-
-    // DP Table where dp[i] is the minimum price for the prefix of length i
-    const dp = new Array(totalCount + 1).fill(0);
-    dp[0] = 0;
-
-    for (let i = 1; i <= totalCount; i++) {
-      // Option 1: Treat current garment as single
-      let minVal = dp[i - 1] + garmentPrices[i - 1];
-
-      // Option 2: Bundle of 3 for S/. 100
-      if (i >= 3) {
-        minVal = Math.min(minVal, dp[i - 3] + 100);
-      }
-      // Option 3: Bundle of 5 for S/. 155
-      if (i >= 5) {
-        minVal = Math.min(minVal, dp[i - 5] + 155);
-      }
-      // Option 4: Bundle of 6 for S/. 185
-      if (i >= 6) {
-        minVal = Math.min(minVal, dp[i - 6] + 185);
-      }
-      // Option 5: Bundle of 12 for S/. 330
-      if (i >= 12) {
-        minVal = Math.min(minVal, dp[i - 12] + 330);
-      }
-
-      dp[i] = minVal;
-    }
-
-    const discountedTotal = dp[totalCount];
-    const discountAmount = originalTotal - discountedTotal;
-
+    const discountAmount = Math.max(0, originalTotal - discountedTotal);
     return {
       originalTotal,
       discountedTotal,
