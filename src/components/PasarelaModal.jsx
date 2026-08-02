@@ -3,11 +3,9 @@ import React from 'react';
 /**
  * PasarelaModal Component
  * Displays catwalk / preview video for the selected product.
- * Supports YouTube URLs, YouTube Shorts, Google Drive Videos, TikTok, or direct MP4 files.
+ * Preloads videos in background so playback opens instantly without delay.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
-  if (!visible) return null;
-
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
 
   // Converts YouTube watch/shorts, Google Drive, and Pinterest URLs into embed URLs
@@ -59,7 +57,11 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   const isDirectMp4 = videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?');
 
   return (
-    <div className="pasarela-modal-overlay" onClick={onClose}>
+    <div 
+      className="pasarela-modal-overlay" 
+      onClick={onClose}
+      style={{ display: visible ? 'flex' : 'none' }}
+    >
       <div className="pasarela-modal-card" onClick={(e) => e.stopPropagation()}>
         <header className="pasarela-modal-header">
           <div className="pasarela-header-info">
@@ -85,20 +87,24 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
             </div>
           ) : isDirectMp4 ? (
             <video 
+              key={videoUrl}
               src={videoUrl} 
               controls 
-              autoPlay 
+              autoPlay={visible}
               loop 
               playsInline 
+              preload="auto"
               className="pasarela-video-player"
             />
           ) : embedUrl ? (
             <iframe 
+              key={embedUrl}
               src={embedUrl} 
               title="Pasarela Video" 
               className="pasarela-iframe-player" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
               allowFullScreen
+              loading="eager"
             />
           ) : (
             <div className="pasarela-empty-state">
