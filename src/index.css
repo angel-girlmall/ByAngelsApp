@@ -2905,6 +2905,16 @@ select {
   display: block;
 }
 
+.pasarela-pinterest-iframe {
+  width: 110% !important;
+  height: 112% !important;
+  transform: scale(1.09) !important;
+  transform-origin: center center !important;
+  border: 0 !important;
+  outline: none !important;
+  overflow: hidden !important;
+}
+
 .pasarela-empty-state {
   text-align: center;
   padding: 40px 24px;
