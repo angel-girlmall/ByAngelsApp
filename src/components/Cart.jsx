@@ -473,7 +473,7 @@ function Cart({
                   </span>
                   <p className="cart-upsell-message">
                     {language === 'es'
-                      ? `Agrega 1 Conjunto más al carrito para desbloquear la oferta de descuento a partir de ${nextUpsellThreshold} prendas.`
+                      ? `Agrega 1 Conjunto más al carrito para desbloquear la oferta de descuento a partir de ${nextUpsellThreshold} Unidades.`
                       : `Add 1 more item to unlock special pricing starting from ${nextUpsellThreshold} items.`}
                   </p>
                 </div>
