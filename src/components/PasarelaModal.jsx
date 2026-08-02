@@ -2,32 +2,37 @@ import React from 'react';
 
 /**
  * PasarelaModal Component
- * Displays catwalk / preview video for the selected product.
- * Preloads videos in background so playback opens instantly without delay.
+ * Renders catwalk video for selected product with clean Google Drive stream handling.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
+  if (!visible) return null;
+
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
 
-  // Converts YouTube watch/shorts, Google Drive, and Pinterest URLs into embed URLs
+  // Parse Google Drive File ID
+  const getGoogleDriveId = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
+    if (!trimmed.includes('drive.google.com')) return null;
+
+    const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
+    if (matchD && matchD[1]) return matchD[1];
+
+    const matchId = trimmed.match(/[?&]id=([^&]+)/);
+    if (matchId && matchId[1]) return matchId[1];
+
+    return null;
+  };
+
+  const driveId = getGoogleDriveId(videoUrl);
+
+  // Converts YouTube watch/shorts and Pinterest URLs into embed URLs
   const getEmbedUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
 
-    // Google Drive Video Link (file/d/FILE_ID/view or open?id=FILE_ID)
-    if (trimmed.includes('drive.google.com')) {
-      let fileId = '';
-      const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
-      if (matchD && matchD[1]) {
-        fileId = matchD[1];
-      } else {
-        const matchId = trimmed.match(/[?&]id=([^&]+)/);
-        if (matchId && matchId[1]) {
-          fileId = matchId[1];
-        }
-      }
-      if (fileId) {
-        return `https://drive.google.com/file/d/${fileId}/preview`;
-      }
+    if (driveId) {
+      return `https://drive.google.com/file/d/${driveId}/preview`;
     }
 
     // Pinterest Pin Video Link (pinterest.com/pin/PIN_ID)
@@ -57,11 +62,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   const isDirectMp4 = videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?');
 
   return (
-    <div 
-      className="pasarela-modal-overlay" 
-      onClick={onClose}
-      style={{ display: visible ? 'flex' : 'none' }}
-    >
+    <div className="pasarela-modal-overlay" onClick={onClose}>
       <div className="pasarela-modal-card" onClick={(e) => e.stopPropagation()}>
         <header className="pasarela-modal-header">
           <div className="pasarela-header-info">
@@ -90,12 +91,35 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               key={videoUrl}
               src={videoUrl} 
               controls 
-              autoPlay={visible}
+              autoPlay 
               loop 
               playsInline 
-              preload="auto"
               className="pasarela-video-player"
             />
+          ) : driveId ? (
+            /* Direct HTML5 Stream for Google Drive Video (No play.google.com/log or preload warnings) */
+            <video
+              key={driveId}
+              controls
+              autoPlay
+              loop
+              playsInline
+              className="pasarela-video-player"
+              onError={(e) => {
+                const parent = e.target.parentNode;
+                if (parent) {
+                  const iframe = document.createElement('iframe');
+                  iframe.src = `https://drive.google.com/file/d/${driveId}/preview`;
+                  iframe.className = 'pasarela-iframe-player';
+                  iframe.allow = 'autoplay; encrypted-media';
+                  iframe.allowFullscreen = true;
+                  parent.replaceChild(iframe, e.target);
+                }
+              }}
+            >
+              <source src={`https://drive.google.com/uc?export=download&id=${driveId}`} type="video/mp4" />
+              <source src={`https://lh3.googleusercontent.com/d/${driveId}`} type="video/mp4" />
+            </video>
           ) : embedUrl ? (
             <iframe 
               key={embedUrl}
@@ -104,7 +128,6 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               className="pasarela-iframe-player" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
               allowFullScreen
-              loading="eager"
             />
           ) : (
             <div className="pasarela-empty-state">
