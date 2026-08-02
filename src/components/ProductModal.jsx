@@ -42,11 +42,13 @@ function ProductModal({
 
   if (!visible || !product) return null;
 
-  // Retrieve ONLY imgReel0 and imgReel7 for Product Modal slider as requested
-  const images = [
-    product.imgReel0,
-    product.imgReel7
-  ].filter(img => Boolean(img && typeof img === 'string' && img.trim()));
+  // Retrieve imgReel0 and imgReel7 (or fallback to imgReel1/imgReel6 if imgReel7 is not set yet)
+  const secondaryImage = (product.imgReel7 && typeof product.imgReel7 === 'string' && product.imgReel7.trim()) 
+    ? product.imgReel7.trim() 
+    : (product.imgReel1 || product.imgReel6 || product.imgReel2 || '');
+
+  const rawImages = [product.imgReel0, secondaryImage].filter(img => Boolean(img && typeof img === 'string' && img.trim()));
+  const images = Array.from(new Set(rawImages));
 
   // Fallback if no images found
   if (images.length === 0) {
