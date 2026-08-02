@@ -2179,37 +2179,91 @@ select {
   font-weight: 600;
 }
 
-.notice-reels-slider {
-  display: flex;
-  flex-direction: row;
+.notice-reels-wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
-.notice-reels-slider::-webkit-scrollbar {
-  height: 6px;
-}
-
-.notice-reels-slider::-webkit-scrollbar-thumb {
-  background: rgba(97, 64, 55, 0.2);
+.notice-reels-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
 }
 
 .notice-reel-slide {
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
-  scroll-snap-align: start;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
   box-sizing: border-box;
+}
+
+.notice-slide-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: rgba(97, 64, 55, 0.75);
+  color: var(--color-accent-light);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  backdrop-filter: blur(4px);
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-md);
+}
+
+.notice-slide-arrow:hover {
+  background: var(--color-accent-dark);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.notice-slide-arrow.prev {
+  left: 16px;
+}
+
+.notice-slide-arrow.next {
+  right: 16px;
+}
+
+.notice-dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.notice-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(97, 64, 55, 0.25);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  padding: 0;
+}
+
+.notice-dot.active {
+  background: var(--color-accent-dark);
+  width: 22px;
+  border-radius: 10px;
 }
 
 .notice-reel-badge {
