@@ -3,8 +3,7 @@ import React from 'react';
 /**
  * PasarelaModal Component
  * Displays catwalk video for selected product.
- * Uses official Google Drive preview iframe embed (https://drive.google.com/file/d/ID/preview)
- * which supports chunked blob video streaming and range requests.
+ * Supports Google Drive Videos (file/d/ID/preview), YouTube, YouTube Shorts, Pinterest Pins, and direct MP4 files.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   if (!visible) return null;
@@ -95,15 +94,36 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               className="pasarela-video-player"
             />
           ) : embedUrl ? (
-            <iframe 
-              key={embedUrl}
-              src={embedUrl} 
-              title="Pasarela Video" 
-              className="pasarela-iframe-player" 
-              referrerPolicy="no-referrer"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-              allowFullScreen
-            />
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <iframe 
+                key={embedUrl}
+                src={embedUrl} 
+                title="Pasarela Video" 
+                className="pasarela-iframe-player" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowFullScreen
+              />
+              <a 
+                href={videoUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  background: 'rgba(0,0,0,0.85)',
+                  color: 'var(--color-gold)',
+                  padding: '6px 16px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  border: '1px solid rgba(212,175,55,0.6)',
+                  textDecoration: 'none',
+                  zIndex: 10,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                }}
+              >
+                🔗 {language === 'es' ? 'Abrir Video en Google Drive / Pestaña Externa' : 'Open Video Externally'}
+              </a>
+            </div>
           ) : (
             <div className="pasarela-empty-state">
               <p>{language === 'es' ? 'No se pudo cargar el reproductor de video.' : 'Could not load video player.'}</p>
