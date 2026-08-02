@@ -112,6 +112,8 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               src={embedUrl} 
               title="Pasarela Video" 
               className="pasarela-iframe-player" 
+              scrolling="no"
+              style={{ border: 0, overflow: 'hidden' }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
               allowFullScreen
             />
