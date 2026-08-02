@@ -47,9 +47,24 @@ function App() {
   const activeLabels = appConfig.languages[language];
 
   useEffect(() => {
+    const normalizeProductData = (p) => {
+      const soles = Number(p.Precio || p.precio || 0);
+      const customUsd = p.precioDolares || p.PrecioDolares;
+      const usd = (customUsd && !isNaN(Number(customUsd)) && Number(customUsd) > 0)
+        ? String(customUsd)
+        : (soles > 0 ? (soles / 3.7).toFixed(2) : '0.00');
+
+      return {
+        ...p,
+        Precio: String(soles > 0 ? (p.Precio || p.precio) : '0.00'),
+        precioDolares: usd
+      };
+    };
+
     const sortProducts = (list) => {
       if (!list || !Array.isArray(list)) return [];
-      return [...list].sort((a, b) => {
+      const normalized = list.map(normalizeProductData);
+      return normalized.sort((a, b) => {
         const valA = a.numorden !== undefined ? a.numorden : a.numOrden;
         const valB = b.numorden !== undefined ? b.numorden : b.numOrden;
         const numA = Number(valA);
