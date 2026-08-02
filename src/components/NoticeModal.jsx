@@ -1,12 +1,28 @@
 import React from 'react';
 
 export default function NoticeModal({ visible, onClose, reels = [], loading = false }) {
-  const getOptimizedPinterestUrl = (url, size = '474x') => {
-    if (!url) return '';
-    if (url.includes('pinimg.com') && url.includes('/736x/')) {
-      return url.replace('/736x/', `/${size}/`);
+  const parseImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    let trimmed = url.trim();
+    if (trimmed.includes('drive.google.com')) {
+      let fileId = '';
+      const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
+      if (matchD && matchD[1]) {
+        fileId = matchD[1];
+      } else {
+        const matchId = trimmed.match(/[?&]id=([^&]+)/);
+        if (matchId && matchId[1]) {
+          fileId = matchId[1];
+        }
+      }
+      if (fileId) {
+        return `https://lh3.googleusercontent.com/d/${fileId}`;
+      }
     }
-    return url;
+    if (trimmed.includes('pinimg.com') && trimmed.includes('/736x/')) {
+      return trimmed.replace('/736x/', '/474x/');
+    }
+    return trimmed;
   };
 
   if (!visible) return null;
@@ -32,7 +48,7 @@ export default function NoticeModal({ visible, onClose, reels = [], loading = fa
               {reels.map((url, index) => (
                 <div key={index} className="notice-reel-slide">
                   <div className="notice-reel-badge">Reel {index + 1}</div>
-                  <img src={getOptimizedPinterestUrl(url, '474x')} alt={`Noticia Reel ${index + 1}`} className="notice-reel-img" />
+                  <img src={parseImageUrl(url)} alt={`Noticia Reel ${index + 1}`} className="notice-reel-img" />
                 </div>
               ))}
               
