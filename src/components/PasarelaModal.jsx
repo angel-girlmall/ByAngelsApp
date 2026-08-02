@@ -3,20 +3,21 @@ import React from 'react';
 /**
  * PasarelaModal Component
  * Displays catwalk video for selected product.
- * Supports Google Drive Videos (file/d/ID/preview), YouTube, YouTube Shorts, Pinterest Pins, and direct MP4 files.
+ * Uses official Google Drive preview iframe embed (https://drive.google.com/file/d/ID/preview)
+ * which supports chunked blob video streaming and range requests.
  */
 function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   if (!visible) return null;
 
   const videoUrl = product?.urlVideoPasarela || product?.urlVideo || '';
 
-  // Converts Google Drive, YouTube, and Pinterest URLs into working embed URLs
+  // Converts Google Drive, YouTube, and Pinterest URLs into working iframe embed URLs
   const getEmbedUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
 
-    // Google Drive Video Link (file/d/FILE_ID/view or open?id=FILE_ID)
-    if (trimmed.includes('drive.google.com')) {
+    // Google Drive Video Link (file/d/FILE_ID/view or open?id=FILE_ID) -> /preview iframe
+    if (trimmed.includes('drive.google.com') || trimmed.includes('googleusercontent.com')) {
       let fileId = '';
       const matchD = trimmed.match(/\/file\/d\/([^\/]+)/);
       if (matchD && matchD[1]) {
@@ -56,7 +57,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
   };
 
   const embedUrl = getEmbedUrl(videoUrl);
-  const isDirectMp4 = videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?');
+  const isDirectMp4 = (videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?')) && !videoUrl.includes('drive.google.com');
 
   return (
     <div className="pasarela-modal-overlay" onClick={onClose}>
