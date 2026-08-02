@@ -90,6 +90,48 @@ function Cart({
     fetchRules();
   }, [apiBaseUrl]);
 
+  // Helper to calculate total count of all garments in cart
+  const totalGarmentsInCart = (cartItems || []).reduce((acc, curr) => acc + (Number(curr.quantity) || 0), 0);
+
+  // Helper function to calculate effective unit price for any cart item
+  const getItemEffectivePrice = (item) => {
+    const basePrice = Number(item.product.Precio || item.product.precio || 0);
+
+    const activeRules = (descuentosRules && descuentosRules.length > 0)
+      ? descuentosRules.filter(r => r.activo !== false)
+      : [];
+
+    if (activeRules.length > 0) {
+      // Find matching price range rule based on garment base price
+      const matchedRule = activeRules.find(r => {
+        const min = Number(r.rangoInicio || 0);
+        const max = Number(r.rangoFin || Infinity);
+        return basePrice >= min && basePrice <= max;
+      });
+
+      if (matchedRule && Array.isArray(matchedRule.escalones) && matchedRule.escalones.length > 0) {
+        // Sort tiers descending by quantity requirement
+        const escalones = [...matchedRule.escalones].sort(
+          (a, b) => Number(b.cantidadMinima) - Number(a.cantidadMinima)
+        );
+
+        // Match tier based on TOTAL GARMENTS in cart!
+        const matchedTier = escalones.find(t => totalGarmentsInCart >= Number(t.cantidadMinima));
+
+        if (matchedTier && Number(matchedTier.precioOferta) > 0) {
+          const offerPrice = Number(matchedTier.precioOferta);
+          return {
+            basePrice,
+            effectiveUnitPrice: offerPrice,
+            hasDiscount: offerPrice < basePrice
+          };
+        }
+      }
+    }
+
+    return { basePrice, effectiveUnitPrice: basePrice, hasDiscount: false };
+  };
+
   // Dynamic Price-Range Volume Discount Pricing Engine
   const calculateTotals = () => {
     let originalTotal = 0;
@@ -99,56 +141,16 @@ function Cart({
       return { originalTotal: 0, discountedTotal: 0, discountAmount: 0 };
     }
 
-    // 1. Calculate original total sum without discount
-    cartItems.forEach(item => {
-      const priceVal = Number(item.product.Precio || item.product.precio || 0);
-      originalTotal += priceVal * item.quantity;
-    });
-
-    // 2. Filter active rules configured from ByAngelsAdmin
     const activeRules = (descuentosRules && descuentosRules.length > 0)
       ? descuentosRules.filter(r => r.activo !== false)
       : [];
 
     if (activeRules.length > 0) {
-      const rangeGroups = {};
-
       cartItems.forEach(item => {
-        const priceVal = Number(item.product.Precio || item.product.precio || 0);
-        const matchedRule = activeRules.find(r => {
-          const min = Number(r.rangoInicio || 0);
-          const max = Number(r.rangoFin || Infinity);
-          return priceVal >= min && priceVal <= max;
-        });
-
-        if (matchedRule) {
-          const rId = matchedRule.id || `${matchedRule.rangoInicio}_${matchedRule.rangoFin}`;
-          if (!rangeGroups[rId]) {
-            rangeGroups[rId] = { rule: matchedRule, totalQty: 0, items: [] };
-          }
-          rangeGroups[rId].totalQty += item.quantity;
-          rangeGroups[rId].items.push({ item, priceVal });
-        } else {
-          discountedTotal += priceVal * item.quantity;
-        }
-      });
-
-      Object.values(rangeGroups).forEach(group => {
-        const { rule, totalQty, items } = group;
-        const escalones = Array.isArray(rule.escalones) 
-          ? [...rule.escalones].sort((a, b) => Number(b.cantidadMinima) - Number(a.cantidadMinima)) 
-          : [];
-
-        const matchedTier = escalones.find(t => totalQty >= Number(t.cantidadMinima));
-
-        if (matchedTier) {
-          const offerPrice = Number(matchedTier.precioOferta);
-          discountedTotal += offerPrice * totalQty;
-        } else {
-          items.forEach(({ item, priceVal }) => {
-            discountedTotal += priceVal * item.quantity;
-          });
-        }
+        const { basePrice, effectiveUnitPrice } = getItemEffectivePrice(item);
+        const qty = item.quantity || 1;
+        originalTotal += basePrice * qty;
+        discountedTotal += effectiveUnitPrice * qty;
       });
     } else {
       // Fallback DP Pricing Engine if no rules configured
@@ -160,6 +162,8 @@ function Cart({
         }
       });
       const totalCount = garmentPrices.length;
+      originalTotal = garmentPrices.reduce((sum, p) => sum + p, 0);
+
       const dp = new Array(totalCount + 1).fill(0);
       dp[0] = 0;
       for (let i = 1; i <= totalCount; i++) {
@@ -363,7 +367,17 @@ function Cart({
                     </div>
 
                     <div className="cart-item-price-row">
-                      <span className="cart-item-price">S/. {itemPrice}</span>
+                      {(() => {
+                        const { basePrice, effectiveUnitPrice, hasDiscount } = getItemEffectivePrice(item);
+                        return hasDiscount ? (
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ textDecoration: 'line-through', color: '#a0a0b0', fontSize: '0.78rem' }}>S/. {basePrice}</span>
+                            <span className="cart-item-price" style={{ color: '#00e676', fontWeight: 'bold' }}>S/. {effectiveUnitPrice}</span>
+                          </div>
+                        ) : (
+                          <span className="cart-item-price">S/. {basePrice}</span>
+                        );
+                      })()}
 
                       {/* Quantity Controls */}
                       <div className="cart-qty-ctrl">
