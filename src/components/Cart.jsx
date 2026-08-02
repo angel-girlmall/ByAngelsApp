@@ -93,18 +93,34 @@ function Cart({
   // Helper to calculate total count of all garments in cart
   const totalGarmentsInCart = (cartItems || []).reduce((acc, curr) => acc + (Number(curr.quantity) || 0), 0);
 
+  // Number formatting helper: removes unnecessary decimals (.00 -> empty, .30 -> .3)
+  const formatCleanNumber = (num) => {
+    const val = Number(num);
+    if (isNaN(val)) return '0';
+    if (val % 1 === 0) {
+      return val.toString(); // Integer -> 33, 38, 70, 100
+    }
+    const str = val.toFixed(2);
+    return str.replace(/\.00$/, '').replace(/(\.\d)0$/, '$1'); // 33.30 -> 33.3
+  };
+
   // Currency Formatter Helper
   const formatMoney = (amount, prod = null) => {
+    let finalVal = Number(amount);
     if (language === 'en') {
       if (prod && (prod.precioDolares || prod.PrecioDolares)) {
         const customUsd = Number(prod.precioDolares || prod.PrecioDolares);
         if (!isNaN(customUsd) && customUsd > 0) {
-          return `$ ${(customUsd * (amount / (Number(prod.Precio) || 1))).toFixed(2)}`;
+          finalVal = customUsd * (amount / (Number(prod.Precio) || 1));
+        } else {
+          finalVal = amount / 3.7;
         }
+      } else {
+        finalVal = amount / 3.7;
       }
-      return `$ ${(Number(amount) / 3.7).toFixed(2)}`;
+      return `$ ${formatCleanNumber(finalVal)}`;
     }
-    return `S/. ${amount}`;
+    return `S/. ${formatCleanNumber(finalVal)}`;
   };
 
   const getItemEffectivePrice = (item) => {
@@ -377,14 +393,9 @@ function Cart({
 
                     <div className="cart-item-price-row">
                       {(() => {
-                        const { basePrice, effectiveUnitPrice, hasDiscount } = getItemEffectivePrice(item);
-                        return hasDiscount ? (
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ textDecoration: 'line-through', color: '#a0a0b0', fontSize: '0.78rem' }}>{formatMoney(basePrice, item.product)}</span>
-                            <span className="cart-item-price" style={{ color: '#00e676', fontWeight: 'bold' }}>{formatMoney(effectiveUnitPrice, item.product)}</span>
-                          </div>
-                        ) : (
-                          <span className="cart-item-price">{formatMoney(basePrice, item.product)}</span>
+                        const { effectiveUnitPrice } = getItemEffectivePrice(item);
+                        return (
+                          <span className="cart-item-price">{formatMoney(effectiveUnitPrice, item.product)}</span>
                         );
                       })()}
 

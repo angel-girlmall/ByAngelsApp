@@ -31,9 +31,21 @@ function ProductCard({
 }) {
   if (!visible) return null;
 
+  const formatCleanNumber = (num) => {
+    const val = Number(num);
+    if (isNaN(val)) return '0';
+    if (val % 1 === 0) return val.toString();
+    const str = val.toFixed(2);
+    return str.replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  };
+
+  const rawPriceVal = language === 'en'
+    ? (precioDolares || (Number(price) / 3.7).toFixed(2))
+    : price;
+
   const displayPriceStr = language === 'en'
-    ? `$ ${precioDolares || (Number(price) / 3.7).toFixed(2)}`
-    : `S/. ${price}`;
+    ? `$ ${formatCleanNumber(rawPriceVal)}`
+    : `S/. ${formatCleanNumber(rawPriceVal)}`;
 
   const handleCardClick = () => {
     if (onClick) onClick();
