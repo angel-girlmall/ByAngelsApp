@@ -392,12 +392,7 @@ function Cart({
                     </div>
 
                     <div className="cart-item-price-row">
-                      {(() => {
-                        const { effectiveUnitPrice } = getItemEffectivePrice(item);
-                        return (
-                          <span className="cart-item-price">{formatMoney(effectiveUnitPrice, item.product)}</span>
-                        );
-                      })()}
+                      <span className="cart-item-price">{formatMoney(itemPrice, item.product)}</span>
 
                       {/* Quantity Controls */}
                       <div className="cart-qty-ctrl">
