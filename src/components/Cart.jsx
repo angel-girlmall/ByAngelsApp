@@ -43,7 +43,7 @@ function Cart({
   const handleTouchEnd = (e) => {
     const endX = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : touchCurrentX.current;
     const endY = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientY : touchStartY.current;
-    
+
     const diffX = endX - touchStartX.current;
     const diffY = Math.abs(endY - touchStartY.current);
 
@@ -62,7 +62,7 @@ function Cart({
         if (cached) {
           setDescuentosRules(JSON.parse(cached));
         }
-      } catch (e) {}
+      } catch (e) { }
 
       if (!apiBaseUrl) return;
 
@@ -79,7 +79,7 @@ function Cart({
             setDescuentosRules(data);
             try {
               localStorage.setItem('byangels_descuentos_rules', JSON.stringify(data));
-            } catch (saveErr) {}
+            } catch (saveErr) { }
           }
         }
       } catch (err) {
@@ -357,7 +357,7 @@ function Cart({
 
       try {
         localStorage.setItem('byangels_wa_rot_idx', nextIndex.toString());
-      } catch (lsErr) {}
+      } catch (lsErr) { }
 
       console.log(`📱 [Checkout Local Rotation] Assigned WhatsApp number: ${targetWhatsappNumber} (Index: ${safeIndex} -> Next: ${nextIndex})`);
     }
@@ -376,7 +376,7 @@ function Cart({
       />
 
       {/* Cart Drawer Box with Swipe-to-Close Gesture */}
-      <div 
+      <div
         className={`cart-drawer ${visible ? 'visible' : ''}`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -469,11 +469,11 @@ function Cart({
                 <div className="cart-upsell-icon">⚡</div>
                 <div className="cart-upsell-content">
                   <span className="cart-upsell-title">
-                    {language === 'es' ? '¡Estás a solo 1 prenda de un súper descuento!' : 'You are 1 item away from a bigger discount!'}
+                    {language === 'es' ? '¡Estás a solo 1 Conjunto de un súper descuento!' : 'You are 1 item away from a bigger discount!'}
                   </span>
                   <p className="cart-upsell-message">
-                    {language === 'es' 
-                      ? `Agrega 1 prenda más al carrito para desbloquear la oferta de descuento a partir de ${nextUpsellThreshold} prendas.`
+                    {language === 'es'
+                      ? `Agrega 1 Conjunto más al carrito para desbloquear la oferta de descuento a partir de ${nextUpsellThreshold} prendas.`
                       : `Add 1 more item to unlock special pricing starting from ${nextUpsellThreshold} items.`}
                   </p>
                 </div>
