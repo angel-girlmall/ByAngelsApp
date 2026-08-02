@@ -71,9 +71,22 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               </p>
             )}
           </div>
-          <button className="pasarela-modal-close" onClick={onClose} aria-label="Close modal">
-            &times;
-          </button>
+          <div className="pasarela-header-actions">
+            {videoUrl && (
+              <a 
+                href={videoUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-open-external-pill"
+                title={language === 'es' ? 'Abrir enlace externo' : 'Open external link'}
+              >
+                <i className="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            )}
+            <button className="pasarela-modal-close" onClick={onClose} aria-label="Close modal">
+              &times;
+            </button>
+          </div>
         </header>
 
         <div className="pasarela-modal-body">
@@ -94,36 +107,14 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
               className="pasarela-video-player"
             />
           ) : embedUrl ? (
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <iframe 
-                key={embedUrl}
-                src={embedUrl} 
-                title="Pasarela Video" 
-                className="pasarela-iframe-player" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowFullScreen
-              />
-              <a 
-                href={videoUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{
-                  position: 'absolute',
-                  bottom: '12px',
-                  background: 'rgba(0,0,0,0.85)',
-                  color: 'var(--color-gold)',
-                  padding: '6px 16px',
-                  borderRadius: '20px',
-                  fontSize: '0.78rem',
-                  border: '1px solid rgba(212,175,55,0.6)',
-                  textDecoration: 'none',
-                  zIndex: 10,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-                }}
-              >
-                🔗 {language === 'es' ? 'Abrir Video en Google Drive / Pestaña Externa' : 'Open Video Externally'}
-              </a>
-            </div>
+            <iframe 
+              key={embedUrl}
+              src={embedUrl} 
+              title="Pasarela Video" 
+              className="pasarela-iframe-player" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowFullScreen
+            />
           ) : (
             <div className="pasarela-empty-state">
               <p>{language === 'es' ? 'No se pudo cargar el reproductor de video.' : 'Could not load video player.'}</p>
