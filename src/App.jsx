@@ -9,6 +9,7 @@ import Cart from './components/Cart';
 import WelcomeScreen from './components/WelcomeScreen';
 import NoticeModal from './components/NoticeModal';
 import CountdownTimer from './components/CountdownTimer';
+import PullToRefresh from './components/PullToRefresh';
 
 function App() {
   const [language, setLanguage] = useState('es'); // Default is Spanish
@@ -510,6 +511,9 @@ function App() {
       />
 
 
+
+      {/* Mobile Smooth Pull-to-Refresh Gesture Indicator */}
+      <PullToRefresh language={language} />
 
       {/* Floating Order Closing Countdown Timer Widget */}
       {!showWelcome && (
