@@ -3041,3 +3041,61 @@ select {
   transform: rotate(180deg);
   transition: transform 0.2s ease;
 }
+
+/* Cart Upsell Discount Alert Banner */
+.cart-upsell-alert-banner {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(255, 215, 0, 0.08) 100%);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+  animation: pulseGoldGlow 2s infinite alternate;
+}
+
+@keyframes pulseGoldGlow {
+  0% {
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+    border-color: rgba(212, 175, 55, 0.6);
+  }
+  100% {
+    box-shadow: 0 6px 22px rgba(212, 175, 55, 0.55);
+    border-color: var(--color-gold);
+  }
+}
+
+.cart-upsell-icon {
+  font-size: 1.2rem;
+  background: var(--color-accent-dark);
+  color: var(--color-gold);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-gold);
+}
+
+.cart-upsell-content {
+  flex: 1;
+}
+
+.cart-upsell-title {
+  display: block;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--color-accent-dark);
+  margin-bottom: 2px;
+}
+
+.cart-upsell-message {
+  font-size: 0.82rem;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.35;
+}

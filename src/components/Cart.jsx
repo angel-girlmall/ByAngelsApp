@@ -158,6 +158,38 @@ function Cart({
     return { basePrice, effectiveUnitPrice: basePrice, hasDiscount: false };
   };
 
+  // Compute if totalGarmentsInCart is EXACTLY 1 garment away from the next discount tier (e.g. 3, 6, 12)
+  const getNextUpsellThreshold = () => {
+    if (!descuentosRules || descuentosRules.length === 0 || totalGarmentsInCart === 0) return null;
+
+    const activeRules = descuentosRules.filter(r => r.activo !== false);
+    if (activeRules.length === 0) return null;
+
+    const allThresholds = new Set();
+    activeRules.forEach(rule => {
+      if (Array.isArray(rule.escalones)) {
+        rule.escalones.forEach(tier => {
+          const qty = Number(tier.cantidadMinima);
+          if (!isNaN(qty) && qty > 0) {
+            allThresholds.add(qty);
+          }
+        });
+      }
+    });
+
+    const sortedThresholds = Array.from(allThresholds).sort((a, b) => a - b);
+
+    for (const threshold of sortedThresholds) {
+      if (threshold - totalGarmentsInCart === 1) {
+        return threshold;
+      }
+    }
+
+    return null;
+  };
+
+  const nextUpsellThreshold = getNextUpsellThreshold();
+
   // Dynamic Price-Range Volume Discount Pricing Engine
   const calculateTotals = () => {
     let originalTotal = 0;
@@ -431,6 +463,23 @@ function Cart({
         {/* Pricing Subtotal Summary and Checkout Trigger */}
         {cartItems.length > 0 && (
           <div className="cart-summary">
+            {/* Upsell Discount Alert Banner when 1 garment away from next threshold */}
+            {nextUpsellThreshold && (
+              <div className="cart-upsell-alert-banner">
+                <div className="cart-upsell-icon">⚡</div>
+                <div className="cart-upsell-content">
+                  <span className="cart-upsell-title">
+                    {language === 'es' ? '¡Estás a solo 1 prenda de un súper descuento!' : 'You are 1 item away from a bigger discount!'}
+                  </span>
+                  <p className="cart-upsell-message">
+                    {language === 'es' 
+                      ? `Agrega 1 prenda más al carrito para desbloquear la oferta de descuento a partir de ${nextUpsellThreshold} prendas.`
+                      : `Add 1 more item to unlock special pricing starting from ${nextUpsellThreshold} items.`}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {discountAmount > 0 && (
               <>
                 <div className="summary-row">
