@@ -158,20 +158,11 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
         </div>
       ) : (
         <div className="countdown-timer-units">
-          <div className="timer-unit-box">
-            <span className="timer-unit-value">{String(timeLeft.hours).padStart(2, '0')}</span>
-            <span className="timer-unit-label">Hs</span>
-          </div>
+          <span className="timer-unit-value">{String(timeLeft.hours).padStart(2, '0')}</span>
           <span className="timer-colon">:</span>
-          <div className="timer-unit-box">
-            <span className="timer-unit-value">{String(timeLeft.minutes).padStart(2, '0')}</span>
-            <span className="timer-unit-label">Min</span>
-          </div>
+          <span className="timer-unit-value">{String(timeLeft.minutes).padStart(2, '0')}</span>
           <span className="timer-colon">:</span>
-          <div className="timer-unit-box">
-            <span className="timer-unit-value accent">{String(timeLeft.seconds).padStart(2, '0')}</span>
-            <span className="timer-unit-label">Seg</span>
-          </div>
+          <span className="timer-unit-value accent">{String(timeLeft.seconds).padStart(2, '0')}</span>
         </div>
       )}
     </div>
