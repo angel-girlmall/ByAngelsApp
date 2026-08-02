@@ -139,7 +139,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
           ) : loadingPinterest ? (
             <div className="pasarela-empty-state">
               <span className="spinner" style={{ fontSize: '2.5rem', display: 'block', marginBottom: '12px' }}>⏳</span>
-              <p>{language === 'es' ? 'Cargando video HD de Pinterest...' : 'Loading HD Pinterest video...'}</p>
+              <p>{language === 'es' ? 'Cargando video...' : 'Loading video...'}</p>
             </div>
           ) : embedUrl ? (
             <iframe 
