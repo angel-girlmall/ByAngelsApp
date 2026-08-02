@@ -42,15 +42,9 @@ function ProductModal({
 
   if (!visible || !product) return null;
 
-  // Retrieve all non-empty reel images (imgReel0 through imgReel7)
+  // Retrieve ONLY imgReel0 and imgReel7 for Product Modal slider as requested
   const images = [
     product.imgReel0,
-    product.imgReel1,
-    product.imgReel2,
-    product.imgReel3,
-    product.imgReel4,
-    product.imgReel5,
-    product.imgReel6,
     product.imgReel7
   ].filter(img => Boolean(img && typeof img === 'string' && img.trim()));
 
