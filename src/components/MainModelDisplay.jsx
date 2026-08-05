@@ -78,8 +78,34 @@ function MainModelDisplay({
         <span className="hanging-bubble-label">PASARELA</span>
       </div>
 
-      {/* Brand logo - Sacramento Neon */}
-      <h1 className="brand-neon">{brandName}</h1>
+      {/* Brand logo - Sacramento Neon with Angel Wings */}
+      <h1 className="brand-neon">
+        <span className="neon-wing-wrapper neon-wing-left" aria-hidden="true">
+          <svg viewBox="0 0 64 64" className="neon-wing-svg">
+            <path
+              d="M58 48 C44 32, 28 16, 4 4 C14 16, 28 28, 44 38 C30 31, 15 28, 2 22 C14 32, 28 41, 40 46 C27 42, 14 43, 6 40 C18 48, 33 53, 50 51 C38 50, 26 53, 18 52 C30 57, 46 56, 58 48 Z"
+              fill="rgba(255, 96, 173, 0.18)"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <span className="brand-neon-text">{brandName}</span>
+        <span className="neon-wing-wrapper neon-wing-right" aria-hidden="true">
+          <svg viewBox="0 0 64 64" className="neon-wing-svg">
+            <path
+              d="M58 48 C44 32, 28 16, 4 4 C14 16, 28 28, 44 38 C30 31, 15 28, 2 22 C14 32, 28 41, 40 46 C27 42, 14 43, 6 40 C18 48, 33 53, 50 51 C38 50, 26 53, 18 52 C30 57, 46 56, 58 48 Z"
+              fill="rgba(255, 96, 173, 0.18)"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </h1>
 
       {/* Model Active Pose Image */}
       <div className="model-container">

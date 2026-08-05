@@ -226,7 +226,7 @@ select {
   z-index: 2;
 }
 
-/* Neon Glow Brand Label */
+/* Neon Glow Brand Label with Angel Wings */
 .brand-neon {
   position: absolute;
   top: 40px;
@@ -235,6 +235,9 @@ select {
   font-family: var(--font-title);
   font-size: 3.5rem;
   color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   text-shadow:
     0 0 4px #fff,
     0 0 10px var(--color-neon-pink),
@@ -243,6 +246,66 @@ select {
   animation: neon-pulse 2s infinite alternate;
   user-select: none;
   pointer-events: none;
+}
+
+.brand-neon-text {
+  line-height: 1;
+}
+
+.neon-wing-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neon-pink);
+  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px var(--color-neon-pink)) drop-shadow(0 0 20px var(--color-neon-pink));
+}
+
+.neon-wing-left {
+  animation: wing-pulse-glow 2s infinite alternate, wing-float-left 3.5s ease-in-out infinite alternate;
+}
+
+.neon-wing-right {
+  animation: wing-pulse-glow 2s infinite alternate, wing-float-right 3.5s ease-in-out infinite alternate;
+}
+
+.neon-wing-svg {
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+  display: block;
+}
+
+@keyframes wing-float-left {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-4deg);
+  }
+  100% {
+    transform: translateY(2px) rotate(2deg);
+  }
+}
+
+@keyframes wing-float-right {
+  0% {
+    transform: scaleX(-1) translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: scaleX(-1) translateY(-4px) rotate(-4deg);
+  }
+  100% {
+    transform: scaleX(-1) translateY(2px) rotate(2deg);
+  }
+}
+
+@keyframes wing-pulse-glow {
+  from {
+    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px var(--color-neon-pink)) drop-shadow(0 0 16px var(--color-neon-pink));
+  }
+  to {
+    filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px var(--color-neon-pink)) drop-shadow(0 0 28px var(--color-neon-pink));
+  }
 }
 
 @keyframes neon-pulse {
@@ -1308,6 +1371,12 @@ select {
     font-size: 2.2rem !important;
     top: 12px !important;
     left: 16px !important;
+    gap: 8px !important;
+  }
+
+  .neon-wing-svg {
+    width: 32px !important;
+    height: 32px !important;
   }
 
   .pose-rotator-overlay {
@@ -1468,6 +1537,16 @@ select {
     animation: none !important;
     text-shadow: 0 2px 8px var(--color-neon-pink) !important;
     /* static simple shadow */
+  }
+
+  .neon-wing-left,
+  .neon-wing-right {
+    animation: none !important;
+    filter: drop-shadow(0 2px 6px var(--color-neon-pink)) !important;
+  }
+
+  .neon-wing-right {
+    transform: scaleX(-1) !important;
   }
 
   .model-image {
