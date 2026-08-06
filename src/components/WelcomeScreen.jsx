@@ -14,7 +14,7 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
         const cachedTimestamp = localStorage.getItem('byangels_welcome_cache_timestamp');
         const cachedImage = localStorage.getItem('byangels_welcome_image');
         const now = Date.now();
-        if (cachedTimestamp && cachedImage && (now - parseInt(cachedTimestamp, 10) < 10 * 60 * 1000)) {
+        if (cachedTimestamp && cachedImage && (now - parseInt(cachedTimestamp, 10) < 2 * 60 * 1000)) {
           console.log('⚡ Using cached Welcome Screen media URL from localStorage');
           setImageUrl(cachedImage);
           return;
