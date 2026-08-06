@@ -36,8 +36,30 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
           // Extract Pinterest url from the collection documents
           if (data && data.length > 0) {
             const doc = data[0];
-            const url = doc.UrlInicio || doc.url || doc.imagen || doc.imageUrl || doc.img || doc.urlN0;
+            let url = doc.UrlInicio || doc.url || doc.imagen || doc.imageUrl || doc.img || doc.urlN0;
             if (url) {
+              // If URL is a Pinterest pin link, extract the raw video stream via API
+              if (url.includes('pinterest.com/pin/') || url.includes('pin.it/')) {
+                try {
+                  console.log('📌 Extracting Pinterest Video stream for WelcomeScreen...');
+                  const pRes = await fetch(`${base}/api/pinterest-video?url=${encodeURIComponent(url)}`, {
+                    headers: {
+                      'Bypass-Tunnel-Reminder': 'true',
+                      'ngrok-skip-browser-warning': 'true'
+                    }
+                  });
+                  if (pRes.ok) {
+                    const pData = await pRes.json();
+                    if (pData && pData.videoUrl) {
+                      url = pData.videoUrl;
+                      console.log('✅ Extracted Pinterest MP4/HLS stream:', url);
+                    }
+                  }
+                } catch (pErr) {
+                  console.warn('⚠️ Could not extract Pinterest video:', pErr);
+                }
+              }
+
               setImageUrl(url);
               // Save to cache
               try {
@@ -173,7 +195,9 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
       /\.(mp4|webm|ogg|mov|m4v|m3u8)($|\?)/i.test(url) ||
       url.includes('/video/') ||
       url.includes('v.pinimg.com') ||
-      url.includes('v/video')
+      url.includes('v/video') ||
+      url.includes('pinterest.com/pin/') ||
+      url.includes('pin.it/')
     );
   };
 
@@ -189,6 +213,7 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
             muted
             playsInline
             className="welcome-bg-image"
+            style={{ pointerEvents: 'none' }}
             onLoadedData={() => {
               if (!imageUrl.includes('.m3u8')) {
                 setLoading(false);
