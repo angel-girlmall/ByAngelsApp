@@ -15,9 +15,11 @@ export default function WelcomeScreen({ onEnter, apiUrl }) {
         const cachedImage = localStorage.getItem('byangels_welcome_image');
         const now = Date.now();
         if (cachedTimestamp && cachedImage && (now - parseInt(cachedTimestamp, 10) < 2 * 60 * 1000)) {
-          console.log('⚡ Using cached Welcome Screen media URL from localStorage');
-          setImageUrl(cachedImage);
-          return;
+          if (!cachedImage.includes('pinterest.com/pin/') && !cachedImage.includes('pin.it/')) {
+            console.log('⚡ Using cached Welcome Screen media URL from localStorage');
+            setImageUrl(cachedImage);
+            return;
+          }
         }
       } catch (cacheErr) {
         console.warn('⚠️ Error reading Welcome cache:', cacheErr);

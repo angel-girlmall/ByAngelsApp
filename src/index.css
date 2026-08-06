@@ -2111,6 +2111,17 @@ select {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+}
+
+video.welcome-bg-image {
+  animation: none !important;
+  transform: none !important;
+  object-fit: cover;
+  object-position: center;
+}
+
+img.welcome-bg-image {
   animation: zoomBg 20s infinite alternate ease-in-out;
 }
 
@@ -2120,7 +2131,7 @@ select {
   }
 
   100% {
-    transform: scale(1.08);
+    transform: scale(1.06);
   }
 }
 
