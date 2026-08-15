@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import appConfig from './config/appConfig.json';
 import SearchFilter from './components/SearchFilter';
 import ProductCard from './components/ProductCard';
@@ -382,7 +382,9 @@ function App() {
     return result;
   };
 
-  const filteredProductsList = getFilteredProducts();
+  const filteredProductsList = useMemo(() => {
+    return getFilteredProducts();
+  }, [products, searchQuery, styleFilter, language]);
 
   // Add Item to Cart
   const handleAddToCart = (productToAdd, size = 'M') => {

@@ -551,7 +551,7 @@ select {
   /* 4:5 aspect ratio */
   overflow: hidden;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background: #f7eae5;
+  background: var(--color-card-bg);
 }
 
 .card-img {

@@ -79,9 +79,7 @@ function ProductCard({
         <img 
           src={getOptimizedPinterestUrl(imageSource, '236x')} 
           alt={text} 
-          className="card-img" 
-          loading="eager"
-          decoding="sync"
+          className="card-img"
         />
       </div>
 
