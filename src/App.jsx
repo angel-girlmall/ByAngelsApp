@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import appConfig from './config/appConfig.json';
 import SearchFilter from './components/SearchFilter';
 import ProductCard from './components/ProductCard';
@@ -30,6 +30,23 @@ function App() {
   // Filter & Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [styleFilter, setStyleFilter] = useState('');
+
+  // Refs for scroll reset on filter change
+  const rightPanelRef = useRef(null);
+  const catalogGridRef = useRef(null);
+
+  // Reset scroll to top on any filter or sorting change
+  useEffect(() => {
+    if (rightPanelRef.current) {
+      rightPanelRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+    if (catalogGridRef.current) {
+      catalogGridRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  }, [styleFilter, searchQuery]);
 
   // Selected Garment states
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -435,7 +452,7 @@ function App() {
       />
 
       {/* Right Panel: Catalog, Search, and Audio Controls */}
-      <section className="right-panel">
+      <section className="right-panel" ref={rightPanelRef}>
         
         
         {/* Search Bar & Styles Dropdown */}
@@ -456,7 +473,7 @@ function App() {
           </div>
         ) : (
           /* Clothing Reel Cards Grid */
-          <div className="catalog-grid">
+          <div className="catalog-grid" ref={catalogGridRef}>
             {filteredProductsList.map((productItem) => (
               <ProductCard
                 key={productItem.id}
