@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Displays a luxury top-right countdown clock showing total remaining hours,
  * minutes, and seconds until the next Order Closing deadline (supports 2 weekly cycles: Ciclo 1 & Ciclo 2).
  */
-function CountdownTimer({ apiUrl = 'https://by-angels-apis.vercel.app' }) {
+function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
   const [config, setConfig] = useState({
     diaInicio1: 'Lunes',
     horaInicio1: '08:00',
