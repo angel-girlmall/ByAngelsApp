@@ -70,7 +70,9 @@ function ProductCard({
       onClick={handleCardClick}
     >
       {isNew && (
-        <span className="badge-new">{newBadgeLabel}</span>
+        <div className="ribbon-new-wrapper">
+          <span className="ribbon-new">{newBadgeLabel}</span>
+        </div>
       )}
       
       <div className="card-img-container">

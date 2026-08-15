@@ -466,7 +466,13 @@ function App() {
                 language={language}
                 imageSource={productItem.imgReel0} // Uses 1st image for catalog card representation
                 isActive={productItem.id === selectedProductId}
-                isNew={productItem.Nuevo === true || productItem.Nuevo === 'true'}
+                isNew={
+                  productItem.Nuevo === true || 
+                  productItem.Nuevo === 'true' || 
+                  (typeof productItem.Nuevo === 'string' && ['si', 'sí', 'yes', 'true'].includes(productItem.Nuevo.trim().toLowerCase())) ||
+                  productItem.nuevo === true ||
+                  (typeof productItem.nuevo === 'string' && ['si', 'sí', 'yes', 'true'].includes(productItem.nuevo.trim().toLowerCase()))
+                }
                 newBadgeLabel={activeLabels.newBadge}
                 viewButtonLabel={activeLabels.viewButton}
                 onClick={() => {
