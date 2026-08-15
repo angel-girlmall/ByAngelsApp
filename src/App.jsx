@@ -35,16 +35,18 @@ function App() {
   const rightPanelRef = useRef(null);
   const catalogGridRef = useRef(null);
 
-  // Reset scroll to top on any filter or sorting change
+  // Reset scroll instantly to top on any filter or sorting change
   useEffect(() => {
     if (rightPanelRef.current) {
-      rightPanelRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      rightPanelRef.current.scrollTop = 0;
+      rightPanelRef.current.scrollLeft = 0;
     }
     if (catalogGridRef.current) {
-      catalogGridRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      catalogGridRef.current.scrollTop = 0;
+      catalogGridRef.current.scrollLeft = 0;
     }
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      window.scrollTo(0, 0);
     }
   }, [styleFilter, searchQuery]);
 
