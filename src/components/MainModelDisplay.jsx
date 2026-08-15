@@ -78,7 +78,7 @@ function MainModelDisplay({
         <span className="hanging-bubble-label">PASARELA</span>
       </div>
 
-      {/* Brand logo - Sacramento Neon with Angel Wings */}
+      {/* Brand logo - Sacramento Neon with Angel Wings & Floating Halo on 'l' of Angel */}
       <h1 className="brand-neon">
         <span className="neon-wing-wrapper neon-wing-left" aria-hidden="true">
           <svg viewBox="0 0 64 64" className="neon-wing-svg">
@@ -92,7 +92,39 @@ function MainModelDisplay({
             />
           </svg>
         </span>
-        <span className="brand-neon-text">{brandName}</span>
+        <span className="brand-neon-text">
+          {brandName === 'Angel Girl' ? (
+            <>
+              <span className="neon-letter-a-wrapper">
+                A
+                <svg className="neon-halo-svg" viewBox="0 0 80 32" aria-hidden="true">
+                  <ellipse
+                    cx="40"
+                    cy="16"
+                    rx="32"
+                    ry="9"
+                    fill="none"
+                    stroke="#ff60ad"
+                    strokeWidth="3.5"
+                    filter="drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px #ff60ad)"
+                  />
+                  <ellipse
+                    cx="40"
+                    cy="16"
+                    rx="32"
+                    ry="9"
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+              </span>
+              ngel Girl
+            </>
+          ) : (
+            brandName
+          )}
+        </span>
         <span className="neon-wing-wrapper neon-wing-right" aria-hidden="true">
           <svg viewBox="0 0 64 64" className="neon-wing-svg">
             <path
