@@ -426,12 +426,15 @@ select {
   justify-content: space-between;
   width: 100%;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1 !important;
 }
 
 .search-input-wrapper {
   flex: 1;
   min-width: 200px;
   position: relative;
+  z-index: 1 !important;
 }
 
 .search-input {
@@ -444,6 +447,8 @@ select {
   font-weight: 500;
   outline: none;
   transition: var(--transition-smooth);
+  position: relative;
+  z-index: 1 !important;
 }
 
 .search-input:focus {
@@ -462,6 +467,8 @@ select {
   outline: none;
   cursor: pointer;
   transition: var(--transition-smooth);
+  position: relative;
+  z-index: 1 !important;
 }
 
 .combobox-styles:focus {
@@ -472,29 +479,34 @@ select {
 /* Catalog Card Reels */
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
   gap: 20px;
+  padding: 14px 14px 20px 14px;
   flex: 1;
   align-items: start;
-  /* Prevents cards from stretching vertically */
+  position: relative;
+  z-index: 100 !important;
+  overflow: visible !important;
 }
 
 .product-card {
   background-color: var(--color-card-bg);
   border-radius: var(--radius-md);
   border: 2px solid transparent;
-  overflow: visible;
+  overflow: visible !important;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: var(--transition-smooth);
   display: flex;
   flex-direction: column;
   position: relative;
+  z-index: 100 !important;
 }
 
 .product-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-md);
+  z-index: 200 !important;
 }
 
 .product-card.active {
@@ -530,33 +542,34 @@ select {
 .ribbon-new-wrapper {
   position: absolute;
   top: -6px;
-  left: -10px;
-  z-index: 10;
+  left: -8px;
+  z-index: 999999 !important;
   pointer-events: none;
 }
 
 .ribbon-new {
   position: relative;
   display: inline-block;
-  transform: rotate(-26deg);
-  background: linear-gradient(135deg, rgba(230, 184, 0, 0.8) 0%, rgba(184, 98, 73, 0.75) 100%);
+  transform: rotate(-18deg);
+  background: linear-gradient(135deg, rgba(235, 185, 0, 0.88) 0%, rgba(184, 98, 73, 0.85) 100%);
   backdrop-filter: blur(6px);
   color: #ffffff;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 1px;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 8px;
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
   text-transform: uppercase;
   user-select: none;
   box-shadow: 
-    0 0 10px rgba(255, 215, 0, 0.75),
-    0 0 18px rgba(255, 255, 255, 0.6),
-    0 3px 8px rgba(0, 0, 0, 0.3);
+    0 0 12px rgba(255, 215, 0, 0.9),
+    0 0 20px rgba(255, 255, 255, 0.75),
+    0 3px 8px rgba(0, 0, 0, 0.35);
   animation: ribbon-contour-sparkle 2.2s infinite alternate ease-in-out;
   overflow: hidden;
+  z-index: 999999 !important;
 }
 
 /* Internal Shimmer Sweep across the badge */
@@ -1534,17 +1547,19 @@ select {
     border-radius: 8px !important;
   }
 
-  /* Horizontal scrolling 2-row grid (fits 2 columns / 4 items visible at a time) */
+  /* Horizontal scrolling 2-row grid (fits exactly 2 columns side-by-side) */
   .catalog-grid {
     display: grid !important;
     grid-template-rows: repeat(2, 1fr) !important;
     grid-template-columns: none !important;
     grid-auto-flow: column !important;
-    grid-auto-columns: calc(50% - 4px) !important;
-    /* Exactly 2 cards fit side-by-side */
+    grid-auto-columns: calc((100% - 10px) / 2) !important;
+    /* Exactly 2 cards fit side-by-side cleanly */
     gap: 8px !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
     overflow-x: auto !important;
-    overflow-y: hidden !important;
+    overflow-y: visible !important;
     scroll-snap-type: x mandatory;
     flex: 1;
     width: 100%;
