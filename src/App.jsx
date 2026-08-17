@@ -45,9 +45,6 @@ function App() {
       catalogGridRef.current.scrollTop = 0;
       catalogGridRef.current.scrollLeft = 0;
     }
-    if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
-    }
   }, [styleFilter, searchQuery]);
 
   // Selected Garment states
@@ -385,6 +382,17 @@ function App() {
   const filteredProductsList = useMemo(() => {
     return getFilteredProducts();
   }, [products, searchQuery, styleFilter, language]);
+
+  // Auto-sync active selected product when filtering or search changes so reel updates instantly
+  useEffect(() => {
+    if (filteredProductsList && filteredProductsList.length > 0) {
+      const isCurrentlySelectedInList = filteredProductsList.some(p => p.id === selectedProductId);
+      if (!isCurrentlySelectedInList) {
+        setSelectedProductId(filteredProductsList[0].id);
+        setSelectedPoseIndex(0);
+      }
+    }
+  }, [filteredProductsList, selectedProductId]);
 
   // Add Item to Cart
   const handleAddToCart = (productToAdd, size = 'M') => {
