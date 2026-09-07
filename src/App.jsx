@@ -145,7 +145,7 @@ function App() {
         setProducts(shopData);
         
         if (shopData.length > 0) {
-          setSelectedProductId(shopData[0].id);
+          setSelectedProductId(prev => (prev && shopData.some(p => p.id === prev)) ? prev : shopData[0].id);
         } else {
           setSelectedProductId(null);
         }
@@ -383,16 +383,16 @@ function App() {
     return getFilteredProducts();
   }, [products, searchQuery, styleFilter, language]);
 
-  // Auto-sync active selected product when filtering or search changes so reel updates instantly
+  // Ensure an initial product is selected if none is active yet, but preserve user selection when filtering
   useEffect(() => {
-    if (filteredProductsList && filteredProductsList.length > 0) {
-      const isCurrentlySelectedInList = filteredProductsList.some(p => p.id === selectedProductId);
-      if (!isCurrentlySelectedInList) {
-        setSelectedProductId(filteredProductsList[0].id);
+    if (products && products.length > 0) {
+      const existsInProducts = products.some(p => p.id === selectedProductId);
+      if (!selectedProductId || !existsInProducts) {
+        setSelectedProductId(products[0].id);
         setSelectedPoseIndex(0);
       }
     }
-  }, [filteredProductsList, selectedProductId]);
+  }, [products, selectedProductId]);
 
   // Add Item to Cart
   const handleAddToCart = (productToAdd, size = 'M') => {
