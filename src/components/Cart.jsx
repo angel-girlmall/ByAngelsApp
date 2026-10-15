@@ -20,6 +20,7 @@ function Cart({
   labels = {},
   whatsappNumber = '51900962934',
   apiBaseUrl = '',
+  externalDescuentosRules = null,
   onQuantityChange,
   onRemove,
   onClose
@@ -54,6 +55,10 @@ function Cart({
   };
 
   const [descuentosRules, setDescuentosRules] = React.useState([]);
+
+  const effectiveDescuentosRules = (externalDescuentosRules && Array.isArray(externalDescuentosRules) && externalDescuentosRules.length > 0)
+    ? externalDescuentosRules
+    : descuentosRules;
 
   React.useEffect(() => {
     const fetchRules = async () => {
@@ -126,8 +131,8 @@ function Cart({
   const getItemEffectivePrice = (item) => {
     const basePrice = Number(item.product.Precio || item.product.precio || 0);
 
-    const activeRules = (descuentosRules && descuentosRules.length > 0)
-      ? descuentosRules.filter(r => r.activo !== false)
+    const activeRules = (effectiveDescuentosRules && effectiveDescuentosRules.length > 0)
+      ? effectiveDescuentosRules.filter(r => r.activo !== false)
       : [];
 
     if (activeRules.length > 0) {
@@ -160,9 +165,9 @@ function Cart({
 
   // Compute if totalGarmentsInCart is EXACTLY 1 garment away from the next discount tier (e.g. 3, 6, 12)
   const getNextUpsellThreshold = () => {
-    if (!descuentosRules || descuentosRules.length === 0 || totalGarmentsInCart === 0) return null;
+    if (!effectiveDescuentosRules || effectiveDescuentosRules.length === 0 || totalGarmentsInCart === 0) return null;
 
-    const activeRules = descuentosRules.filter(r => r.activo !== false);
+    const activeRules = effectiveDescuentosRules.filter(r => r.activo !== false);
     if (activeRules.length === 0) return null;
 
     const allThresholds = new Set();
@@ -199,8 +204,8 @@ function Cart({
       return { originalTotal: 0, discountedTotal: 0, discountAmount: 0 };
     }
 
-    const activeRules = (descuentosRules && descuentosRules.length > 0)
-      ? descuentosRules.filter(r => r.activo !== false)
+    const activeRules = (effectiveDescuentosRules && effectiveDescuentosRules.length > 0)
+      ? effectiveDescuentosRules.filter(r => r.activo !== false)
       : [];
 
     if (activeRules.length > 0) {

@@ -10,7 +10,7 @@
     "es": {
       "searchPlaceholder": "Buscar...",
       "stylesLabel": "Estilos",
-      "viewButton": "Ver",
+      "viewButton": "Añadir",
       "newBadge": "Nuevo",
       "cartAdd": "Agregar al Carrito",
       "whatsappMessage": "Hola, quiero realizar el siguiente pedido:",
@@ -39,7 +39,7 @@
     "en": {
       "searchPlaceholder": "Search...",
       "stylesLabel": "Styles",
-      "viewButton": "View",
+      "viewButton": "Add",
       "newBadge": "NEW",
       "cartAdd": "Add to Cart",
       "whatsappMessage": "Hello, I want to place the following order:",

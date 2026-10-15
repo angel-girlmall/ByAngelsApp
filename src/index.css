@@ -687,7 +687,7 @@ select {
 .btn-view {
   background: var(--color-accent-light);
   color: var(--color-accent-dark);
-  border: none;
+  border: 2px solid transparent;
   padding: 6px 14px;
   border-radius: var(--radius-lg);
   font-weight: 700;
@@ -699,6 +699,47 @@ select {
 .btn-view:hover {
   background: var(--color-accent-dark);
   color: var(--color-accent-light);
+}
+
+/* Blinking in pink with white border when Añadir is clicked */
+.btn-view.btn-adding {
+  animation: blinkPinkWhite 0.55s ease-in-out !important;
+}
+
+@keyframes blinkPinkWhite {
+  0% {
+    background: var(--color-accent-light);
+    color: var(--color-accent-dark);
+    border-color: transparent;
+    transform: scale(1);
+  }
+  20% {
+    background: #ff2378 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(255, 35, 120, 0.9), 0 0 25px rgba(255, 255, 255, 0.9) !important;
+    transform: scale(1.12);
+  }
+  45% {
+    background: #ffffff !important;
+    color: #ff2378 !important;
+    border-color: #ff2378 !important;
+    box-shadow: 0 0 22px #ffffff, 0 0 30px rgba(255, 35, 120, 0.9) !important;
+    transform: scale(1.05);
+  }
+  70% {
+    background: #ff2378 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(255, 35, 120, 0.9), 0 0 25px rgba(255, 255, 255, 0.9) !important;
+    transform: scale(1.12);
+  }
+  100% {
+    background: #ff2378 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    transform: scale(1);
+  }
 }
 
 /* Detail Modal Styles */
@@ -2657,105 +2698,361 @@ img.welcome-bg-image {
   }
 }
 
-/* Floating Buy Button - Bubble Theme */
-.btn-buy-floating {
+/* Floating Cart & Upsell Container */
+.cart-floating-container {
   position: fixed;
   left: calc(24px + env(safe-area-inset-left));
-  bottom: calc(24px + 50px + 12px + env(safe-area-inset-bottom));
-  /* 86px, above music player button */
+  bottom: calc(24px + 50px + 14px + env(safe-area-inset-bottom));
+  /* Above floating music player button */
   z-index: 400;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 310px;
+}
+
+/* 1. Floating Discount Upsell Banner (ARRIBA) */
+.floating-upsell-banner {
+  background: linear-gradient(135deg, #fffbf0 0%, #fff4d1 55%, #feedb3 100%);
+  border: 2px solid #f6d27a;
+  border-radius: 22px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 28px rgba(60, 35, 10, 0.16), 0 0 20px rgba(255, 225, 120, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 290px;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  overflow: visible;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  animation: floatBannerPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-upsell-banner:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(60, 35, 10, 0.22), 0 0 26px rgba(255, 225, 120, 0.6);
+}
+
+@keyframes floatBannerPop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.floating-upsell-banner .upsell-badge-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: #301f11;
+  color: #ffd700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 50px;
-  padding: 0 22px;
-  border-radius: 25px;
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 1rem;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1px solid rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(2px);
-  overflow: visible;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    box-shadow 0.4s ease,
-    background 0.4s ease !important;
-  animation: bubbleFloat 4.5s ease-in-out infinite;
+  font-size: 1.25rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(48, 31, 17, 0.25);
+  flex-shrink: 0;
 }
 
-/* Stretched gloss reflections for pill shape */
+.floating-upsell-banner .upsell-text-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.floating-upsell-banner .upsell-headline {
+  color: #3b220d;
+  font-weight: 800;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.floating-upsell-banner .upsell-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.floating-upsell-banner .upsell-progress-track {
+  flex: 1;
+  height: 14px;
+  background: rgba(180, 130, 50, 0.18);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.floating-upsell-banner .upsell-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb300 0%, #fbc02d 60%, #ffd54f 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 2px;
+  box-shadow: 0 1px 4px rgba(245, 127, 23, 0.4);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.floating-upsell-banner .upsell-check-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  color: #e65100;
+  border-radius: 50%;
+  font-size: 7px;
+  font-weight: 900;
+  margin: 0 1px;
+}
+
+.floating-upsell-banner .upsell-progress-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  pointer-events: none;
+  padding: 0 6px;
+  z-index: 1;
+}
+
+.floating-upsell-banner .upsell-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(120, 80, 30, 0.28);
+}
+
+.floating-upsell-banner .upsell-dot.active {
+  opacity: 0;
+}
+
+.floating-upsell-banner .upsell-progress-counter {
+  color: #3b220d;
+  font-weight: 900;
+  font-size: 0.88rem;
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 2. Floating Pink Cart Button (ABAJO) - Permanent Pink with White Border */
+.btn-buy-floating {
+  position: relative;
+  z-index: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 28px;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.12rem;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #ff2378 0%, #ff4b93 50%, #e6196e 100%) !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 6px 20px rgba(230, 25, 110, 0.45), 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  overflow: visible;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important;
+}
+
+.btn-buy-floating:hover {
+  transform: scale(1.05) translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(230, 25, 110, 0.6), 0 0 15px rgba(255, 75, 147, 0.4) !important;
+}
+
+.btn-buy-floating:active {
+  transform: scale(0.97) translateY(1px) !important;
+  box-shadow: 0 3px 10px rgba(230, 25, 110, 0.4) !important;
+}
+
+.btn-buy-floating i {
+  font-size: 1.3rem;
+  color: #ffffff !important;
+  transition: transform 0.3s ease;
+}
+
+.btn-buy-floating:hover i {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.btn-buy-floating span {
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+/* Stretched gloss highlight for bubble effect */
 .btn-buy-floating::before {
   content: '';
   position: absolute;
-  top: 10%;
+  top: 8%;
   left: 12%;
   width: 76%;
-  height: 18%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.1) 100%);
+  height: 26%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.05) 100%);
   border-radius: 12px;
   pointer-events: none;
   z-index: 1;
-  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-.btn-buy-floating::after {
-  content: '';
+/* Golden 3D Counter on Pink Cart Button - SOLO EL NÚMERO EN COLOR DORADO */
+.cart-floating-badge {
   position: absolute;
-  bottom: 12%;
-  right: 15%;
-  width: 14%;
-  height: 10%;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
+  top: -18px;
+  right: -8px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
   pointer-events: none;
-  z-index: 1;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+  overflow: visible;
 }
 
-/* Position text and icon layers above bubble gloss */
-.btn-buy-floating i,
-.btn-buy-floating span {
-  position: relative;
-  z-index: 2;
-  color: inherit !important;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.4s ease !important;
+.cart-floating-badge .badge-number {
+  font-family: var(--font-sans);
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffd700;
+  background: linear-gradient(180deg, #fff9c4 0%, #ffd700 45%, #ffb300 75%, #b26a00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(255, 215, 0, 0.95));
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Plomo (gray/lead) soap bubble state when empty */
-.btn-buy-floating.empty {
-  background: radial-gradient(circle at 30% 30%,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(232, 226, 222, 0.85) 30%,
-      rgba(182, 173, 169, 0.6) 60%,
-      rgba(255, 96, 173, 0.1) 80%,
-      rgba(166, 227, 233, 0.25) 100%) !important;
-  color: var(--color-accent-dark) !important;
-  cursor: default !important;
-  box-shadow:
-    inset -2px -2px 6px rgba(255, 96, 173, 0.15),
-    inset 2px 2px 6px rgba(166, 227, 233, 0.2),
-    inset 0 6px 8px rgba(255, 255, 255, 0.85),
-    var(--shadow-md) !important;
+.cart-floating-badge.badge-bump .badge-number {
+  animation: goldNumberBump 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.btn-buy-floating .buy-badge {
-  position: relative;
-  z-index: 2;
-  background: #ffffff;
-  color: #1e6b38 !important;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 2px 7px;
-  border-radius: 10px;
-  margin-left: 4px;
+@keyframes goldNumberBump {
+  0% { transform: scale(1); }
+  45% {
+    transform: scale(1.5) rotate(-10deg);
+    filter: drop-shadow(0 0 20px rgba(255, 235, 59, 1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+  }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
-.cart-has-items-green {
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #c8e6c9 50%, #4caf50 100%) !important;
-  color: #1b5e20 !important;
+.cart-floating-badge .badge-sparkle {
+  position: absolute;
+  color: #fffde7;
+  font-size: 0.85rem;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+  pointer-events: none;
+}
+
+.cart-floating-badge .badge-sparkle.top-left {
+  top: -6px;
+  left: -8px;
+  animation: sparkleTwinkle 2s ease-in-out infinite alternate;
+}
+
+.cart-floating-badge .badge-sparkle.bottom-right {
+  bottom: -4px;
+  right: -8px;
+  animation: sparkleTwinkle 2s ease-in-out infinite alternate 1s;
+}
+
+@keyframes sparkleTwinkle {
+  0% { transform: scale(0.7) rotate(0deg); opacity: 0.6; }
+  100% { transform: scale(1.3) rotate(45deg); opacity: 1; }
+}
+
+/* Flying Cart Glow Effect */
+.flying-cart-glow {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flying-cart-glow .glow-orb {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #ff4b93 40%, #ffd700 80%, rgba(255, 215, 0, 0) 100%);
+  box-shadow: 0 0 18px rgba(255, 35, 120, 0.95), 0 0 30px rgba(255, 215, 0, 0.95);
+  animation: orbSpin 0.6s linear infinite;
+}
+
+.flying-cart-glow .glow-sparkle {
+  position: absolute;
+  color: #fff9c4;
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 8px #ffd700);
+}
+
+.flying-cart-glow .glow-sparkle.s1 {
+  top: -8px;
+  right: -8px;
+  animation: sparkleTwinkle 0.3s alternate infinite;
+}
+
+.flying-cart-glow .glow-sparkle.s2 {
+  bottom: -6px;
+  left: -6px;
+  animation: sparkleTwinkle 0.4s alternate infinite 0.15s;
+}
+
+@keyframes orbSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Impact pulse reaction on Mi Carrito button */
+.btn-buy-floating.cart-bump-impact {
+  animation: cartBumpPulse 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+@keyframes cartBumpPulse {
+  0% { transform: scale(1); }
+  35% {
+    transform: scale(1.14) translateY(-4px);
+    box-shadow: 0 0 25px rgba(255, 35, 120, 0.95), 0 0 35px rgba(255, 215, 0, 0.85) !important;
+  }
+  70% { transform: scale(0.96); }
+  100% { transform: scale(1); }
 }
 
 /* Mobile Swipe-to-Close Hint in Cart Drawer */
@@ -2775,92 +3072,50 @@ img.welcome-bg-image {
   }
 }
 
-.btn-buy-floating.empty:hover {
-  transform: scale(1.05) translateY(-3px) !important;
-  box-shadow:
-    inset -2px -2px 6px rgba(255, 96, 173, 0.25),
-    inset 2px 2px 6px rgba(166, 227, 233, 0.3),
-    inset 0 6px 8px rgba(255, 255, 255, 0.95),
-    0 10px 20px rgba(97, 64, 55, 0.15) !important;
-}
-
-/* Green soap bubble state when items are in cart */
-.btn-buy-floating.has-items {
-  background: radial-gradient(circle at 30% 30%,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(220, 245, 225, 0.9) 35%,
-      rgba(160, 230, 180, 0.6) 65%,
-      rgba(39, 174, 96, 0.25) 85%,
-      rgba(166, 227, 233, 0.35) 100%) !important;
-  color: #1e6b38 !important;
-  box-shadow:
-    inset -2px -2px 6px rgba(39, 174, 96, 0.3),
-    inset 2px 2px 6px rgba(166, 227, 233, 0.35),
-    inset 0 6px 8px rgba(255, 255, 255, 0.9),
-    var(--shadow-md) !important;
-  animation: bubbleFloat 4.5s ease-in-out infinite, pulse-green-glow 2s infinite alternate;
-}
-
-.btn-buy-floating.has-items:hover {
-  transform: scale(1.08) translateY(-4px) !important;
-  background: radial-gradient(circle at 25% 25%,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(225, 248, 230, 0.95) 35%,
-      rgba(170, 238, 190, 0.75) 65%,
-      rgba(39, 174, 96, 0.35) 85%,
-      rgba(166, 227, 233, 0.45) 100%) !important;
-  box-shadow:
-    inset -2px -2px 6px rgba(39, 174, 96, 0.4),
-    inset 2px 2px 6px rgba(166, 227, 233, 0.45),
-    inset 0 6px 8px rgba(255, 255, 255, 0.95),
-    0 12px 24px rgba(39, 174, 96, 0.35) !important;
-}
-
-@keyframes pulse-green-glow {
-  0% {
-    box-shadow:
-      inset -2px -2px 6px rgba(39, 174, 96, 0.3),
-      inset 2px 2px 6px rgba(166, 227, 233, 0.35),
-      inset 0 6px 8px rgba(255, 255, 255, 0.9),
-      0 4px 10px rgba(39, 174, 96, 0.15);
-  }
-
-  100% {
-    box-shadow:
-      inset -2px -2px 6px rgba(39, 174, 96, 0.3),
-      inset 2px 2px 6px rgba(166, 227, 233, 0.35),
-      inset 0 6px 8px rgba(255, 255, 255, 0.9),
-      0 8px 20px rgba(39, 174, 96, 0.45);
-  }
-}
-
-.btn-buy-floating:active {
-  transform: scale(0.95) translateY(1px) !important;
-  box-shadow:
-    inset -1px -1px 4px rgba(255, 96, 173, 0.2),
-    inset 1px 1px 4px rgba(166, 227, 233, 0.25),
-    inset 0 4px 6px rgba(255, 255, 255, 0.8),
-    0 4px 8px rgba(97, 64, 55, 0.1) !important;
-}
-
-/* Mobile overrides for Buy and Music Floating buttons */
+/* Mobile overrides for Floating Cart & Upsell Group */
 @media (max-width: 767px) {
-  .btn-buy-floating {
-    height: 36px !important;
-    padding: 0 14px !important;
-    font-size: 0.8rem !important;
-    bottom: calc(42vh + 12px) !important;
-    /* aligned with rotar overlay bottom */
-    bottom: calc(42dvh + 12px) !important;
+  .cart-floating-container {
     left: calc(12px + env(safe-area-inset-left)) !important;
-    border-radius: 18px !important;
+    bottom: calc(42vh + 12px) !important;
+    bottom: calc(42dvh + 12px) !important;
+    gap: 8px !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .floating-upsell-banner {
+    max-width: 270px !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+  }
+
+  .floating-upsell-banner .upsell-badge-icon {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .floating-upsell-banner .upsell-headline {
+    font-size: 0.78rem !important;
+  }
+
+  .floating-upsell-banner .upsell-progress-counter {
+    font-size: 0.78rem !important;
+  }
+
+  .btn-buy-floating {
+    height: 48px !important;
+    padding: 0 20px !important;
+    font-size: 0.96rem !important;
+    border-width: 2.5px !important;
   }
 
   .btn-buy-floating::before {
-    top: 10% !important;
+    top: 8% !important;
     left: 12% !important;
     width: 76% !important;
-    height: 18% !important;
+    height: 22% !important;
     border-radius: 8px !important;
   }
 

@@ -25,11 +25,14 @@ function ProductCard({
   isActive = false,
   isNew = false,
   newBadgeLabel = 'NEW',
-  viewButtonLabel = 'View',
+  viewButtonLabel = 'Añadir',
   onClick,
+  onAddToCart,
   onViewDetail
 }) {
   if (!visible) return null;
+
+  const [isAdding, setIsAdding] = React.useState(false);
 
   const formatCleanNumber = (num) => {
     const val = Number(num);
@@ -51,9 +54,16 @@ function ProductCard({
     if (onClick) onClick();
   };
 
-  const handleViewClick = (e) => {
+  const handleButtonClick = (e) => {
     e.stopPropagation(); // Avoid triggering parent card selection click
-    if (onViewDetail) onViewDetail();
+    setIsAdding(true);
+    setTimeout(() => setIsAdding(false), 550);
+
+    if (onAddToCart) {
+      onAddToCart(e);
+    } else if (onViewDetail) {
+      onViewDetail();
+    }
   };
 
   const getOptimizedPinterestUrl = (url, size = '236x') => {
@@ -87,8 +97,8 @@ function ProductCard({
         <span className="card-price">{displayPriceStr}</span>
         <button 
           type="button" 
-          className="btn-view"
-          onClick={handleViewClick}
+          className={`btn-view ${isAdding ? 'btn-adding' : ''}`}
+          onClick={handleButtonClick}
         >
           {viewButtonLabel}
         </button>

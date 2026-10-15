@@ -63,6 +63,86 @@ function App() {
   const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
 
+  const DEFAULT_DESCUENTOS = [
+    {
+      id: 'rango_1',
+      nombre: 'súper descuento 3x S/100',
+      rangoInicio: 0,
+      rangoFin: 999,
+      activo: true,
+      escalones: [
+        { cantidadMinima: 3, precioOferta: 33.33 }
+      ]
+    }
+  ];
+
+  const [descuentosRules, setDescuentosRules] = useState(() => {
+    try {
+      const cached = localStorage.getItem('byangels_descuentos_rules');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_DESCUENTOS;
+  });
+
+  // Calculate total number of garments in shopping cart
+  const totalGarmentsInCart = useMemo(() => {
+    return (cart || []).reduce((acc, curr) => acc + (Number(curr.quantity) || 1), 0);
+  }, [cart]);
+
+  // Compute if cart is EXACTLY 1 garment away from reaching a volume discount tier
+  const upsellInfo = useMemo(() => {
+    if (!descuentosRules || descuentosRules.length === 0 || totalGarmentsInCart === 0) return null;
+
+    const activeRules = descuentosRules.filter(r => r.activo !== false);
+    if (activeRules.length === 0) return null;
+
+    let candidateTiers = [];
+    activeRules.forEach(rule => {
+      if (Array.isArray(rule.escalones)) {
+        rule.escalones.forEach(tier => {
+          const qty = Number(tier.cantidadMinima);
+          if (!isNaN(qty) && qty > 0) {
+            candidateTiers.push({
+              threshold: qty,
+              precioOferta: Number(tier.precioOferta) || 0,
+              nombre: rule.nombre || '',
+              rule
+            });
+          }
+        });
+      }
+    });
+
+    if (candidateTiers.length === 0) return null;
+
+    candidateTiers.sort((a, b) => a.threshold - b.threshold);
+
+    for (const t of candidateTiers) {
+      if (t.threshold - totalGarmentsInCart === 1) {
+        let promoText = '';
+        if (t.precioOferta > 0) {
+          const totalPromo = Math.round(t.threshold * t.precioOferta);
+          promoText = `${t.threshold}x S/${totalPromo}`;
+        } else if (t.nombre) {
+          promoText = t.nombre;
+        } else {
+          promoText = `${t.threshold} unidades`;
+        }
+
+        return {
+          current: totalGarmentsInCart,
+          target: t.threshold,
+          promoText
+        };
+      }
+    }
+
+    return null;
+  }, [descuentosRules, totalGarmentsInCart]);
+
   const activeLabels = appConfig.languages[language];
 
   useEffect(() => {
@@ -208,6 +288,20 @@ function App() {
         } else {
           finalNoticeData = [];
           setNotices([]);
+        }
+
+        // Fetch discounts from DB
+        try {
+          const resDesc = await fetch(`${apiBaseUrl}/api/descuentos`, { headers: tunnelHeaders });
+          if (resDesc.ok) {
+            const descData = await resDesc.json();
+            if (Array.isArray(descData) && descData.length > 0) {
+              setDescuentosRules(descData);
+              localStorage.setItem('byangels_descuentos_rules', JSON.stringify(descData));
+            }
+          }
+        } catch (descErr) {
+          console.warn('⚠️ Could not fetch descuentos config:', descErr.message);
         }
 
         // Store new data in localStorage cache
@@ -394,6 +488,78 @@ function App() {
     }
   }, [products, selectedProductId]);
 
+  const [numberBump, setNumberBump] = useState(false);
+
+  // Add Item to Cart from Card button with flying shine animation
+  const handleAddToCartFromCard = (productToAdd, e) => {
+    const btnRect = e.currentTarget.getBoundingClientRect();
+    const cartBtn = document.querySelector('.btn-buy-floating');
+
+    if (!cartBtn) {
+      handleAddToCart(productToAdd, 'M');
+      return;
+    }
+
+    const endRect = cartBtn.getBoundingClientRect();
+    const startX = btnRect.left + btnRect.width / 2;
+    const startY = btnRect.top + btnRect.height / 2;
+    const endX = endRect.left + endRect.width / 2;
+    const endY = endRect.top + endRect.height / 2;
+
+    // Spawn flying glow sparkle
+    const flyer = document.createElement('div');
+    flyer.className = 'flying-cart-glow';
+    flyer.innerHTML = `
+      <span class="glow-orb"></span>
+      <span class="glow-sparkle s1">✨</span>
+      <span class="glow-sparkle s2">✦</span>
+    `;
+    flyer.style.left = `${startX}px`;
+    flyer.style.top = `${startY}px`;
+    document.body.appendChild(flyer);
+
+    // Arch curve trajectory towards Mi Carrito button
+    const midX = (startX + endX) / 2 - 50;
+    const midY = Math.min(startY, endY) - 60;
+
+    const animation = flyer.animate([
+      { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0.8 },
+      { transform: `translate(${midX - startX}px, ${midY - startY}px) scale(1.4)`, opacity: 1, offset: 0.45 },
+      { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.5)`, opacity: 0.9, offset: 0.92 },
+      { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0)`, opacity: 0, offset: 1 }
+    ], {
+      duration: 650,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+    });
+
+    animation.onfinish = () => {
+      flyer.remove();
+
+      // Add to cart state
+      setCart(prevCart => {
+        const existingItem = prevCart.find(item => item.product.id === productToAdd.id && item.size === 'M');
+        if (existingItem) {
+          return prevCart.map(item => 
+            (item.product.id === productToAdd.id && item.size === 'M')
+              ? { ...item, quantity: Math.min(item.quantity + 1, 99) }
+              : item
+          );
+        } else {
+          return [...prevCart, { product: productToAdd, size: 'M', quantity: 1 }];
+        }
+      });
+
+      // Impact bump reaction on Mi Carrito button & golden number
+      cartBtn.classList.remove('cart-bump-impact');
+      void cartBtn.offsetWidth; // force reflow
+      cartBtn.classList.add('cart-bump-impact');
+      setTimeout(() => cartBtn.classList.remove('cart-bump-impact'), 600);
+
+      setNumberBump(true);
+      setTimeout(() => setNumberBump(false), 550);
+    };
+  };
+
   // Add Item to Cart
   const handleAddToCart = (productToAdd, size = 'M') => {
     setCart(prevCart => {
@@ -503,11 +669,12 @@ function App() {
                   (typeof productItem.nuevo === 'string' && ['si', 'sí', 'yes', 'true'].includes(productItem.nuevo.trim().toLowerCase()))
                 }
                 newBadgeLabel={activeLabels.newBadge}
-                viewButtonLabel={activeLabels.viewButton}
+                viewButtonLabel={activeLabels.viewButton || (language === 'es' ? 'Añadir' : 'Add')}
                 onClick={() => {
                   setSelectedProductId(productItem.id);
                   setSelectedPoseIndex(0); // Reset pose index when switching garments
                 }}
+                onAddToCart={(e) => handleAddToCartFromCard(productItem, e)}
                 onViewDetail={() => setDetailProduct(productItem)}
               />
             ))}
@@ -522,20 +689,72 @@ function App() {
 
       </section>
 
-      {/* Floating Buy Button */}
+      {/* Floating Cart & Upsell Group (Anuncio flotante ARRIBA, Botón Mi Carrito ABAJO) */}
       {!showWelcome && (
-        <button
-          type="button"
-          className={`btn-buy-floating ${cart.length === 0 ? 'empty' : 'has-items'}`}
-          onClick={() => {
-            if (cart.length > 0) {
-              setCartVisible(true);
-            }
-          }}
-        >
-          <i className="fa-solid fa-cart-shopping"></i>
-          <span>{language === 'es' ? 'Comprar' : 'Buy'}</span>
-        </button>
+        <div className="cart-floating-container">
+          {/* 1. Anuncio Flotante ARRIBA (cuando falta 1 prenda para acceder al descuento) */}
+          {upsellInfo && (
+            <div
+              className="floating-upsell-banner"
+              onClick={() => setCartVisible(true)}
+              role="button"
+              tabIndex={0}
+              title={language === 'es' ? 'Ver oferta en el carrito' : 'View offer in cart'}
+            >
+              <div className="upsell-badge-icon">
+                <i className="fa-solid fa-bolt"></i>
+              </div>
+              <div className="upsell-text-content">
+                <div className="upsell-headline">
+                  {language === 'es'
+                    ? `¡Estás a solo 1 conjunto del súper descuento ${upsellInfo.promoText}!`
+                    : `You're only 1 item away from the super discount ${upsellInfo.promoText}!`}
+                </div>
+                <div className="upsell-progress-row">
+                  <div className="upsell-progress-track">
+                    <div
+                      className="upsell-progress-fill"
+                      style={{ width: `${Math.min(100, Math.round((upsellInfo.current / upsellInfo.target) * 100))}%` }}
+                    >
+                      {Array.from({ length: upsellInfo.current }).map((_, i) => (
+                        <span key={i} className="upsell-check-badge">✓</span>
+                      ))}
+                    </div>
+                    <div className="upsell-progress-dots">
+                      {Array.from({ length: upsellInfo.target }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`upsell-dot ${i < upsellInfo.current ? 'active' : ''}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <span className="upsell-progress-counter">
+                    {upsellInfo.current}/{upsellInfo.target}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. Botón Mi Carrito ABAJO (siempre rosa con borde blanco) */}
+          <button
+            type="button"
+            className="btn-buy-floating btn-pink-cart"
+            onClick={() => setCartVisible(true)}
+            aria-label={language === 'es' ? 'Ver Mi Carrito' : 'View My Cart'}
+          >
+            <i className="fa-solid fa-cart-shopping"></i>
+            <span>{language === 'es' ? 'Mi Carrito' : 'My Cart'}</span>
+            {totalGarmentsInCart > 0 && (
+              <span className={`cart-floating-badge ${numberBump ? 'badge-bump' : ''}`}>
+                <span className="badge-sparkle top-left">✦</span>
+                <span className="badge-number">{totalGarmentsInCart}</span>
+                <span className="badge-sparkle bottom-right">✦</span>
+              </span>
+            )}
+          </button>
+        </div>
       )}
 
       {/* Floating Music Player Widget */}
@@ -566,6 +785,7 @@ function App() {
         labels={activeLabels}
         whatsappNumber={appConfig.whatsappNumber}
         apiBaseUrl={apiBaseUrl}
+        externalDescuentosRules={descuentosRules}
         onQuantityChange={handleCartQuantityChange}
         onRemove={handleRemoveFromCart}
         onClose={() => setCartVisible(false)}
