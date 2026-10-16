@@ -29,15 +29,19 @@ function ProductModal({
   onVideoClick
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [sizeError, setSizeError] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  // Reset slide index when opening/changing products
+  // Reset slide index and size when opening/changing products
   useEffect(() => {
     if (visible) {
       setCurrentSlide(0);
-      setSelectedSize('M');
+      setSelectedSize('');
+      setSizeError(false);
+      setAlertMessage('');
     }
   }, [visible, product]);
 
@@ -108,9 +112,20 @@ function ProductModal({
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    if (!selectedSize || selectedSize.trim() === '') {
+      setSizeError(true);
+      setAlertMessage(language === 'es' ? 'Seleccione una talla por favor' : 'Please select a size');
+      setTimeout(() => {
+        setAlertMessage('');
+      }, 3500);
+      return;
+    }
+
+    setSizeError(false);
+    setAlertMessage('');
     if (onCartAdded) {
-      onCartAdded(product, selectedSize);
+      onCartAdded(product, selectedSize, e);
     }
     if (onClose) {
       onClose();
@@ -199,29 +214,51 @@ function ProductModal({
             </div>
           </div>
 
-          <ComboBox
-            id="modal-size-select"
-            name="size"
-            label={language === 'es' ? 'Talla' : 'Size'}
-            value={selectedSize}
-            options={sizeOptions}
-            onChange={(e) => setSelectedSize(e.target.value)}
-          />
+          {/* Selector de Talla con contenedor relativo para alerta estática abajo */}
+          <div className="size-select-wrapper-relative">
+            <ComboBox
+              id="modal-size-select"
+              name="size"
+              label={language === 'es' ? 'Talla' : 'Size'}
+              value={selectedSize}
+              placeholder={language === 'es' ? 'Seleccionar talla' : 'Select size'}
+              options={sizeOptions}
+              onChange={(e) => {
+                setSelectedSize(e.target.value);
+                if (sizeError) {
+                  setSizeError(false);
+                  setAlertMessage('');
+                }
+              }}
+              error={sizeError}
+              className={`neon-pulse-talla ${sizeError ? 'has-size-error' : ''}`}
+            />
+
+            {/* Alerta Temporal abajo del selector sin mover la posición de los demás elementos */}
+            {alertMessage && (
+              <div className="size-alert-below" role="alert">
+                <i className="fa-solid fa-circle-exclamation"></i>
+                <span>{alertMessage}</span>
+              </div>
+            )}
+          </div>
 
           <div className="modal-action-row">
-            <button 
-              type="button" 
-              className="btn-add-cart-large"
-              onClick={handleAddToCart}
-            >
-              🛒 {labels.cartAdd || 'Agregar al Carrito'}
-            </button>
+            <div className="modal-add-cart-wrapper">
+              <button 
+                type="button" 
+                className="btn-add-cart-large"
+                onClick={handleAddToCart}
+              >
+                🛒 {labels.cartAdd || (language === 'es' ? 'Agregar al Carrito' : 'Add to Cart')}
+              </button>
+            </div>
             <button 
               type="button" 
               className="btn-close-modal"
               onClick={onClose}
             >
-              {labels.closeButton || 'Cerrar'}
+              {labels.closeButton || (language === 'es' ? 'Cerrar' : 'Close')}
             </button>
           </div>
         </div>

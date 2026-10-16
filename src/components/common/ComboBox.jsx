@@ -53,7 +53,7 @@ function ComboBox({
           {...props}
         >
           {placeholder && (
-            <option value="" disabled>
+            <option value="">
               {placeholder}
             </option>
           )}

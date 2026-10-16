@@ -490,66 +490,197 @@ function App() {
 
   const [numberBump, setNumberBump] = useState(false);
 
-  // Add Item to Cart from Card button with flying shine animation
-  const handleAddToCartFromCard = (productToAdd, e) => {
+  // Add Item to Cart from Card or Modal button with curved flying shine animation
+  const handleAddToCartFromCard = (productToAdd, e, size = 'M') => {
     const btnRect = e.currentTarget.getBoundingClientRect();
     const cartBtn = document.querySelector('.btn-buy-floating');
 
     if (!cartBtn) {
-      handleAddToCart(productToAdd, 'M');
+      handleAddToCart(productToAdd, size);
       return;
     }
 
     const endRect = cartBtn.getBoundingClientRect();
     const startX = btnRect.left + btnRect.width / 2;
     const startY = btnRect.top + btnRect.height / 2;
-    const endX = endRect.left + endRect.width / 2;
-    const endY = endRect.top + endRect.height / 2;
 
-    // Spawn flying glow sparkle
-    const flyer = document.createElement('div');
-    flyer.className = 'flying-cart-glow';
-    flyer.innerHTML = `
-      <span class="glow-orb"></span>
-      <span class="glow-sparkle s1">✨</span>
-      <span class="glow-sparkle s2">✦</span>
+    // Destello brilloso curveado dirigido exactamente a la esquina superior donde aparece el número
+    const badgeEl = cartBtn.querySelector('.cart-floating-badge');
+    let targetX = endRect.right - 8;
+    let targetY = endRect.top + 2;
+
+    if (badgeEl) {
+      const badgeRect = badgeEl.getBoundingClientRect();
+      targetX = badgeRect.left + badgeRect.width / 2;
+      targetY = badgeRect.top + badgeRect.height / 2;
+    }
+
+    // Calcular arco de curvatura amplio hacia afuera y arriba (como en la imagen de referencia)
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    let ctrlX, ctrlY;
+
+    if (startX >= targetX) {
+      // Viene de la derecha hacia la izquierda (comportamiento de la imagen con card a la derecha)
+      ctrlX = startX + Math.max(50, Math.abs(dx) * 0.28);
+      ctrlY = Math.min(startY, targetY) - Math.max(65, Math.abs(dy) * 0.35);
+    } else {
+      ctrlX = startX - Math.max(50, Math.abs(dx) * 0.28);
+      ctrlY = Math.min(startY, targetY) - Math.max(65, Math.abs(dy) * 0.35);
+    }
+
+    // Contenedor principal de la escena de animación
+    const scene = document.createElement('div');
+    scene.className = 'curved-cart-glow-scene';
+
+    // SVG para el trazo brilloso curveado
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'curved-glow-svg');
+    svg.setAttribute('width', window.innerWidth);
+    svg.setAttribute('height', window.innerHeight);
+    svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+
+    const pathD = `M ${startX} ${startY} Q ${ctrlX} ${ctrlY} ${targetX} ${targetY}`;
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="goldBeamGrad" gradientUnits="userSpaceOnUse" x1="${startX}" y1="${startY}" x2="${targetX}" y2="${targetY}">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+          <stop offset="30%" stop-color="#ffd700" stop-opacity="1" />
+          <stop offset="70%" stop-color="#ffb300" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="1" />
+        </linearGradient>
+        <filter id="goldGlowBlur" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <path class="arc-glow-beam" d="${pathD}" />
+      <path class="arc-core-beam" d="${pathD}" />
     `;
-    flyer.style.left = `${startX}px`;
-    flyer.style.top = `${startY}px`;
-    document.body.appendChild(flyer);
 
-    // Arch curve trajectory towards Mi Carrito button
-    const midX = (startX + endX) / 2 - 50;
-    const midY = Math.min(startY, endY) - 60;
+    scene.appendChild(svg);
 
-    const animation = flyer.animate([
-      { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0.8 },
-      { transform: `translate(${midX - startX}px, ${midY - startY}px) scale(1.4)`, opacity: 1, offset: 0.45 },
-      { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.5)`, opacity: 0.9, offset: 0.92 },
-      { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0)`, opacity: 0, offset: 1 }
-    ], {
-      duration: 650,
+    // Función para calcular puntos a lo largo de la curva cuadrática
+    const getBezierPoint = (t) => {
+      const invT = 1 - t;
+      const x = invT * invT * startX + 2 * invT * t * ctrlX + t * t * targetX;
+      const y = invT * invT * startY + 2 * invT * t * ctrlY + t * t * targetY;
+      return { x, y };
+    };
+
+    // Generar partículas brillantes de destello (estrellas y polvillo dorado) a lo largo de la curva
+    const sparklesCount = 12;
+    const starIcons = ['✨', '✦', '★', '⋆'];
+    for (let i = 1; i <= sparklesCount; i++) {
+      const t = i / (sparklesCount + 1);
+      const pt = getBezierPoint(t);
+      const jitterX = (Math.random() - 0.5) * 28;
+      const jitterY = (Math.random() - 0.5) * 28;
+      const sparkle = document.createElement('div');
+      sparkle.className = 'arc-stardust';
+      sparkle.style.left = `${pt.x + jitterX}px`;
+      sparkle.style.top = `${pt.y + jitterY}px`;
+      sparkle.style.animationDelay = `${t * 380}ms`;
+      sparkle.innerHTML = starIcons[i % starIcons.length];
+      scene.appendChild(sparkle);
+    }
+
+    // Elemento volador (miniatura del producto + halo brillante)
+    const flyer = document.createElement('div');
+    flyer.className = 'curved-flyer-item';
+    const productImg = productToAdd.imgReel0 || productToAdd.imgreel0 || productToAdd.img || '';
+    flyer.innerHTML = `
+      <div class="flyer-halo-ring"></div>
+      ${productImg ? `<img src="${productImg.replace('/736x/', '/236x/')}" class="flyer-garment-thumb" alt="" />` : ''}
+      <span class="flyer-star s-lead">✨</span>
+      <span class="flyer-star s-trail">✦</span>
+    `;
+    scene.appendChild(flyer);
+    document.body.appendChild(scene);
+
+    // Animar el trazo SVG con su longitud exacta
+    const glowBeam = svg.querySelector('.arc-glow-beam');
+    const coreBeam = svg.querySelector('.arc-core-beam');
+    if (glowBeam && coreBeam) {
+      try {
+        const pathLength = glowBeam.getTotalLength();
+        [glowBeam, coreBeam].forEach(beam => {
+          beam.style.strokeDasharray = `${pathLength}`;
+          beam.style.strokeDashoffset = `${pathLength}`;
+          beam.animate([
+            { strokeDashoffset: pathLength, opacity: 0 },
+            { strokeDashoffset: 0, opacity: 1, offset: 0.6 },
+            { strokeDashoffset: 0, opacity: 0.85, offset: 0.85 },
+            { strokeDashoffset: 0, opacity: 0, offset: 1 }
+          ], {
+            duration: 720,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+          });
+        });
+      } catch (err) {}
+    }
+
+    // Animar elemento volador a lo largo de la curva
+    const numFrames = 30;
+    const keyframes = [];
+    for (let i = 0; i <= numFrames; i++) {
+      const t = i / numFrames;
+      const pt = getBezierPoint(t);
+      const scale = t < 0.45 ? 0.75 + t * 0.9 : 1.15 - (t - 0.45) * 1.5;
+      const rotate = (t * 50 - 25);
+      const opacity = t > 0.93 ? (1 - t) / 0.07 : 1;
+      keyframes.push({
+        transform: `translate(${pt.x}px, ${pt.y}px) translate(-50%, -50%) scale(${Math.max(0.15, scale)}) rotate(${rotate}deg)`,
+        opacity
+      });
+    }
+
+    const flyerAnim = flyer.animate(keyframes, {
+      duration: 680,
       easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
     });
 
-    animation.onfinish = () => {
-      flyer.remove();
+    flyerAnim.onfinish = () => {
+      // Destello de impacto / explosión estelar en el número en la esquina superior
+      const burst = document.createElement('div');
+      burst.className = 'badge-impact-burst';
+      burst.style.left = `${targetX}px`;
+      burst.style.top = `${targetY}px`;
+      burst.innerHTML = `
+        <span class="burst-ring"></span>
+        <span class="burst-ring r2"></span>
+        <span class="burst-star b1">✦</span>
+        <span class="burst-star b2">✨</span>
+        <span class="burst-star b3">✦</span>
+        <span class="burst-star b4">★</span>
+      `;
+      document.body.appendChild(burst);
+      setTimeout(() => burst.remove(), 700);
 
-      // Add to cart state
+      // Limpiar escena completa
+      setTimeout(() => scene.remove(), 250);
+
+      // Actualizar estado del carrito
       setCart(prevCart => {
-        const existingItem = prevCart.find(item => item.product.id === productToAdd.id && item.size === 'M');
+        const existingItem = prevCart.find(item => item.product.id === productToAdd.id && item.size === size);
         if (existingItem) {
           return prevCart.map(item => 
-            (item.product.id === productToAdd.id && item.size === 'M')
+            (item.product.id === productToAdd.id && item.size === size)
               ? { ...item, quantity: Math.min(item.quantity + 1, 99) }
               : item
           );
         } else {
-          return [...prevCart, { product: productToAdd, size: 'M', quantity: 1 }];
+          return [...prevCart, { product: productToAdd, size, quantity: 1 }];
         }
       });
 
-      // Impact bump reaction on Mi Carrito button & golden number
+      // Reacción de rebote en el botón Mi Carrito y número dorado
       cartBtn.classList.remove('cart-bump-impact');
       void cartBtn.offsetWidth; // force reflow
       cartBtn.classList.add('cart-bump-impact');
@@ -576,6 +707,14 @@ function App() {
     });
     // Open cart drawer immediately for visual feedback
     setCartVisible(true);
+  };
+
+  const handleAddToCartFromModal = (productToAdd, size = 'M', e = null) => {
+    if (e && e.currentTarget) {
+      handleAddToCartFromCard(productToAdd, e, size);
+    } else {
+      handleAddToCart(productToAdd, size);
+    }
   };
 
   // Modify Cart Item quantity
@@ -674,7 +813,7 @@ function App() {
                   setSelectedProductId(productItem.id);
                   setSelectedPoseIndex(0); // Reset pose index when switching garments
                 }}
-                onAddToCart={(e) => handleAddToCartFromCard(productItem, e)}
+                onAddToCart={() => setDetailProduct(productItem)}
                 onViewDetail={() => setDetailProduct(productItem)}
               />
             ))}
@@ -798,7 +937,7 @@ function App() {
         language={language}
         labels={activeLabels}
         onClose={() => setDetailProduct(null)}
-        onCartAdded={handleAddToCart}
+        onCartAdded={handleAddToCartFromModal}
         onVideoClick={(prod) => {
           if (prod) setDetailProduct(prod);
           setShowPasarelaModal(true);
