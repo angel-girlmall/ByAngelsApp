@@ -224,14 +224,20 @@ function ProductModal({
               placeholder={language === 'es' ? 'Seleccionar talla' : 'Select size'}
               options={sizeOptions}
               onChange={(e) => {
-                setSelectedSize(e.target.value);
-                if (sizeError) {
-                  setSizeError(false);
-                  setAlertMessage('');
+                const val = e.target.value;
+                if (e.target && typeof e.target.blur === 'function') {
+                  e.target.blur();
                 }
+                setTimeout(() => {
+                  setSelectedSize(val);
+                  if (sizeError) {
+                    setSizeError(false);
+                    setAlertMessage('');
+                  }
+                }, 40);
               }}
               error={sizeError}
-              className={`neon-pulse-talla ${sizeError ? 'has-size-error' : ''}`}
+              className={`${!selectedSize ? 'neon-pulse-talla' : 'size-selected'} ${sizeError ? 'has-size-error' : ''}`}
             />
 
             {/* Alerta Temporal abajo del selector sin mover la posición de los demás elementos */}
@@ -247,7 +253,7 @@ function ProductModal({
             <div className="modal-add-cart-wrapper">
               <button 
                 type="button" 
-                className="btn-add-cart-large"
+                className={`btn-add-cart-large ${selectedSize ? 'pulse-active' : ''}`}
                 onClick={handleAddToCart}
               >
                 🛒 {labels.cartAdd || (language === 'es' ? 'Agregar al Carrito' : 'Add to Cart')}

@@ -33,6 +33,16 @@ function ComboBox({
   className = '',
   ...props
 }) {
+  const handleChange = (e) => {
+    const target = e.target;
+    if (onChange) {
+      onChange(e);
+    }
+    if (target && typeof target.blur === 'function') {
+      target.blur();
+    }
+  };
+
   return (
     <div className={`common-field-wrapper ${error ? 'common-field-wrapper--error' : ''} ${className}`}>
       {label && (
@@ -46,7 +56,7 @@ function ComboBox({
           id={id}
           name={name}
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           disabled={disabled}
           required={required}
           className={`common-select ${error ? 'common-select--error' : ''}`}

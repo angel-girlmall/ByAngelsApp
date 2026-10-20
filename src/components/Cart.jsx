@@ -23,35 +23,139 @@ function Cart({
   externalDescuentosRules = null,
   onQuantityChange,
   onRemove,
-  onClose
+  onClose,
+  onOpen
 }) {
+  const drawerRef = useRef(null);
+  const overlayRef = useRef(null);
+
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const touchCurrentX = useRef(0);
+  const isDragging = useRef(false);
+  const isHorizontalSwipe = useRef(null);
+  const drawerWidth = useRef(420);
+  const isEdgeDrag = useRef(false);
 
+  // Limpiar estilos inline cuando el estado visible cambia a false
+  React.useEffect(() => {
+    if (!visible) {
+      if (drawerRef.current) {
+        drawerRef.current.style.transform = '';
+        drawerRef.current.style.transition = '';
+      }
+      if (overlayRef.current) {
+        overlayRef.current.style.opacity = '';
+        overlayRef.current.style.transition = '';
+      }
+    }
+  }, [visible]);
+
+  // Gestos en vivo cuando el carrito está ABIERTO: SOLO desliza a la DERECHA para ocultar
   const handleTouchStart = (e) => {
     if (!e.targetTouches || e.targetTouches.length === 0) return;
-    touchStartX.current = e.targetTouches[0].clientX;
-    touchStartY.current = e.targetTouches[0].clientY;
-    touchCurrentX.current = e.targetTouches[0].clientX;
+    const touch = e.targetTouches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    touchCurrentX.current = touch.clientX;
+    isDragging.current = true;
+    isHorizontalSwipe.current = null;
+
+    if (drawerRef.current) {
+      drawerWidth.current = drawerRef.current.offsetWidth || 420;
+      drawerRef.current.style.transition = 'none';
+    }
+    if (overlayRef.current) {
+      overlayRef.current.style.transition = 'none';
+    }
   };
 
   const handleTouchMove = (e) => {
-    if (!e.targetTouches || e.targetTouches.length === 0) return;
-    touchCurrentX.current = e.targetTouches[0].clientX;
+    if (!isDragging.current || !e.targetTouches || e.targetTouches.length === 0) return;
+    const touch = e.targetTouches[0];
+    const diffX = touch.clientX - touchStartX.current;
+    const diffY = Math.abs(touch.clientY - touchStartY.current);
+
+    if (isHorizontalSwipe.current === null) {
+      if (Math.abs(diffX) > 8 || diffY > 8) {
+        // Solo permitir deslizamiento si es horizontal y HACIA LA DERECHA (diffX > 0)
+        isHorizontalSwipe.current = Math.abs(diffX) > diffY && diffX > 0;
+      }
+    }
+
+    if (!isHorizontalSwipe.current) return;
+
+    if (e.cancelable) {
+      e.preventDefault();
+    }
+
+    touchCurrentX.current = touch.clientX;
+    const width = drawerWidth.current;
+
+    // Solo se mueve hacia la derecha (a la izquierda no: Math.max(0, diffX))
+    const moveX = Math.max(0, diffX);
+
+    // Deslizar a la derecha en vivo: aclara el fondo progresivamente según desaparece
+    const progress = Math.max(0, Math.min(1, 1 - moveX / width));
+
+    if (drawerRef.current) {
+      drawerRef.current.style.transform = `translateX(${moveX}px)`;
+    }
+    if (overlayRef.current) {
+      overlayRef.current.style.opacity = progress.toString();
+    }
   };
 
   const handleTouchEnd = (e) => {
-    const endX = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : touchCurrentX.current;
-    const endY = e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientY : touchStartY.current;
+    if (!isDragging.current) return;
+    isDragging.current = false;
 
+    const endX = e.changedTouches && e.changedTouches.length > 0
+      ? e.changedTouches[0].clientX
+      : touchCurrentX.current;
     const diffX = endX - touchStartX.current;
-    const diffY = Math.abs(endY - touchStartY.current);
 
-    // Swipe left-to-right (diffX > 50px) closes the drawer in mobile view
-    if (diffX > 50 && diffX > diffY) {
-      if (onClose) onClose();
+    if (drawerRef.current) {
+      drawerRef.current.style.transition = 'transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)';
     }
+    if (overlayRef.current) {
+      overlayRef.current.style.transition = 'opacity 0.28s ease';
+    }
+
+    // Solo deslizarse a la derecha para ocultar (diffX > 55)
+    if (isHorizontalSwipe.current && diffX > 55) {
+      if (drawerRef.current) {
+        drawerRef.current.style.transform = 'translateX(100%)';
+      }
+      if (overlayRef.current) {
+        overlayRef.current.style.opacity = '0';
+      }
+
+      setTimeout(() => {
+        if (onClose) onClose();
+      }, 280);
+    } else {
+      // Revertir a abierto si fue a la izquierda o no superó el umbral
+      if (drawerRef.current) {
+        drawerRef.current.style.transform = 'translateX(0px)';
+      }
+      if (overlayRef.current) {
+        overlayRef.current.style.opacity = '1';
+      }
+
+      setTimeout(() => {
+        if (drawerRef.current) {
+          drawerRef.current.style.transform = '';
+          drawerRef.current.style.transition = '';
+        }
+        if (overlayRef.current) {
+          overlayRef.current.style.opacity = '';
+          overlayRef.current.style.transition = '';
+        }
+      }, 280);
+    }
+
+    isHorizontalSwipe.current = null;
   };
 
   const [descuentosRules, setDescuentosRules] = React.useState([]);
@@ -378,29 +482,50 @@ function Cart({
     <>
       {/* Background overlay click-to-close handler */}
       <div
+        ref={overlayRef}
         className={`cart-drawer-overlay ${visible ? 'visible' : ''}`}
         onClick={onClose}
       />
 
       {/* Cart Drawer Box with Swipe-to-Close Gesture */}
       <div
+        ref={drawerRef}
         className={`cart-drawer ${visible ? 'visible' : ''}`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div className="cart-header">
-          <h2 className="cart-title">🛍️ {labels.cartTitle || 'Shopping Cart'}</h2>
-          <div className="cart-swipe-hint">
-            <span>Desliza &rarr;</span>
+          <div className="cart-header-top-row">
+            <div
+              className="cart-back-action"
+              onClick={onClose}
+              title={language === 'es' ? 'Desliza a la derecha o toca para cerrar' : 'Swipe right or tap to close'}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onClose && onClose()}
+            >
+              <i className="fa-solid fa-arrow-right cart-back-arrow"></i>
+              <span className="cart-back-text">
+                {language === 'es' ? 'Desliza a la derecha' : 'Swipe right'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className="btn-close-drawer"
+              onClick={onClose}
+              aria-label={language === 'es' ? 'Cerrar carrito' : 'Close cart'}
+            >
+              ✕
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn-close-drawer"
-            onClick={onClose}
-          >
-            ✕
-          </button>
+
+          <div className="cart-header-title-row">
+            <h2 className="cart-title">
+              {labels.cartTitle || (language === 'es' ? 'Carrito de Compras' : 'Shopping Cart')}
+            </h2>
+          </div>
         </div>
 
         {/* Cart Item Feed */}
@@ -408,7 +533,14 @@ function Cart({
           {cartItems.length === 0 ? (
             <div className="cart-empty-state">
               <span className="cart-empty-icon">🛒</span>
-              <p>{labels.cartEmpty || 'Your cart is empty'}</p>
+              <p>{labels.cartEmpty || (language === 'es' ? 'Tu carrito está vacío' : 'Your cart is empty')}</p>
+              <button
+                type="button"
+                className="btn-continue-shopping empty-cart-btn"
+                onClick={onClose}
+              >
+                {language === 'es' ? 'Seguir Comprando' : 'Continue Shopping'}
+              </button>
             </div>
           ) : (
             cartItems.map((item) => {
@@ -510,13 +642,23 @@ function Cart({
               </span>
             </div>
 
-            <button
-              type="button"
-              className="btn-checkout"
-              onClick={handleCheckout}
-            >
-              🟢 {labels.checkoutButton || 'Confirm via WhatsApp'}
-            </button>
+            <div className="cart-checkout-actions">
+              <button
+                type="button"
+                className="btn-continue-shopping"
+                onClick={onClose}
+              >
+                {language === 'es' ? 'Seguir Comprando' : 'Continue Shopping'}
+              </button>
+
+              <button
+                type="button"
+                className="btn-checkout"
+                onClick={handleCheckout}
+              >
+                <i className="fa-brands fa-whatsapp"></i> {language === 'es' ? 'Confirmar Pedido' : 'Confirm Order'}
+              </button>
+            </div>
           </div>
         )}
       </div>
