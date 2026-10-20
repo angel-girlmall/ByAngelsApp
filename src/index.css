@@ -1550,6 +1550,17 @@ select {
   color: var(--color-text-secondary);
 }
 
+.cart-item-size {
+  font-size: 0.75rem;
+  color: var(--color-accent-dark);
+  margin-top: 2px;
+}
+
+.cart-item-size strong {
+  font-weight: 700;
+  color: var(--color-accent-dark);
+}
+
 .cart-item-price-row {
   display: flex;
   justify-content: space-between;
@@ -1624,7 +1635,20 @@ select {
 .summary-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.95rem;
+  font-size: 0.80rem;
+  color: var(--color-text-secondary);
+}
+
+.summary-row.original {
+  font-size: 0.80rem;
+  color: var(--color-text-secondary);
+  opacity: 0.85;
+}
+
+.summary-row.discount {
+  color: var(--color-badge-new);
+  font-weight: 600;
+  font-size: 0.80rem;
 }
 
 .summary-row.total {
@@ -1633,15 +1657,10 @@ select {
   color: var(--color-accent-dark);
 }
 
-.summary-row.discount {
-  color: var(--color-badge-new);
-  font-weight: 600;
-}
-
 .price-original-crossed {
   text-decoration: line-through;
   opacity: 0.6;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   margin-right: 8px;
 }
 

@@ -539,8 +539,12 @@ function Cart({
                       <h4 className="cart-item-name">{item.product.Nombre}</h4>
                       <div className="cart-item-meta">
                         {labels.colorLabel || 'Color'}: {item.product.Color} | {item.product.Categoria}
-                        {item.size && ` | ${language === 'es' ? 'Talla' : 'Size'}: ${item.size}`}
                       </div>
+                      {item.size && (
+                        <div className="cart-item-size">
+                          {language === 'es' ? 'Talla' : 'Size'}: <strong>{item.size}</strong>
+                        </div>
+                      )}
                     </div>
 
                     <div className="cart-item-price-row">
@@ -602,7 +606,7 @@ function Cart({
 
             {discountAmount > 0 && (
               <>
-                <div className="summary-row">
+                <div className="summary-row original">
                   <span>{labels.originalTotal || 'Original Total'}:</span>
                   <span>{formatMoney(originalTotal)}</span>
                 </div>
