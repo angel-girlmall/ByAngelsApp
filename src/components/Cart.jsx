@@ -496,21 +496,15 @@ function Cart({
         onTouchEnd={handleTouchEnd}
       >
         <div className="cart-header">
-          <div className="cart-header-top-row">
+          <h2 className="cart-title">🛍️ {labels.cartTitle || (language === 'es' ? 'Carrito de Compras' : 'Shopping Cart')}</h2>
+          <div className="cart-header-actions">
             <div
-              className="cart-back-action"
+              className="cart-swipe-hint"
               onClick={onClose}
-              title={language === 'es' ? 'Desliza a la derecha o toca para cerrar' : 'Swipe right or tap to close'}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onClose && onClose()}
+              title={language === 'es' ? 'Desliza a la derecha para cerrar' : 'Swipe right to close'}
             >
-              <i className="fa-solid fa-arrow-right cart-back-arrow"></i>
-              <span className="cart-back-text">
-                {language === 'es' ? 'Desliza a la derecha' : 'Swipe right'}
-              </span>
+              <span>Desliza &rarr;</span>
             </div>
-
             <button
               type="button"
               className="btn-close-drawer"
@@ -520,12 +514,6 @@ function Cart({
               ✕
             </button>
           </div>
-
-          <div className="cart-header-title-row">
-            <h2 className="cart-title">
-              {labels.cartTitle || (language === 'es' ? 'Carrito de Compras' : 'Shopping Cart')}
-            </h2>
-          </div>
         </div>
 
         {/* Cart Item Feed */}
@@ -534,13 +522,6 @@ function Cart({
             <div className="cart-empty-state">
               <span className="cart-empty-icon">🛒</span>
               <p>{labels.cartEmpty || (language === 'es' ? 'Tu carrito está vacío' : 'Your cart is empty')}</p>
-              <button
-                type="button"
-                className="btn-continue-shopping empty-cart-btn"
-                onClick={onClose}
-              >
-                {language === 'es' ? 'Seguir Comprando' : 'Continue Shopping'}
-              </button>
             </div>
           ) : (
             cartItems.map((item) => {
@@ -647,8 +628,9 @@ function Cart({
                 type="button"
                 className="btn-continue-shopping"
                 onClick={onClose}
+                title={language === 'es' ? 'Deslizar para cerrar' : 'Swipe to close'}
               >
-                {language === 'es' ? 'Seguir Comprando' : 'Continue Shopping'}
+                {language === 'es' ? '← Deslizar' : '← Swipe'}
               </button>
 
               <button

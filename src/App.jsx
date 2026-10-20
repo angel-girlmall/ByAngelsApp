@@ -591,10 +591,13 @@ function App() {
       scene.appendChild(sparkle);
     }
 
-    // Destello de luz brillante volador hacia el carrito (sin imagen de prenda)
+    // Elemento volador (miniatura del producto + halo brillante)
     const flyer = document.createElement('div');
     flyer.className = 'curved-flyer-item';
+    const productImg = productToAdd.imgReel0 || productToAdd.imgreel0 || productToAdd.img || '';
     flyer.innerHTML = `
+      <div class="flyer-halo-ring"></div>
+      ${productImg ? `<img src="${productImg.replace('/736x/', '/236x/')}" class="flyer-garment-thumb" alt="" />` : ''}
       <span class="flyer-star s-lead">✨</span>
       <span class="flyer-star s-trail">✦</span>
     `;
@@ -644,6 +647,22 @@ function App() {
     });
 
     flyerAnim.onfinish = () => {
+      // Destello de impacto redondo y explosión estelar en el número en la esquina superior
+      const burst = document.createElement('div');
+      burst.className = 'badge-impact-burst';
+      burst.style.left = `${targetX}px`;
+      burst.style.top = `${targetY}px`;
+      burst.innerHTML = `
+        <span class="burst-ring"></span>
+        <span class="burst-ring r2"></span>
+        <span class="burst-star b1">✦</span>
+        <span class="burst-star b2">✨</span>
+        <span class="burst-star b3">✦</span>
+        <span class="burst-star b4">★</span>
+      `;
+      document.body.appendChild(burst);
+      setTimeout(() => burst.remove(), 700);
+
       // Limpiar escena completa de animación
       setTimeout(() => scene.remove(), 250);
 
