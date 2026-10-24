@@ -58,6 +58,20 @@ function App() {
   // Music Player background states
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const musicPlayingBeforePasarela = useRef(false);
+
+  // Pause background store music when Pasarela Modal is active to avoid lag/audio contention
+  useEffect(() => {
+    if (showPasarelaModal) {
+      if (isPlayingMusic) {
+        musicPlayingBeforePasarela.current = true;
+        setIsPlayingMusic(false);
+      }
+    } else if (musicPlayingBeforePasarela.current) {
+      setIsPlayingMusic(true);
+      musicPlayingBeforePasarela.current = false;
+    }
+  }, [showPasarelaModal]);
 
   // Shopping Cart state
   const [cart, setCart] = useState([]);
