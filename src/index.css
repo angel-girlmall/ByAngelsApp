@@ -229,8 +229,8 @@ select {
 /* Lua Mila Luxury Logo with Animated Crescent Moon and Sparkles */
 .brand-lua-mila {
   position: absolute;
-  top: 24px;
-  left: 20px;
+  top: 14px;
+  left: 26px;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -242,7 +242,7 @@ select {
 }
 
 .lua-mila-moon-wrapper {
-  width: clamp(100px, 14vw, 150px);
+  width: clamp(80px, 11vw, 115px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -265,34 +265,51 @@ select {
 }
 
 .lua-sparkle-1 {
-  animation-delay: 0s;
-  animation-duration: 2.2s;
+  animation: luaLensFlare 2.8s infinite alternate ease-in-out;
 }
 
 .lua-sparkle-2 {
-  animation-delay: 0.6s;
-  animation-duration: 2.6s;
+  animation-delay: 0.4s;
+  animation-duration: 2.4s;
 }
 
 .lua-sparkle-3 {
-  animation-delay: 1.2s;
+  animation-delay: 0.8s;
   animation-duration: 2s;
 }
 
 .lua-sparkle-4 {
-  animation-delay: 1.7s;
+  animation-delay: 1.4s;
   animation-duration: 2.5s;
 }
 
 .lua-sparkle-5 {
-  animation-delay: 0.9s;
+  animation-delay: 0.6s;
   animation-duration: 2.8s;
+}
+
+@keyframes luaLensFlare {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.9);
+    filter: drop-shadow(0 0 6px rgba(255, 235, 170, 0.75));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 14px rgba(255, 245, 200, 1)) drop-shadow(0 0 24px rgba(230, 180, 80, 0.85));
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 8px rgba(255, 235, 170, 0.8));
+  }
 }
 
 @keyframes luaSparkleTwinkle {
   0%, 100% {
-    opacity: 0.15;
-    transform: scale(0.3) rotate(0deg);
+    opacity: 0.2;
+    transform: scale(0.4) rotate(0deg);
   }
   50% {
     opacity: 1;
@@ -338,15 +355,16 @@ select {
   margin: -2px 0 0 0;
   padding: 0;
   font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
-  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35em;
+  gap: 0.22em;
   line-height: 1;
+  white-space: nowrap;
   background: linear-gradient(135deg, #FFF6DC 0%, #F5D78E 30%, #C49238 65%, #F7DF9E 85%, #FFEEC2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2046,17 +2064,19 @@ select {
   }
 
   .brand-lua-mila {
-    top: 18px !important;
-    left: 14px !important;
+    top: 10px !important;
+    left: 19px !important;
   }
 
   .lua-mila-moon-wrapper {
-    width: 90px !important;
+    width: 68px !important;
   }
 
   .brand-lua-mila-text {
-    font-size: 1.35rem !important;
-    letter-spacing: 0.16em !important;
+    font-size: 1.05rem !important;
+    letter-spacing: 0.06em !important;
+    gap: 0.2em !important;
+    margin: -4px 0 0 0 !important;
   }
 
   .pose-rotator-overlay {
@@ -3857,8 +3877,8 @@ img.welcome-bg-image {
   -webkit-backdrop-filter: blur(14px) !important;
   border: 1.2px solid #D4A017 !important;
   border-radius: 9999px !important;
-  padding: 10px 18px 10px 13px !important;
-  min-height: 48px !important;
+  padding: 6px 14px 6px 11px !important;
+  min-height: 38px !important;
   box-shadow: 
     0 8px 24px rgba(0, 0, 0, 0.55),
     inset 0 1.5px 2px rgba(255, 255, 255, 0.35),
@@ -3866,7 +3886,7 @@ img.welcome-bg-image {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 11px !important;
+  gap: 9px !important;
   font-family: 'Outfit', 'Inter', -apple-system, sans-serif !important;
   color: #ffffff !important;
   user-select: none;
@@ -3917,13 +3937,13 @@ img.welcome-bg-image {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: rgba(212, 160, 23, 0.16);
   border: 1px solid rgba(212, 160, 23, 0.5);
   color: #D4A017;
-  font-size: 0.96rem;
+  font-size: 0.82rem;
   flex-shrink: 0;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
   transition: all 0.3s ease;
@@ -4057,15 +4077,15 @@ img.welcome-bg-image {
   .countdown-timer-widget {
     top: 10px !important;
     right: 10px !important;
-    padding: 8px 15px 8px 11px !important;
-    min-height: 44px !important;
-    gap: 9px !important;
+    padding: 4px 11px 4px 8px !important;
+    min-height: 34px !important;
+    gap: 7px !important;
   }
 
   .countdown-clock-icon-wrapper {
-    width: 28px;
-    height: 28px;
-    font-size: 0.88rem;
+    width: 22px;
+    height: 22px;
+    font-size: 0.74rem;
   }
 
   .countdown-timer-title {

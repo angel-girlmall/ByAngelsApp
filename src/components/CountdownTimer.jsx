@@ -135,10 +135,25 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      // 'HOY' only if less than 24 hours remaining. If 24h or more, show day abbreviation (e.g. SÁB, MIÉ)
-      const prefix = totalHours < 24 ? 'HOY' : (dayIndexToAbbr[target.getDay()] || 'HOY');
+      // Si falta más de 24 horas: mostrar día (SÁB) y hora en que cerrará (11:59 PM)
+      // Si falta menos de 24 horas: cuenta regresiva del tiempo restante (HOY HH:MM:SS)
+      const isMoreThan24Hours = totalHours >= 24;
+      const targetHoursRaw = target.getHours();
+      const targetHours12 = targetHoursRaw % 12 || 12;
+      const targetMins = String(target.getMinutes()).padStart(2, '0');
+      const closingTime = `${targetHours12}:${targetMins} PM`;
 
-      setTimeLeft({ hours: totalHours, minutes, seconds, prefix, isFinished: false });
+      const prefix = isMoreThan24Hours ? (dayIndexToAbbr[target.getDay()] || 'SÁB') : 'HOY';
+
+      setTimeLeft({
+        hours: totalHours,
+        minutes,
+        seconds,
+        prefix,
+        isMoreThan24Hours,
+        closingTime,
+        isFinished: false
+      });
     };
 
     updateTimer();
@@ -166,6 +181,11 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
         {timeLeft.isFinished ? (
           <div className="countdown-timer-finished">
             <span>¡Cierre Finalizado!</span>
+          </div>
+        ) : timeLeft.isMoreThan24Hours ? (
+          <div className="countdown-timer-time-row">
+            <span className="countdown-timer-prefix">{timeLeft.prefix} </span>
+            <span className="countdown-timer-hours">{timeLeft.closingTime}</span>
           </div>
         ) : (
           <div className="countdown-timer-time-row">

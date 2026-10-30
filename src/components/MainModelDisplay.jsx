@@ -138,27 +138,36 @@ function MainModelDisplay({
       <div className="brand-lua-mila" role="banner" aria-label="Lua Mila">
         <div className="lua-mila-moon-wrapper">
           <svg
-            viewBox="0 0 140 95"
+            viewBox="0 0 170 145"
             className="lua-mila-moon-svg"
             aria-hidden="true"
           >
             <defs>
               <linearGradient id="luaGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FFF9E6" />
-                <stop offset="25%" stopColor="#F5D78E" />
-                <stop offset="60%" stopColor="#C49238" />
-                <stop offset="85%" stopColor="#E9C575" />
-                <stop offset="100%" stopColor="#FFF2CB" />
+                <stop offset="0%" stopColor="#FFFDF2" />
+                <stop offset="20%" stopColor="#FCE4A0" />
+                <stop offset="45%" stopColor="#D4A044" />
+                <stop offset="70%" stopColor="#BF8323" />
+                <stop offset="88%" stopColor="#FCE6A6" />
+                <stop offset="100%" stopColor="#FFFBF0" />
               </linearGradient>
 
-              <radialGradient id="luaAura" cx="45%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(255, 230, 160, 0.40)" />
-                <stop offset="50%" stopColor="rgba(218, 165, 32, 0.15)" />
+              <radialGradient id="luaAura" cx="48%" cy="52%" r="50%">
+                <stop offset="0%" stopColor="rgba(255, 230, 160, 0.35)" />
+                <stop offset="50%" stopColor="rgba(218, 165, 32, 0.12)" />
                 <stop offset="100%" stopColor="transparent" />
               </radialGradient>
 
-              <filter id="luaGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="2.5" result="blur" />
+              {/* Flare gradient */}
+              <radialGradient id="luaFlareGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+                <stop offset="25%" stopColor="#FFF0BA" stopOpacity="0.9" />
+                <stop offset="60%" stopColor="#E2B056" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#E2B056" stopOpacity="0" />
+              </radialGradient>
+
+              <filter id="luaGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
@@ -167,86 +176,98 @@ function MainModelDisplay({
             </defs>
 
             {/* Ambient golden aura behind the crescent */}
-            <circle cx="68" cy="46" r="38" fill="url(#luaAura)" className="lua-ambient-aura" />
+            <circle cx="86" cy="74" r="54" fill="url(#luaAura)" className="lua-ambient-aura" />
 
-            {/* Slender Crescent Moon */}
+            {/* Delicate Hollow Crescent Moon - Fine golden border and transparent center */}
             <path
-              d="M 85,16 A 34,34 0 1,0 85,78 A 27,27 0 1,1 85,16 Z"
-              fill="url(#luaGoldGrad)"
+              d="M 89,18 A 54.7,54.7 0 1,0 138,88 A 46.1,46.1 0 1,1 89,18 Z"
+              fill="none"
+              stroke="url(#luaGoldGrad)"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               filter="url(#luaGlow)"
               className="lua-crescent-moon"
             />
 
-            {/* Central 5-pointed star nestled inside the crescent */}
+            {/* Central 5-pointed star nestled inside the crescent hollow */}
             <polygon
-              points="78,41 80.5,46 86,47 82,51 83,56.5 78,53.5 73,56.5 74,51 70,47 75.5,46"
+              points="99,55 101.5,60.5 107.5,61.2 103,65.5 104.2,71.5 99,68.2 93.8,71.5 95,65.5 90.5,61.2 96.5,60.5"
               fill="url(#luaGoldGrad)"
+              filter="url(#luaGlow)"
               className="lua-star lua-star-center"
             />
 
-            {/* Small floating stars around the moon */}
-            {/* Top star */}
+            {/* Orbiting stars from Lua Mila reference */}
+            {/* Top star near top tip */}
             <polygon
-              points="58,11 59.5,14 63,14.5 60.5,17 61,20.5 58,18.5 55,20.5 55.5,17 53,14.5 56.5,14"
+              points="54,10 55.2,13 58,13.5 55.8,15.5 56.4,18.5 54,17 51.6,18.5 52.2,15.5 50,13.5 52.8,13"
               fill="url(#luaGoldGrad)"
               className="lua-star lua-star-top"
             />
             {/* Upper right star */}
             <polygon
-              points="98,18 99,20 101.5,20.5 99.5,22.5 100,25 98,23.5 96,25 96.5,22.5 94.5,20.5 97,20"
+              points="118,17 119.5,20.5 123,21 120.5,23.5 121.2,27 118,25 114.8,27 115.5,23.5 113,21 116.5,20.5"
               fill="url(#luaGoldGrad)"
               className="lua-star lua-star-top-right"
             />
-            {/* Lower right star */}
+            {/* Lower star below bottom tip */}
             <polygon
-              points="104,66 105.5,69 108.5,69.5 106,72 106.5,75 104,73.5 101.5,75 102,72 99.5,69.5 102.5,69"
+              points="132,111 133.5,114.5 137,115 134.5,117.5 135.2,121 132,119 128.8,121 129.5,117.5 127,115 130.5,114.5"
               fill="url(#luaGoldGrad)"
               className="lua-star lua-star-bottom-right"
             />
-            {/* Far upper tiny star */}
-            <circle cx="78" cy="20" r="1.3" fill="#FFF2CB" className="lua-star-dot" />
-            {/* Bottom-left tiny star */}
-            <circle cx="98" cy="42" r="1.5" fill="#FFF2CB" className="lua-star-dot" />
+            {/* Small star on right side */}
+            <polygon
+              points="120,72 121,74.2 123.5,74.7 121.7,76.5 122.2,79 120,77.6 117.8,79 118.3,76.5 116.5,74.7 119,74.2"
+              fill="url(#luaGoldGrad)"
+              className="lua-star"
+            />
 
-            {/* Animated Sparkles / Brillitos con efecto destello diamante y cruz de luz */}
-            {/* Brillito 1: Destello principal en el lomo de la luna */}
-            <g className="lua-sparkle lua-sparkle-1" transform="translate(48, 44)">
-              <ellipse cx="0" cy="0" rx="9" ry="1.2" fill="#FFFFFF" />
-              <ellipse cx="0" cy="0" rx="1.2" ry="9" fill="#FFFFFF" />
-              <path d="M 0,-7 Q 0,0 7,0 Q 0,0 0,7 Q 0,0 -7,0 Q 0,0 0,-7 Z" fill="#FFF7DB" />
-              <circle cx="0" cy="0" r="1.8" fill="#FFFFFF" />
+            {/* Tiny stardust sparkle dots */}
+            <circle cx="82" cy="72" r="1.3" fill="#FFFBF0" className="lua-star-dot" />
+            <circle cx="126" cy="52" r="1.2" fill="#FFFBF0" className="lua-star-dot" />
+            <circle cx="70" cy="38" r="1.1" fill="#FFFBF0" className="lua-star-dot" />
+            <circle cx="106" cy="100" r="1.2" fill="#FFFBF0" className="lua-star-dot" />
+
+            {/* Animated Sparkles / Brillitos mágicos */}
+            {/* Brillito Principal Grande: Gran destello en el borde inferior-izquierdo de la luna */}
+            <g className="lua-sparkle lua-sparkle-1" transform="translate(46, 106)">
+              <ellipse cx="0" cy="0" rx="36" ry="1.8" fill="url(#luaFlareGrad)" />
+              <ellipse cx="0" cy="0" rx="20" ry="1.2" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1.8" ry="14" fill="url(#luaFlareGrad)" />
+              <ellipse cx="0" cy="0" rx="1.1" ry="8" fill="#FFFFFF" />
+              <path d="M 0,-8 Q 0,0 8,0 Q 0,0 0,8 Q 0,0 -8,0 Q 0,0 0,-8 Z" fill="#FFFFFF" />
+              <circle cx="0" cy="0" r="2.5" fill="#FFFFFF" />
             </g>
 
             {/* Brillito 2: Cerca de la estrella central */}
-            <g className="lua-sparkle lua-sparkle-2" transform="translate(86, 50)">
-              <ellipse cx="0" cy="0" rx="6" ry="1" fill="#FFFFFF" />
-              <ellipse cx="0" cy="0" rx="1" ry="6" fill="#FFFFFF" />
+            <g className="lua-sparkle lua-sparkle-2" transform="translate(107, 56)">
+              <ellipse cx="0" cy="0" rx="9" ry="1.1" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1.1" ry="9" fill="#FFFFFF" />
+              <circle cx="0" cy="0" r="1.5" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 3: En la estrella superior */}
+            <g className="lua-sparkle lua-sparkle-3" transform="translate(54, 14)">
+              <ellipse cx="0" cy="0" rx="8" ry="1" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1" ry="8" fill="#FFFFFF" />
+              <circle cx="0" cy="0" r="1.3" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 4: En la punta inferior de la luna */}
+            <g className="lua-sparkle lua-sparkle-4" transform="translate(138, 88)">
+              <ellipse cx="0" cy="0" rx="10" ry="1.1" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1.1" ry="10" fill="#FFFFFF" />
               <path d="M 0,-5 Q 0,0 5,0 Q 0,0 0,5 Q 0,0 -5,0 Q 0,0 0,-5 Z" fill="#FFF7DB" />
-              <circle cx="0" cy="0" r="1.2" fill="#FFFFFF" />
-            </g>
-
-            {/* Brillito 3: En la punta superior del cuerno */}
-            <g className="lua-sparkle lua-sparkle-3" transform="translate(85, 17)">
-              <ellipse cx="0" cy="0" rx="5" ry="0.8" fill="#FFFFFF" />
-              <ellipse cx="0" cy="0" rx="0.8" ry="5" fill="#FFFFFF" />
-              <path d="M 0,-4 Q 0,0 4,0 Q 0,0 0,4 Q 0,0 -4,0 Q 0,0 0,-4 Z" fill="#FFF7DB" />
-              <circle cx="0" cy="0" r="1" fill="#FFFFFF" />
-            </g>
-
-            {/* Brillito 4: En el cuerno inferior */}
-            <g className="lua-sparkle lua-sparkle-4" transform="translate(84, 76)">
-              <ellipse cx="0" cy="0" rx="5" ry="0.8" fill="#FFFFFF" />
-              <ellipse cx="0" cy="0" rx="0.8" ry="5" fill="#FFFFFF" />
-              <path d="M 0,-4 Q 0,0 4,0 Q 0,0 0,4 Q 0,0 -4,0 Q 0,0 0,-4 Z" fill="#FFF7DB" />
-              <circle cx="0" cy="0" r="1" fill="#FFFFFF" />
-            </g>
-
-            {/* Brillito 5: Destello flotante a la derecha */}
-            <g className="lua-sparkle lua-sparkle-5" transform="translate(112, 40)">
-              <ellipse cx="0" cy="0" rx="7" ry="1" fill="#FFFFFF" />
-              <ellipse cx="0" cy="0" rx="1" ry="7" fill="#FFFFFF" />
-              <path d="M 0,-5.5 Q 0,0 5.5,0 Q 0,0 0,5.5 Q 0,0 -5.5,0 Q 0,0 0,-5.5 Z" fill="#FFF7DB" />
               <circle cx="0" cy="0" r="1.4" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 5: En la estrella inferior derecha */}
+            <g className="lua-sparkle lua-sparkle-5" transform="translate(132, 116)">
+              <ellipse cx="0" cy="0" rx="7" ry="0.9" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="0.9" ry="7" fill="#FFFFFF" />
+              <circle cx="0" cy="0" r="1.2" fill="#FFFFFF" />
             </g>
           </svg>
         </div>
