@@ -143,28 +143,36 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
   if (config.activo === false) return null;
 
   // Clean title text removing "Semanal" if present
-  const displayTitle = (config.titulo || 'Cierre de Pedidos').replace(/\s*Semanal\s*/i, '').trim();
+  const displayTitle = (config.titulo || 'CIERRE DE PEDIDOS').replace(/\s*Semanal\s*/i, '').trim().toUpperCase();
+
+  // Urgency condition: less than 5 hours remaining until closing
+  const isUrgent = !timeLeft.isFinished && timeLeft.hours < 5;
 
   return (
-    <div className="countdown-timer-widget">
-      <div className="countdown-timer-header">
-        <i className="fa-solid fa-clock-rotate-left countdown-icon-glow"></i>
-        <span className="countdown-timer-title">{displayTitle || 'Cierre de Pedidos'}</span>
+    <div className={`countdown-timer-widget ${isUrgent ? 'urgent-mode' : ''}`}>
+      <div className="countdown-clock-icon-wrapper">
+        <i className="fa-solid fa-clock-rotate-left countdown-clock-icon"></i>
       </div>
 
-      {timeLeft.isFinished ? (
-        <div className="countdown-timer-finished">
-          <span>¡Cierre Finalizado!</span>
-        </div>
-      ) : (
-        <div className="countdown-timer-units">
-          <span className="timer-unit-value">{String(timeLeft.hours).padStart(2, '0')}</span>
-          <span className="timer-colon">:</span>
-          <span className="timer-unit-value">{String(timeLeft.minutes).padStart(2, '0')}</span>
-          <span className="timer-colon">:</span>
-          <span className="timer-unit-value accent">{String(timeLeft.seconds).padStart(2, '0')}</span>
-        </div>
-      )}
+      <div className="countdown-timer-text-group">
+        <span className="countdown-timer-title">{displayTitle || 'CIERRE DE PEDIDOS'}</span>
+
+        {timeLeft.isFinished ? (
+          <div className="countdown-timer-finished">
+            <span>¡Cierre Finalizado!</span>
+          </div>
+        ) : (
+          <div className="countdown-timer-time-row">
+            <span className="countdown-timer-prefix">HOY </span>
+            <span className="countdown-timer-digits">
+              {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:
+            </span>
+            <span className={`countdown-timer-seconds ${isUrgent ? 'seconds-red' : ''}`}>
+              {String(timeLeft.seconds).padStart(2, '0')}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

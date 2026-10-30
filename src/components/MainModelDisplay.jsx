@@ -32,6 +32,62 @@ function MainModelDisplay({
   // Selected pose image
   const activeImage = (images && images.length > 0) ? images[currentPoseIndex % images.length] : null;
 
+  // Double-buffering state: keeps previous image visible until new image is 100% loaded and decoded
+  const [displayedImage, setDisplayedImage] = useState(activeImage);
+  const [incomingImage, setIncomingImage] = useState(null);
+
+  // Pre-decode all current garment poses in browser memory to eliminate any pose change lag/blink
+  useEffect(() => {
+    if (images && images.length > 0) {
+      images.forEach((url) => {
+        if (url) {
+          const img = new Image();
+          img.src = url;
+        }
+      });
+    }
+  }, [images]);
+
+  // Handle activeImage change without any blank white gap
+  useEffect(() => {
+    if (!activeImage) {
+      setDisplayedImage(null);
+      setIncomingImage(null);
+      return;
+    }
+
+    if (activeImage === displayedImage) {
+      setIncomingImage(null);
+      return;
+    }
+
+    let isCancelled = false;
+    const preloadImg = new Image();
+    preloadImg.src = activeImage;
+
+    const onComplete = () => {
+      if (!isCancelled) {
+        setDisplayedImage(activeImage);
+        setIncomingImage(null);
+      }
+    };
+
+    if (preloadImg.complete && preloadImg.naturalWidth > 0) {
+      // Already cached in memory: seamless immediate switch
+      onComplete();
+    } else {
+      setIncomingImage(activeImage);
+      preloadImg.onload = onComplete;
+      preloadImg.onerror = onComplete;
+    }
+
+    return () => {
+      isCancelled = true;
+      preloadImg.onload = null;
+      preloadImg.onerror = null;
+    };
+  }, [activeImage, displayedImage]);
+
   // Sequential rotation through poses (0-2 for Clara, 3-5 for Morena)
   const handleRotatePose = () => {
     let nextIndex;
@@ -139,15 +195,16 @@ function MainModelDisplay({
         </span>
       </h1>
 
-      {/* Model Active Pose Image */}
+      {/* Model Active Pose Image with Zero-Flicker Double Buffering */}
       <div className="model-container">
-        {activeImage ? (
+        {displayedImage ? (
           <img
-            src={activeImage}
+            key={displayedImage}
+            src={displayedImage}
             alt={`Model pose ${currentPoseIndex + 1}`}
             className="model-image"
             loading="eager"
-            decoding="async"
+            decoding="sync"
           />
         ) : loading ? (
           <div className="model-loading-placeholder">
@@ -158,6 +215,32 @@ function MainModelDisplay({
           <div className="model-loading-placeholder">
             <p style={{ opacity: 0.7 }}>{language === 'es' ? 'Sin modelo disponible' : 'No model available'}</p>
           </div>
+        )}
+
+        {/* Hidden incoming image preloader in DOM: loads & decodes before switching displayedImage */}
+        {incomingImage && incomingImage !== displayedImage && (
+          <img
+            key={`preload-${incomingImage}`}
+            src={incomingImage}
+            alt=""
+            aria-hidden="true"
+            className="model-image"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              opacity: 0,
+              pointerEvents: 'none',
+              zIndex: -1,
+              visibility: 'hidden'
+            }}
+            loading="eager"
+            decoding="sync"
+            onLoad={() => {
+              setDisplayedImage(incomingImage);
+              setIncomingImage(null);
+            }}
+          />
         )}
       </div>
 

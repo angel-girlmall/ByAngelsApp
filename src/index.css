@@ -2084,7 +2084,8 @@ select {
     object-fit: cover !important;
     filter: none !important;
     transform: translateZ(0);
-    will-change: contents;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .right-panel {
@@ -3827,155 +3828,169 @@ img.welcome-bg-image {
 }
 
 /* Top-Right Luxury Order Closing Countdown Timer Widget */
+/* Negro al 85% con blur y borde dorado fino como joyería */
 .countdown-timer-widget {
   position: fixed;
-  top: 18px;
-  right: 18px;
+  top: 14px;
+  right: 14px;
   z-index: 500;
-  background: radial-gradient(circle at 30% 30%,
-      rgba(45, 45, 55, 0.80) 0%,
-      rgba(20, 20, 28, 0.75) 35%,
-      rgba(10, 10, 15, 0.68) 70%,
-      rgba(10, 10, 15, 0.68) 100%) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow:
-    inset 2px 2px 6px rgba(166, 227, 233, 0.35),
-    inset 0 6px 8px rgba(255, 255, 255, 0.3),
-    0 8px 30px rgba(0, 0, 0, 0.6) !important;
-  border-radius: 18px;
-  padding: 10px 16px;
-  color: #ffffff;
-  font-family: 'Outfit', 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  animation: fadeIn 0.3s ease;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease !important;
-  overflow: visible;
-}
-
-/* Glossy reflection bubble effect */
-.countdown-timer-widget::before {
-  content: '';
-  position: absolute;
-  top: 8%;
-  left: 12%;
-  width: 40%;
-  height: 22%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-  transform: rotate(-10deg);
-  pointer-events: none;
-  z-index: 1;
+  background: rgba(26, 26, 26, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid #D4A017 !important;
+  border-radius: 9999px !important;
+  padding: 5px 13px 5px 9px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif !important;
+  color: #ffffff !important;
+  user-select: none;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .countdown-timer-widget:hover {
-  transform: scale(1.05) translateY(-2px) !important;
-  box-shadow:
-    inset -2px -2px 6px rgba(255, 96, 173, 0.4),
-    inset 2px 2px 6px rgba(166, 227, 233, 0.45),
-    inset 0 6px 8px rgba(255, 255, 255, 0.4),
-    0 12px 35px rgba(0, 0, 0, 0.75) !important;
+  transform: scale(1.03) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(212, 160, 23, 0.3) !important;
 }
 
-.countdown-timer-header {
+/* Icono Reloj Dorado con sutil halo circular */
+.countdown-clock-icon-wrapper {
   display: flex;
   align-items: center;
-  gap: 6px;
-  position: relative;
-  z-index: 2;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(212, 160, 23, 0.15);
+  border: 1px solid rgba(212, 160, 23, 0.4);
+  color: #D4A017;
+  font-size: 0.82rem;
+  flex-shrink: 0;
 }
 
-.countdown-icon-glow {
-  color: #d4af37;
-  font-size: 0.85rem;
-  animation: pulseGlow 2s infinite alternate;
+.countdown-clock-icon {
+  color: #D4A017;
+  filter: drop-shadow(0 0 4px rgba(212, 160, 23, 0.5));
 }
 
-.countdown-timer-title {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #ffffff;
-}
-
-.countdown-timer-units {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-  z-index: 2;
-}
-
-.timer-unit-box {
+/* Text group: Título arriba, tiempo abajo */
+.countdown-timer-text-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.timer-unit-value {
-  font-size: 0.95rem;
-  font-weight: 700;
-  font-family: monospace, sans-serif;
-  color: #ffffff;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
   line-height: 1;
 }
 
-.timer-unit-value.accent {
-  color: #ff4081;
+.countdown-timer-title {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.timer-unit-label {
-  font-size: 0.58rem;
-  color: #9a9ab0;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  margin-top: 1px;
-}
-
-.timer-colon {
-  font-size: 0.9rem;
+.countdown-timer-time-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #d4af37;
-  margin: 0 2px;
+  letter-spacing: 0.4px;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.countdown-timer-prefix {
+  color: #ffffff;
+  font-weight: 700;
+  margin-right: 3px;
+}
+
+.countdown-timer-digits {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Segundos normales en blanco */
+.countdown-timer-seconds {
+  color: #ffffff;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+/* Segundos en rojo para la urgencia final de 5 horas */
+.countdown-timer-seconds.seconds-red {
+  color: #FF1744 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 8px rgba(255, 23, 68, 0.7);
+  animation: redUrgentPulse 0.8s infinite alternate ease-in-out;
+}
+
+/* Pulso dorado elegante TUM-TUM para urgencia < 5h */
+.countdown-timer-widget.urgent-mode {
+  animation: goldUrgentPulse 2s infinite ease-in-out !important;
+}
+
+@keyframes goldUrgentPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45), 0 0 0 0 rgba(212, 160, 23, 0) !important;
+    border-color: #D4A017 !important;
+  }
+  50% {
+    transform: scale(1.025);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55), 0 0 12px 2px rgba(212, 160, 23, 0.5) !important;
+    border-color: #FFD54F !important;
+  }
+}
+
+@keyframes redUrgentPulse {
+  0% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+    text-shadow: 0 0 10px rgba(255, 23, 68, 0.95);
+  }
 }
 
 .countdown-timer-finished {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #ff5252;
-  letter-spacing: 0.5px;
-}
-
-@keyframes pulseGlow {
-  from {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1.15);
-  }
+  letter-spacing: 0.4px;
 }
 
 @media (max-width: 767px) {
   .countdown-timer-widget {
-    top: 10px;
-    right: 10px;
-    padding: 8px 12px;
+    top: 10px !important;
+    right: 10px !important;
+    padding: 4px 11px 4px 8px !important;
+    gap: 7px !important;
+  }
+
+  .countdown-clock-icon-wrapper {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
   }
 
   .countdown-timer-title {
-    font-size: 0.65rem;
+    font-size: 0.56rem !important;
   }
 
-  .timer-unit-value {
-    font-size: 0.85rem;
-  }
+  .countdown-timer-time-row {
+    font-size: 0.72rem !important;
+}
 
   .hanging-video-bubble-container {
     left: 16px;
