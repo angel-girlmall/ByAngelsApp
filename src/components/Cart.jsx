@@ -51,36 +51,7 @@ function Cart({
     }
   }, [visible]);
 
-  // Alerta flotante temporal de cobertura de envíos al abrir el carrito
-  const [showShippingAlert, setShowShippingAlert] = React.useState(false);
-  const [isAlertFading, setIsAlertFading] = React.useState(false);
 
-  React.useEffect(() => {
-    let hideTimer;
-    let removeTimer;
-
-    if (visible) {
-      setShowShippingAlert(true);
-      setIsAlertFading(false);
-
-      // Desaparece a los 3.5 segundos (entre 3 y 4 segundos)
-      hideTimer = setTimeout(() => {
-        setIsAlertFading(true);
-        removeTimer = setTimeout(() => {
-          setShowShippingAlert(false);
-          setIsAlertFading(false);
-        }, 400);
-      }, 3500);
-    } else {
-      setShowShippingAlert(false);
-      setIsAlertFading(false);
-    }
-
-    return () => {
-      clearTimeout(hideTimer);
-      clearTimeout(removeTimer);
-    };
-  }, [visible]);
 
   // Gestos en vivo cuando el carrito está ABIERTO: SOLO desliza a la DERECHA para ocultar
   const handleTouchStart = (e) => {
@@ -547,21 +518,7 @@ function Cart({
           </div>
         </div>
 
-        {/* Mensaje flotante temporal de envíos */}
-        {showShippingAlert && (
-          <div
-            className={`cart-shipping-floating-toast ${isAlertFading ? 'fading-out' : ''}`}
-            onClick={() => setIsAlertFading(true)}
-            role="status"
-            aria-live="polite"
-          >
-            <div className="shipping-toast-inner">
-              <span className="toast-part">lima 🛵.</span>
-              <span className="toast-space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span className="toast-part">Provincia 🚚</span>
-            </div>
-          </div>
-        )}
+
 
         {/* Cart Item Feed */}
         <div className="cart-items-list">

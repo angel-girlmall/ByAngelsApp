@@ -146,6 +146,8 @@ function MainModelDisplay({
             src={activeImage}
             alt={`Model pose ${currentPoseIndex + 1}`}
             className="model-image"
+            loading="eager"
+            decoding="async"
           />
         ) : loading ? (
           <div className="model-loading-placeholder">

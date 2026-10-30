@@ -10,23 +10,42 @@ const pinterestUrlCache = new Map();
  * Preloads catwalk video in background as soon as model view loads.
  * Discards previous load if user switches models, instantly playing ready video.
  */
-function PasarelaModal({ visible, onClose, product, language = 'es' }) {
+function PasarelaModal({ 
+  visible, 
+  onClose, 
+  product, 
+  language = 'es',
+  isPlayingMusic = false,
+  onToggleMusic
+}) {
   const [extractedPinterestMp4, setExtractedPinterestMp4] = useState('');
   const [loadingPinterest, setLoadingPinterest] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   const videoUrl = (product?.urlVideoPasarela || product?.urlVideo || '').trim();
   const apiBaseUrl = import.meta.env.VITE_API_URL || appConfig.apiUrl || 'http://localhost:5000';
 
-  // Background Stream Preloader: runs continuously as soon as the model loads, even if modal is closed!
+  // Fetch and resolve video on demand ONLY when modal is visible (saves CPU/RAM on mobile)
   useEffect(() => {
-    // Abort previous download / API call if user switched models
+    // Abort previous download / API call if user switched models or closed modal
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
+    }
+
+    if (!visible) {
+      // Clean up video decoder and memory when modal is closed
+      if (videoRef.current) {
+        try {
+          videoRef.current.pause();
+          videoRef.current.src = '';
+          videoRef.current.removeAttribute('src');
+          videoRef.current.load();
+        } catch (e) {}
+      }
+      return;
     }
 
     if (!videoUrl) {
@@ -42,8 +61,8 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
       return;
     }
 
-    // 2. Fetch and resolve Pinterest MP4 in background immediately
-    if (videoUrl.includes('pinterest.com/pin/')) {
+    // 2. Fetch and resolve Pinterest MP4 on demand
+    if (videoUrl.includes('pinterest.com/pin/') || videoUrl.includes('pin.it/')) {
       setLoadingPinterest(true);
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -54,8 +73,13 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
         .then(res => res.json())
         .then(data => {
           if (data && data.videoUrl) {
-            pinterestUrlCache.set(videoUrl, data.videoUrl);
-            setExtractedPinterestMp4(data.videoUrl);
+            let finalUrl = data.videoUrl;
+            // If Pinterest returns HLS (.m3u8), auto-derive direct MP4 so Chrome/Android can play natively
+            if (finalUrl.includes('pinimg.com/videos/') && finalUrl.includes('.m3u8')) {
+              finalUrl = finalUrl.replace('/hls/', '/expMp4/').replace('.m3u8', '_720w.mp4');
+            }
+            pinterestUrlCache.set(videoUrl, finalUrl);
+            setExtractedPinterestMp4(finalUrl);
           }
         })
         .catch(err => {
@@ -74,7 +98,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
       setExtractedPinterestMp4('');
       setLoadingPinterest(false);
     }
-  }, [videoUrl, apiBaseUrl]);
+  }, [visible, videoUrl, apiBaseUrl]);
 
   const isDirectMp4 = (videoUrl.toLowerCase().endsWith('.mp4') || videoUrl.toLowerCase().includes('.mp4?')) && !videoUrl.includes('drive.google.com');
   const activeMp4Source = extractedPinterestMp4 || (isDirectMp4 ? videoUrl : '');
@@ -105,8 +129,8 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
     if (!video) return;
 
     video.setAttribute('muted', '');
-    video.defaultMuted = true;
-    video.muted = isMuted;
+    video.defaultMuted = isPlayingMusic;
+    video.muted = isPlayingMusic;
     video.playsInline = true;
     video.playbackRate = speed;
 
@@ -134,7 +158,6 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
           // If browser policy blocked playback, guarantee muted and retry
           if (err.name === 'NotAllowedError') {
             video.muted = true;
-            setIsMuted(true);
             video.play()
               .then(() => {
                 setIsPaused(false);
@@ -158,18 +181,16 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
     }
   }, [visible, activeMp4Source]);
 
-  // If modal is closed, maintain invisible background preloader so video is ready when opened!
+  // Sync video audio mute with background playlist state
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isPlayingMusic;
+    }
+  }, [isPlayingMusic]);
+
+  // Do not render any video element or occupy hardware decoder memory when modal is closed
   if (!visible) {
-    return activeMp4Source ? (
-      <video
-        key={`bg-preload-${activeMp4Source}`}
-        src={activeMp4Source}
-        preload="auto"
-        muted
-        playsInline
-        style={{ display: 'none' }}
-      />
-    ) : null;
+    return null;
   }
 
   // Social Media Share Handler
@@ -252,14 +273,15 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
 
   const toggleSound = (e) => {
     if (e) e.stopPropagation();
-    const video = videoRef.current;
-    if (video) {
-      const nextMuted = !video.muted;
-      video.muted = nextMuted;
-      setIsMuted(nextMuted);
-      if (video.paused) {
-        video.play().catch(() => {});
+    const nextMusicPlaying = !isPlayingMusic;
+    if (videoRef.current) {
+      videoRef.current.muted = nextMusicPlaying;
+      if (!nextMusicPlaying && videoRef.current.paused) {
+        videoRef.current.play().catch(() => {});
       }
+    }
+    if (onToggleMusic) {
+      onToggleMusic();
     }
   };
 
@@ -328,7 +350,7 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
                 controls 
                 autoPlay 
                 loop 
-                muted={isMuted}
+                muted={isPlayingMusic}
                 playsInline 
                 preload="auto"
                 className="pasarela-video-player"
@@ -365,10 +387,16 @@ function PasarelaModal({ visible, onClose, product, language = 'es' }) {
                   type="button"
                   className="pasarela-pill-btn"
                   onClick={toggleSound}
-                  title={isMuted ? 'Activar sonido' : 'Silenciar'}
+                  title={isPlayingMusic 
+                    ? (language === 'es' ? 'Desactivar música y activar audio del video' : 'Mute music and play video audio') 
+                    : (language === 'es' ? 'Activar música y silenciar video' : 'Play music and mute video')}
                 >
-                  <i className={`fa-solid ${isMuted ? 'fa-volume-xmark' : 'fa-volume-high'}`}></i>
-                  <span>{isMuted ? (language === 'es' ? 'Activar Audio' : 'Unmute') : (language === 'es' ? 'Audio Activo' : 'Sound On')}</span>
+                  <i className={`fa-solid ${isPlayingMusic ? 'fa-music' : 'fa-volume-high'}`}></i>
+                  <span>
+                    {isPlayingMusic 
+                      ? (language === 'es' ? 'Música Tienda' : 'Store Music') 
+                      : (language === 'es' ? 'Audio Video' : 'Video Sound')}
+                  </span>
                 </button>
               </div>
             </>

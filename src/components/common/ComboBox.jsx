@@ -1,29 +1,30 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Label from './Label';
 
 /**
- * Componente ComboBox (Select) flexible y reutilizable.
- * 
- * @param {Object} props - Propiedades del componente.
- * @param {string} [props.label] - Etiqueta superior del control.
- * @param {string|number} props.value - Valor seleccionado.
- * @param {Array<Object>} props.options - Listado de opciones [{ value, label }].
- * @param {Function} props.onChange - Evento disparado al cambiar la selección.
- * @param {string} [props.placeholder] - Opción por defecto vacía / deshabilitada.
- * @param {boolean} [props.disabled=false] - Deshabilita el selector.
- * @param {boolean} [props.error=false] - Cambia el borde a color de error.
- * @param {string} [props.helperText] - Texto informativo o mensaje de error.
- * @param {string} props.name - Nombre del atributo.
- * @param {string} props.id - ID único del elemento.
- * @param {boolean} [props.required=false] - Indica obligatoriedad.
- * @param {string} [props.className=""] - Clases del contenedor principal.
+ * Luxury Boutique ComboBox Component
+ * Replicates editorial boutique aesthetic with golden radio indicators and serif italic typography.
+ *
+ * @param {Object} props
+ * @param {string} [props.label] - Upper label
+ * @param {string|number} props.value - Selected size/option value
+ * @param {Array<Object>} props.options - [{ value, label }]
+ * @param {Function} props.onChange - Triggered upon selection { target: { value, name } }
+ * @param {string} [props.placeholder] - Fallback placeholder text
+ * @param {boolean} [props.disabled=false]
+ * @param {boolean} [props.error=false]
+ * @param {string} [props.helperText]
+ * @param {string} props.name
+ * @param {string} props.id
+ * @param {boolean} [props.required=false]
+ * @param {string} [props.className=""]
  */
 function ComboBox({
   label,
   value,
   options = [],
   onChange,
-  placeholder,
+  placeholder = 'Seleccionar talla',
   disabled = false,
   error = false,
   helperText,
@@ -31,52 +32,108 @@ function ComboBox({
   id,
   required = false,
   className = '',
+  placement = 'top',
   ...props
 }) {
-  const handleChange = (e) => {
-    const target = e.target;
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  // Close dropdown when tapping anywhere outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleSelectOption = (optVal) => {
+    if (disabled) return;
     if (onChange) {
-      onChange(e);
+      onChange({ target: { value: optVal, name } });
     }
-    if (target && typeof target.blur === 'function') {
-      target.blur();
-    }
+    setIsOpen(false);
   };
 
+  const selectedOption = options.find((o) => String(o.value) === String(value));
+
   return (
-    <div className={`common-field-wrapper ${error ? 'common-field-wrapper--error' : ''} ${className}`}>
+    <div
+      ref={containerRef}
+      className={`common-field-wrapper custom-combobox-wrapper ${error ? 'common-field-wrapper--error' : ''} ${className}`}
+    >
       {label && (
         <Label htmlFor={id} required={required}>
           {label}
         </Label>
       )}
 
-      <div className="common-select-container">
-        <select
+      <div className="custom-combobox-container">
+        {/* Trigger Button with 50% opacity pink border and gold pill */}
+        <button
+          type="button"
           id={id}
+          disabled={disabled}
+          onClick={() => !disabled && setIsOpen((prev) => !prev)}
+          className={`custom-combobox-trigger ${isOpen ? 'is-open' : ''} ${error ? 'has-error' : ''}`}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+        >
+          <span className="combobox-trigger-text">
+            {selectedOption ? `Talla: ${selectedOption.label}` : (placeholder || 'Seleccionar talla')}
+          </span>
+          <span className="combobox-gold-pill" aria-hidden="true">
+            <span className="gold-pill-knob" />
+          </span>
+        </button>
+
+        {/* Dropdown Options Menu matching reference photo */}
+        {isOpen && (
+          <div className={`custom-combobox-dropdown placement-${placement}`} role="listbox">
+            <div className="custom-combobox-options-list">
+              {options.map((opt) => {
+                const isSelected = String(opt.value) === String(value);
+                return (
+                  <div
+                    key={opt.value}
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => handleSelectOption(opt.value)}
+                    className={`custom-combobox-item ${isSelected ? 'is-selected' : ''}`}
+                  >
+                    <span className="combobox-item-label">{opt.label}</span>
+                    <span className={`combobox-radio-circle ${isSelected ? 'selected' : ''}`} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Hidden select for accessibility & form compliance */}
+        <select
           name={name}
           value={value}
-          onChange={handleChange}
-          disabled={disabled}
-          required={required}
-          className={`common-select ${error ? 'common-select--error' : ''}`}
-          {...props}
+          onChange={(e) => onChange && onChange(e)}
+          tabIndex={-1}
+          style={{ display: 'none' }}
+          aria-hidden="true"
         >
-          {placeholder && (
-            <option value="">
-              {placeholder}
-            </option>
-          )}
+          <option value="">{placeholder}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
           ))}
         </select>
-        
-        <span className="common-select-arrow">
-          <i className="fa-solid fa-chevron-down" />
-        </span>
       </div>
 
       {helperText && (

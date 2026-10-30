@@ -115,7 +115,7 @@ function ProductModal({
   const handleAddToCart = (e) => {
     if (!selectedSize || selectedSize.trim() === '') {
       setSizeError(true);
-      setAlertMessage(language === 'es' ? 'Seleccione una talla por favor' : 'Please select a size');
+      setAlertMessage(language === 'es' ? 'Elige tu talla ideal para ti' : 'Choose your favorite size');
       setTimeout(() => {
         setAlertMessage('');
       }, 3500);
@@ -240,11 +240,12 @@ function ProductModal({
               className={`${!selectedSize ? 'neon-pulse-talla' : 'size-selected'} ${sizeError ? 'has-size-error' : ''}`}
             />
 
-            {/* Alerta Temporal abajo del selector sin mover la posición de los demás elementos */}
+            {/* Sugerencia Temporal dorada abajo del selector */}
             {alertMessage && (
-              <div className="size-alert-below" role="alert">
-                <i className="fa-solid fa-circle-exclamation"></i>
+              <div className="size-alert-below" role="status">
+                <span className="star-sparkle">✨</span>
                 <span>{alertMessage}</span>
+                <span className="star-sparkle">⭐</span>
               </div>
             )}
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import appConfig from './config/appConfig.json';
 import SearchFilter from './components/SearchFilter';
 import ProductCard from './components/ProductCard';
@@ -58,20 +58,77 @@ function App() {
   // Music Player background states
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const musicPlayingBeforePasarela = useRef(false);
+  const musicActiveBeforePasarelaRef = useRef(false);
 
-  // Pause background store music when Pasarela Modal is active to avoid lag/audio contention
+  // Restore background music when closing Pasarela if user had switched to video audio
   useEffect(() => {
     if (showPasarelaModal) {
-      if (isPlayingMusic) {
-        musicPlayingBeforePasarela.current = true;
-        setIsPlayingMusic(false);
+      musicActiveBeforePasarelaRef.current = isPlayingMusic;
+    } else {
+      if (musicActiveBeforePasarelaRef.current && !isPlayingMusic) {
+        setIsPlayingMusic(true);
       }
-    } else if (musicPlayingBeforePasarela.current) {
-      setIsPlayingMusic(true);
-      musicPlayingBeforePasarela.current = false;
+      musicActiveBeforePasarelaRef.current = false;
     }
   }, [showPasarelaModal]);
+
+  // Floating Announcement System (Right above Mi Carrito button)
+  const [announcement, setAnnouncement] = useState(null);
+  const [isAnnouncementFading, setIsAnnouncementFading] = useState(false);
+  const announcementTimerRef = useRef(null);
+  const announcementFadeTimerRef = useRef(null);
+
+  const showAnnouncement = useCallback((text, duration = 5000) => {
+    if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
+    if (announcementFadeTimerRef.current) clearTimeout(announcementFadeTimerRef.current);
+
+    setIsAnnouncementFading(false);
+    setAnnouncement(text);
+
+    announcementTimerRef.current = setTimeout(() => {
+      setIsAnnouncementFading(true);
+      announcementFadeTimerRef.current = setTimeout(() => {
+        setAnnouncement(null);
+        setIsAnnouncementFading(false);
+      }, 400);
+    }, duration);
+  }, []);
+
+  const dismissAnnouncement = useCallback(() => {
+    if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
+    setIsAnnouncementFading(true);
+    announcementFadeTimerRef.current = setTimeout(() => {
+      setAnnouncement(null);
+      setIsAnnouncementFading(false);
+    }, 400);
+  }, []);
+
+  // Recurring announcement "lima 🛵.     Provincia 🚚" every 15 seconds
+  useEffect(() => {
+    if (!showWelcome) {
+      // First announcement right after entering
+      const initialTimer = setTimeout(() => {
+        showAnnouncement('lima 🛵.     Provincia 🚚', 5000);
+      }, 600);
+
+      // Re-trigger announcement every 15 seconds
+      const interval = setInterval(() => {
+        showAnnouncement('lima 🛵.     Provincia 🚚', 5000);
+      }, 15000);
+
+      return () => {
+        clearTimeout(initialTimer);
+        clearInterval(interval);
+      };
+    }
+  }, [showWelcome, showAnnouncement]);
+
+  useEffect(() => {
+    return () => {
+      if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
+      if (announcementFadeTimerRef.current) clearTimeout(announcementFadeTimerRef.current);
+    };
+  }, []);
 
   // Shopping Cart state
   const [cart, setCart] = useState([]);
@@ -890,6 +947,21 @@ function App() {
             </div>
           )}
 
+          {/* Anuncio Flotante Temporal (desaparece a los 5s) justo arriba de Mi Carrito */}
+          {announcement && (
+            <div
+              className={`floating-cart-announcement-toast ${isAnnouncementFading ? 'fading-out' : ''}`}
+              onClick={dismissAnnouncement}
+              role="status"
+              aria-live="polite"
+              title="Click para cerrar"
+            >
+              <div className="cart-announcement-content">
+                <span className="announcement-text">{announcement}</span>
+              </div>
+            </div>
+          )}
+
           {/* 2. Botón Mi Carrito ABAJO (siempre rosa con borde blanco) */}
           <button
             type="button"
@@ -967,13 +1039,17 @@ function App() {
         onClose={() => setShowNoticeModal(false)}
       />
 
-      {/* Pasarela Virtual Video Modal */}
-      <PasarelaModal
-        visible={showPasarelaModal}
-        product={detailProduct || (products.find(p => p.id === selectedProductId) || products[0] || null)}
-        language={language}
-        onClose={() => setShowPasarelaModal(false)}
-      />
+      {/* Pasarela Virtual Video Modal - mounted strictly on demand */}
+      {showPasarelaModal && (
+        <PasarelaModal
+          visible={showPasarelaModal}
+          product={detailProduct || (products.find(p => p.id === selectedProductId) || products[0] || null)}
+          language={language}
+          isPlayingMusic={isPlayingMusic}
+          onToggleMusic={() => setIsPlayingMusic(prev => !prev)}
+          onClose={() => setShowPasarelaModal(false)}
+        />
+      )}
 
       {/* Fullscreen Entry Screen */}
       {showWelcome && (
