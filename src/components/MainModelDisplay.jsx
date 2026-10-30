@@ -134,66 +134,130 @@ function MainModelDisplay({
         <span className="hanging-bubble-label">PASARELA</span>
       </div>
 
-      {/* Brand logo - Sacramento Neon with Angel Wings & Floating Halo on 'l' of Angel */}
-      <h1 className="brand-neon">
-        <span className="neon-wing-wrapper neon-wing-left" aria-hidden="true">
-          <svg viewBox="0 0 64 64" className="neon-wing-svg">
+      {/* Brand logo - Lua Mila with animated crescent moon, stars and sparkling flares */}
+      <div className="brand-lua-mila" role="banner" aria-label="Lua Mila">
+        <div className="lua-mila-moon-wrapper">
+          <svg
+            viewBox="0 0 140 95"
+            className="lua-mila-moon-svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="luaGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFF9E6" />
+                <stop offset="25%" stopColor="#F5D78E" />
+                <stop offset="60%" stopColor="#C49238" />
+                <stop offset="85%" stopColor="#E9C575" />
+                <stop offset="100%" stopColor="#FFF2CB" />
+              </linearGradient>
+
+              <radialGradient id="luaAura" cx="45%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255, 230, 160, 0.40)" />
+                <stop offset="50%" stopColor="rgba(218, 165, 32, 0.15)" />
+                <stop offset="100%" stopColor="transparent" />
+              </radialGradient>
+
+              <filter id="luaGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Ambient golden aura behind the crescent */}
+            <circle cx="68" cy="46" r="38" fill="url(#luaAura)" className="lua-ambient-aura" />
+
+            {/* Slender Crescent Moon */}
             <path
-              d="M58 48 C44 32, 28 16, 4 4 C14 16, 28 28, 44 38 C30 31, 15 28, 2 22 C14 32, 28 41, 40 46 C27 42, 14 43, 6 40 C18 48, 33 53, 50 51 C38 50, 26 53, 18 52 C30 57, 46 56, 58 48 Z"
-              fill="rgba(255, 96, 173, 0.18)"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d="M 85,16 A 34,34 0 1,0 85,78 A 27,27 0 1,1 85,16 Z"
+              fill="url(#luaGoldGrad)"
+              filter="url(#luaGlow)"
+              className="lua-crescent-moon"
             />
-          </svg>
-        </span>
-        <span className="brand-neon-text">
-          {brandName === 'Angel Girl' ? (
-            <>
-              <span className="neon-letter-a-wrapper">
-                A
-                <svg className="neon-halo-svg" viewBox="0 0 80 32" aria-hidden="true">
-                  <ellipse
-                    cx="40"
-                    cy="16"
-                    rx="32"
-                    ry="9"
-                    fill="none"
-                    stroke="#ff60ad"
-                    strokeWidth="3.5"
-                    filter="drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px #ff60ad)"
-                  />
-                  <ellipse
-                    cx="40"
-                    cy="16"
-                    rx="32"
-                    ry="9"
-                    fill="none"
-                    stroke="#ffffff"
-                    strokeWidth="1.8"
-                  />
-                </svg>
-              </span>
-              ngel Girl
-            </>
-          ) : (
-            brandName
-          )}
-        </span>
-        <span className="neon-wing-wrapper neon-wing-right" aria-hidden="true">
-          <svg viewBox="0 0 64 64" className="neon-wing-svg">
-            <path
-              d="M58 48 C44 32, 28 16, 4 4 C14 16, 28 28, 44 38 C30 31, 15 28, 2 22 C14 32, 28 41, 40 46 C27 42, 14 43, 6 40 C18 48, 33 53, 50 51 C38 50, 26 53, 18 52 C30 57, 46 56, 58 48 Z"
-              fill="rgba(255, 96, 173, 0.18)"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+
+            {/* Central 5-pointed star nestled inside the crescent */}
+            <polygon
+              points="78,41 80.5,46 86,47 82,51 83,56.5 78,53.5 73,56.5 74,51 70,47 75.5,46"
+              fill="url(#luaGoldGrad)"
+              className="lua-star lua-star-center"
             />
+
+            {/* Small floating stars around the moon */}
+            {/* Top star */}
+            <polygon
+              points="58,11 59.5,14 63,14.5 60.5,17 61,20.5 58,18.5 55,20.5 55.5,17 53,14.5 56.5,14"
+              fill="url(#luaGoldGrad)"
+              className="lua-star lua-star-top"
+            />
+            {/* Upper right star */}
+            <polygon
+              points="98,18 99,20 101.5,20.5 99.5,22.5 100,25 98,23.5 96,25 96.5,22.5 94.5,20.5 97,20"
+              fill="url(#luaGoldGrad)"
+              className="lua-star lua-star-top-right"
+            />
+            {/* Lower right star */}
+            <polygon
+              points="104,66 105.5,69 108.5,69.5 106,72 106.5,75 104,73.5 101.5,75 102,72 99.5,69.5 102.5,69"
+              fill="url(#luaGoldGrad)"
+              className="lua-star lua-star-bottom-right"
+            />
+            {/* Far upper tiny star */}
+            <circle cx="78" cy="20" r="1.3" fill="#FFF2CB" className="lua-star-dot" />
+            {/* Bottom-left tiny star */}
+            <circle cx="98" cy="42" r="1.5" fill="#FFF2CB" className="lua-star-dot" />
+
+            {/* Animated Sparkles / Brillitos con efecto destello diamante y cruz de luz */}
+            {/* Brillito 1: Destello principal en el lomo de la luna */}
+            <g className="lua-sparkle lua-sparkle-1" transform="translate(48, 44)">
+              <ellipse cx="0" cy="0" rx="9" ry="1.2" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1.2" ry="9" fill="#FFFFFF" />
+              <path d="M 0,-7 Q 0,0 7,0 Q 0,0 0,7 Q 0,0 -7,0 Q 0,0 0,-7 Z" fill="#FFF7DB" />
+              <circle cx="0" cy="0" r="1.8" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 2: Cerca de la estrella central */}
+            <g className="lua-sparkle lua-sparkle-2" transform="translate(86, 50)">
+              <ellipse cx="0" cy="0" rx="6" ry="1" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1" ry="6" fill="#FFFFFF" />
+              <path d="M 0,-5 Q 0,0 5,0 Q 0,0 0,5 Q 0,0 -5,0 Q 0,0 0,-5 Z" fill="#FFF7DB" />
+              <circle cx="0" cy="0" r="1.2" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 3: En la punta superior del cuerno */}
+            <g className="lua-sparkle lua-sparkle-3" transform="translate(85, 17)">
+              <ellipse cx="0" cy="0" rx="5" ry="0.8" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="0.8" ry="5" fill="#FFFFFF" />
+              <path d="M 0,-4 Q 0,0 4,0 Q 0,0 0,4 Q 0,0 -4,0 Q 0,0 0,-4 Z" fill="#FFF7DB" />
+              <circle cx="0" cy="0" r="1" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 4: En el cuerno inferior */}
+            <g className="lua-sparkle lua-sparkle-4" transform="translate(84, 76)">
+              <ellipse cx="0" cy="0" rx="5" ry="0.8" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="0.8" ry="5" fill="#FFFFFF" />
+              <path d="M 0,-4 Q 0,0 4,0 Q 0,0 0,4 Q 0,0 -4,0 Q 0,0 0,-4 Z" fill="#FFF7DB" />
+              <circle cx="0" cy="0" r="1" fill="#FFFFFF" />
+            </g>
+
+            {/* Brillito 5: Destello flotante a la derecha */}
+            <g className="lua-sparkle lua-sparkle-5" transform="translate(112, 40)">
+              <ellipse cx="0" cy="0" rx="7" ry="1" fill="#FFFFFF" />
+              <ellipse cx="0" cy="0" rx="1" ry="7" fill="#FFFFFF" />
+              <path d="M 0,-5.5 Q 0,0 5.5,0 Q 0,0 0,5.5 Q 0,0 -5.5,0 Q 0,0 0,-5.5 Z" fill="#FFF7DB" />
+              <circle cx="0" cy="0" r="1.4" fill="#FFFFFF" />
+            </g>
           </svg>
-        </span>
-      </h1>
+        </div>
+
+        {/* Brand Text: LUA ★ MILA */}
+        <h1 className="brand-lua-mila-text">
+          <span>LUA</span>
+          <span className="brand-lua-mila-star">★</span>
+          <span>MILA</span>
+        </h1>
+      </div>
 
       {/* Model Active Pose Image with Zero-Flicker Double Buffering */}
       <div className="model-container">

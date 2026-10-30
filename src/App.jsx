@@ -826,7 +826,7 @@ function App() {
       <MainModelDisplay
         images={activeProductPoses}
         currentPoseIndex={selectedPoseIndex}
-        brandName="Angel Girl"
+        brandName="Lua Mila"
         language={language}
         loading={loading}
         onPoseChange={(newPose) => setSelectedPoseIndex(newPose)}

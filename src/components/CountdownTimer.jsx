@@ -25,6 +25,7 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
     hours: 0,
     minutes: 0,
     seconds: 0,
+    prefix: 'HOY',
     isFinished: false
   });
 
@@ -39,6 +40,8 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
     'sábado': 6,
     'sabado': 6
   };
+
+  const dayIndexToAbbr = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
 
   // Fetch Order Closing Schedule configuration from API or cache
   useEffect(() => {
@@ -123,7 +126,7 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
       const diff = target.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isFinished: true });
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, prefix: 'HOY', isFinished: true });
         return;
       }
 
@@ -132,7 +135,10 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      setTimeLeft({ hours: totalHours, minutes, seconds, isFinished: false });
+      // 'HOY' only if less than 24 hours remaining. If 24h or more, show day abbreviation (e.g. SÁB, MIÉ)
+      const prefix = totalHours < 24 ? 'HOY' : (dayIndexToAbbr[target.getDay()] || 'HOY');
+
+      setTimeLeft({ hours: totalHours, minutes, seconds, prefix, isFinished: false });
     };
 
     updateTimer();
@@ -163,12 +169,12 @@ function CountdownTimer({ apiUrl = 'https://by-angels-apis-five.vercel.app' }) {
           </div>
         ) : (
           <div className="countdown-timer-time-row">
-            <span className="countdown-timer-prefix">HOY </span>
-            <span className="countdown-timer-digits">
-              {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:
+            <span className="countdown-timer-prefix">{timeLeft.prefix} </span>
+            <span className="countdown-timer-hours">
+              {String(timeLeft.hours).padStart(2, '0')}:
             </span>
-            <span className={`countdown-timer-seconds ${isUrgent ? 'seconds-red' : ''}`}>
-              {String(timeLeft.seconds).padStart(2, '0')}
+            <span className={`countdown-timer-min-sec ${isUrgent ? 'urgent-fuchsia' : ''}`}>
+              {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
             </span>
           </div>
         )}

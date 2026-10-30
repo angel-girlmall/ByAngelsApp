@@ -226,126 +226,143 @@ select {
   z-index: 2;
 }
 
-/* Neon Glow Brand Label with Angel Wings & Halo */
-.brand-neon {
+/* Lua Mila Luxury Logo with Animated Crescent Moon and Sparkles */
+.brand-lua-mila {
   position: absolute;
-  top: 50px;
-  left: 24px;
+  top: 24px;
+  left: 20px;
   z-index: 10;
-  font-family: var(--font-title);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: #fff;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: clamp(6px, 1.8vw, 12px);
-  text-shadow:
-    0 0 4px #fff,
-    0 0 10px var(--color-neon-pink),
-    0 0 20px var(--color-neon-pink),
-    0 0 40px var(--color-neon-pink);
-  animation: neon-pulse 2s infinite alternate;
+  justify-content: center;
   user-select: none;
   pointer-events: none;
-  max-width: calc(100% - 32px);
+  cursor: default;
 }
 
-.brand-neon-text {
-  line-height: 1;
-  display: inline-flex;
+.lua-mila-moon-wrapper {
+  width: clamp(100px, 14vw, 150px);
+  display: flex;
+  justify-content: center;
   align-items: center;
+  filter: drop-shadow(0 0 10px rgba(243, 211, 137, 0.45));
+  animation: moonGlowPulse 3s infinite alternate ease-in-out;
 }
 
-.neon-letter-a-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.neon-halo-svg {
-  position: absolute;
-  top: -0.6em;
-  left: 50%;
-  transform: translateX(-50%) rotate(-10deg);
-  width: clamp(32px, 5.5vw, 56px);
-  height: clamp(14px, 2.2vw, 24px);
+.lua-mila-moon-svg {
+  width: 100%;
+  height: auto;
   overflow: visible;
   display: block;
-  filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px var(--color-neon-pink)) drop-shadow(0 0 20px var(--color-neon-pink));
-  animation: halo-float 3s ease-in-out infinite alternate;
 }
 
-@keyframes halo-float {
+/* Animaciones de brillitos / destellos mágicos de la luna */
+.lua-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: luaSparkleTwinkle 2.4s infinite ease-in-out;
+}
+
+.lua-sparkle-1 {
+  animation-delay: 0s;
+  animation-duration: 2.2s;
+}
+
+.lua-sparkle-2 {
+  animation-delay: 0.6s;
+  animation-duration: 2.6s;
+}
+
+.lua-sparkle-3 {
+  animation-delay: 1.2s;
+  animation-duration: 2s;
+}
+
+.lua-sparkle-4 {
+  animation-delay: 1.7s;
+  animation-duration: 2.5s;
+}
+
+.lua-sparkle-5 {
+  animation-delay: 0.9s;
+  animation-duration: 2.8s;
+}
+
+@keyframes luaSparkleTwinkle {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.3) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(35deg);
+    filter: drop-shadow(0 0 6px rgba(255, 240, 180, 1)) drop-shadow(0 0 12px rgba(243, 211, 137, 0.8));
+  }
+}
+
+.lua-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: starPulse 2.8s infinite alternate ease-in-out;
+}
+
+.lua-star-top { animation-delay: 0.3s; }
+.lua-star-top-right { animation-delay: 0.9s; }
+.lua-star-bottom-right { animation-delay: 1.5s; }
+.lua-star-center { animation-delay: 0.6s; }
+
+@keyframes starPulse {
   0% {
-    transform: translateX(-50%) rotate(-10deg) translateY(0px);
+    opacity: 0.75;
+    transform: scale(0.92);
   }
   100% {
-    transform: translateX(-50%) rotate(-6deg) translateY(-3px);
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 4px rgba(255, 235, 170, 0.9));
   }
 }
 
-.neon-wing-wrapper {
+@keyframes moonGlowPulse {
+  0% {
+    filter: drop-shadow(0 0 6px rgba(243, 211, 137, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.75)) drop-shadow(0 0 24px rgba(212, 160, 23, 0.4));
+  }
+}
+
+/* LUA ★ MILA Brand Name Typography */
+.brand-lua-mila-text {
+  margin: -2px 0 0 0;
+  padding: 0;
+  font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-neon-pink);
-  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px var(--color-neon-pink)) drop-shadow(0 0 20px var(--color-neon-pink));
+  gap: 0.35em;
+  line-height: 1;
+  background: linear-gradient(135deg, #FFF6DC 0%, #F5D78E 30%, #C49238 65%, #F7DF9E 85%, #FFEEC2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 8px rgba(212, 160, 23, 0.35));
 }
 
-.neon-wing-left {
-  animation: wing-pulse-glow 2s infinite alternate, wing-float-left 3.5s ease-in-out infinite alternate;
-}
-
-.neon-wing-right {
-  animation: wing-pulse-glow 2s infinite alternate, wing-float-right 3.5s ease-in-out infinite alternate;
-}
-
-.neon-wing-svg {
-  width: clamp(26px, 4vw, 50px);
-  height: clamp(26px, 4vw, 50px);
-  overflow: visible;
-  display: block;
-}
-
-@keyframes wing-float-left {
-  0% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-4px) rotate(-4deg);
-  }
-  100% {
-    transform: translateY(2px) rotate(2deg);
-  }
-}
-
-@keyframes wing-float-right {
-  0% {
-    transform: scaleX(-1) translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: scaleX(-1) translateY(-4px) rotate(-4deg);
-  }
-  100% {
-    transform: scaleX(-1) translateY(2px) rotate(2deg);
-  }
-}
-
-@keyframes wing-pulse-glow {
-  from {
-    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px var(--color-neon-pink)) drop-shadow(0 0 16px var(--color-neon-pink));
-  }
-  to {
-    filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px var(--color-neon-pink)) drop-shadow(0 0 28px var(--color-neon-pink));
-  }
-}
-
-@keyframes neon-pulse {
-  from {
-    text-shadow: 0 0 4px #fff, 0 0 10px var(--color-neon-pink), 0 0 20px var(--color-neon-pink), 0 0 30px var(--color-neon-pink);
-  }
-
-  to {
-    text-shadow: 0 0 4px #fff, 0 0 15px var(--color-neon-pink), 0 0 30px var(--color-neon-pink), 0 0 50px var(--color-neon-pink), 0 0 70px var(--color-neon-pink);
-  }
+.brand-lua-mila-star {
+  font-size: 0.55em;
+  margin: 0 0.05em;
+  background: linear-gradient(135deg, #FFF9E6 0%, #F5D78E 50%, #C49238 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  transform: translateY(-0.08em);
+  filter: drop-shadow(0 0 4px rgba(255, 230, 150, 0.8));
+  animation: starPulse 2s infinite alternate ease-in-out;
 }
 
 /* Pose Display & Overlay Controls */
@@ -2028,17 +2045,18 @@ select {
     padding: 0 !important;
   }
 
-  .brand-neon {
-    font-size: clamp(1.8rem, 6.5vw, 2.6rem) !important;
-    top: 42px !important;
-    left: 12px !important;
-    gap: 6px !important;
-    max-width: calc(100% - 24px) !important;
+  .brand-lua-mila {
+    top: 18px !important;
+    left: 14px !important;
   }
 
-  .neon-wing-svg {
-    width: clamp(26px, 5.5vw, 40px) !important;
-    height: clamp(26px, 5.5vw, 40px) !important;
+  .lua-mila-moon-wrapper {
+    width: 90px !important;
+  }
+
+  .brand-lua-mila-text {
+    font-size: 1.35rem !important;
+    letter-spacing: 0.16em !important;
   }
 
   .pose-rotator-overlay {
@@ -3828,71 +3846,113 @@ img.welcome-bg-image {
 }
 
 /* Top-Right Luxury Order Closing Countdown Timer Widget */
-/* Negro al 85% con blur y borde dorado fino como joyería */
+/* Negro al 85% con blur, efecto burbuja de cristal y borde dorado fino */
 .countdown-timer-widget {
   position: fixed;
   top: 14px;
   right: 14px;
   z-index: 500;
-  background: rgba(26, 26, 26, 0.85) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid #D4A017 !important;
+  background: radial-gradient(130% 120% at 50% 10%, rgba(35, 35, 42, 0.88) 0%, rgba(18, 18, 22, 0.85) 60%, rgba(10, 10, 12, 0.88) 100%) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1.2px solid #D4A017 !important;
   border-radius: 9999px !important;
-  padding: 5px 13px 5px 9px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+  padding: 10px 18px 10px 13px !important;
+  min-height: 48px !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.35),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.6) !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 11px !important;
   font-family: 'Outfit', 'Inter', -apple-system, sans-serif !important;
   color: #ffffff !important;
   user-select: none;
   cursor: default;
-  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  overflow: hidden !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* Efecto burbuja: reflejo curvo de luz brillante superior */
+.countdown-timer-widget::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 8%;
+  right: 8%;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.05) 75%, transparent 100%);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Efecto burbuja: reflejo inferior de relieve */
+.countdown-timer-widget::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.45), transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .countdown-timer-widget:hover {
   transform: scale(1.03) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(212, 160, 23, 0.3) !important;
+  box-shadow: 
+    0 10px 28px rgba(0, 0, 0, 0.7),
+    0 0 12px rgba(212, 160, 23, 0.4),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.45) !important;
 }
 
 /* Icono Reloj Dorado con sutil halo circular */
 .countdown-clock-icon-wrapper {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: rgba(212, 160, 23, 0.15);
-  border: 1px solid rgba(212, 160, 23, 0.4);
+  background: rgba(212, 160, 23, 0.16);
+  border: 1px solid rgba(212, 160, 23, 0.5);
   color: #D4A017;
-  font-size: 0.82rem;
+  font-size: 0.96rem;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease;
 }
 
 .countdown-clock-icon {
   color: #D4A017;
-  filter: drop-shadow(0 0 4px rgba(212, 160, 23, 0.5));
+  filter: drop-shadow(0 0 4px rgba(212, 160, 23, 0.6));
 }
 
 /* Text group: Título arriba, tiempo abajo */
 .countdown-timer-text-group {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 1px;
+  gap: 3px;
   line-height: 1;
 }
 
 .countdown-timer-title {
-  font-size: 0.62rem !important;
+  font-size: 0.66rem !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.6px !important;
+  letter-spacing: 0.7px !important;
   color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -3900,11 +3960,12 @@ img.welcome-bg-image {
 .countdown-timer-time-row {
   display: flex;
   align-items: center;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.4px;
   font-variant-numeric: tabular-nums;
   color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .countdown-timer-prefix {
@@ -3913,58 +3974,80 @@ img.welcome-bg-image {
   margin-right: 3px;
 }
 
-.countdown-timer-digits {
+.countdown-timer-hours {
   color: #ffffff;
   font-weight: 700;
 }
 
-/* Segundos normales en blanco */
-.countdown-timer-seconds {
+/* Minutos y segundos normales */
+.countdown-timer-min-sec {
   color: #ffffff;
   font-weight: 700;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* Segundos en rojo para la urgencia final de 5 horas */
-.countdown-timer-seconds.seconds-red {
-  color: #FF1744 !important;
+/* A 5 horas: Minuto y Segundo en FUCSIA neón vibrante */
+.countdown-timer-min-sec.urgent-fuchsia {
+  color: #FF007F !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 8px rgba(255, 23, 68, 0.7);
-  animation: redUrgentPulse 0.8s infinite alternate ease-in-out;
+  text-shadow: 
+    0 0 6px #FF007F,
+    0 0 14px rgba(255, 0, 127, 0.85),
+    0 0 22px rgba(255, 20, 147, 0.6) !important;
+  animation: fuchsiaPulse 0.9s infinite alternate ease-in-out;
 }
 
-/* Pulso dorado elegante TUM-TUM para urgencia < 5h */
+/* A 5 horas: Palpitan en ROJO las luces (borde, halo y sombras) */
 .countdown-timer-widget.urgent-mode {
-  animation: goldUrgentPulse 2s infinite ease-in-out !important;
+  animation: redUrgentLightsPulse 1.4s infinite ease-in-out !important;
 }
 
-@keyframes goldUrgentPulse {
+.countdown-timer-widget.urgent-mode .countdown-clock-icon-wrapper {
+  border-color: #FF1744 !important;
+  background: rgba(255, 23, 68, 0.22) !important;
+  color: #FF1744 !important;
+  box-shadow: 0 0 10px rgba(255, 23, 68, 0.7);
+}
+
+.countdown-timer-widget.urgent-mode .countdown-clock-icon {
+  color: #FF1744 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 23, 68, 0.8));
+}
+
+@keyframes redUrgentLightsPulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45), 0 0 0 0 rgba(212, 160, 23, 0) !important;
-    border-color: #D4A017 !important;
+    border-color: #FF1744 !important;
+    box-shadow: 
+      0 0 14px rgba(255, 23, 68, 0.75), 
+      0 0 28px rgba(255, 23, 68, 0.35), 
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset 0 0 12px rgba(255, 23, 68, 0.35) !important;
   }
   50% {
-    transform: scale(1.025);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55), 0 0 12px 2px rgba(212, 160, 23, 0.5) !important;
-    border-color: #FFD54F !important;
+    transform: scale(1.035);
+    border-color: #FF5252 !important;
+    box-shadow: 
+      0 0 24px rgba(255, 23, 68, 1), 
+      0 0 45px rgba(255, 23, 68, 0.55), 
+      inset 0 1.5px 3px rgba(255, 255, 255, 0.65), 
+      inset 0 0 18px rgba(255, 23, 68, 0.6) !important;
   }
 }
 
-@keyframes redUrgentPulse {
+@keyframes fuchsiaPulse {
   0% {
-    opacity: 0.85;
-    transform: scale(1);
+    opacity: 0.9;
+    text-shadow: 0 0 6px #FF007F, 0 0 12px rgba(255, 0, 127, 0.8);
   }
   100% {
     opacity: 1;
-    transform: scale(1.08);
-    text-shadow: 0 0 10px rgba(255, 23, 68, 0.95);
+    text-shadow: 0 0 10px #FF007F, 0 0 20px rgba(255, 0, 127, 1), 0 0 30px rgba(255, 20, 147, 0.8);
   }
 }
 
 .countdown-timer-finished {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #ff5252;
   letter-spacing: 0.4px;
@@ -3974,23 +4057,24 @@ img.welcome-bg-image {
   .countdown-timer-widget {
     top: 10px !important;
     right: 10px !important;
-    padding: 4px 11px 4px 8px !important;
-    gap: 7px !important;
+    padding: 8px 15px 8px 11px !important;
+    min-height: 44px !important;
+    gap: 9px !important;
   }
 
   .countdown-clock-icon-wrapper {
-    width: 22px;
-    height: 22px;
-    font-size: 0.75rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.88rem;
   }
 
   .countdown-timer-title {
-    font-size: 0.56rem !important;
+    font-size: 0.62rem !important;
   }
 
   .countdown-timer-time-row {
-    font-size: 0.72rem !important;
-}
+    font-size: 0.82rem !important;
+  }
 
   .hanging-video-bubble-container {
     left: 16px;
