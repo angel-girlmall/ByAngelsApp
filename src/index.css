@@ -495,7 +495,58 @@ select {
   width: 100%;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1 !important;
+  z-index: 500 !important;
+}
+
+.styles-combobox-wrapper {
+  position: relative;
+  min-width: 190px;
+  z-index: 501 !important;
+}
+
+.filter-combobox .custom-combobox-trigger {
+  height: 48px;
+  background: rgba(253, 245, 242, 0.45);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 14px !important;
+  padding: 0 14px;
+}
+
+.filter-combobox .custom-combobox-trigger:hover {
+  background: rgba(253, 245, 242, 0.8);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.filter-combobox .custom-combobox-trigger.is-open {
+  border-color: #F59E0B;
+  background: #ffffff;
+}
+
+.filter-combobox .combobox-trigger-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-combobox .custom-combobox-dropdown {
+  z-index: 9999 !important;
+  min-width: 210px;
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 0 14px rgba(245, 158, 11, 0.25);
+  border: 2px solid rgba(245, 158, 11, 0.4);
+}
+
+.filter-combobox .custom-combobox-item {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.filter-combobox .combobox-item-label {
+  font-size: 1.05rem;
 }
 
 .search-input-wrapper {
@@ -993,7 +1044,7 @@ select {
   width: 100%;
   height: 52px;
   background: #ffffff;
-  border: 2px solid rgba(255, 35, 120, 0.6);
+  border: 2px solid rgba(245, 158, 11, 0.5);
   border-radius: 18px !important;
   padding: 0 16px;
   display: flex;
@@ -1001,65 +1052,65 @@ select {
   justify-content: space-between;
   cursor: pointer;
   transition: all 0.25s ease;
-  animation: neonSelectPulse 1.6s ease-in-out infinite alternate !important;
 }
 
 .custom-combobox-trigger:hover {
-  box-shadow: 0 0 14px rgba(255, 35, 120, 0.6);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
 }
 
 .custom-combobox-trigger.is-open {
-  border-color: #ff2378;
+  border-color: #F59E0B;
 }
 
+/* Primero palpita la selección de talla cuando NO hay talla escogida */
 .neon-pulse-talla .custom-combobox-trigger,
-.neon-pulse-talla .common-select,
+.neon-pulse-talla .common-select {
+  animation: sizeSelectPulse 1.6s ease-in-out infinite alternate !important;
+}
+
+/* Deja de palpitar cuando se escoge la talla */
 .size-selected .custom-combobox-trigger,
 .size-selected .common-select {
-  animation: neonSelectPulse 1.6s ease-in-out infinite alternate !important;
+  animation: none !important;
+  border-color: rgba(97, 64, 55, 0.3) !important;
+  box-shadow: none !important;
 }
 
-/* Parpadeo neón original de la boutique */
-@keyframes neonSelectPulse {
+/* Parpadeo ámbar/dorado cálido de selección de talla */
+@keyframes sizeSelectPulse {
   0% {
-    border-color: #ff2378;
-    box-shadow: 0 0 5px rgba(255, 35, 120, 0.4), inset 0 0 4px rgba(255, 35, 120, 0.2);
+    border-color: #F59E0B;
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.45), inset 0 0 4px rgba(245, 158, 11, 0.15);
   }
   50% {
-    border-color: #ff5da0;
-    box-shadow: 0 0 16px rgba(255, 35, 120, 0.95), 0 0 25px rgba(255, 93, 160, 0.7), inset 0 0 6px rgba(255, 35, 120, 0.35);
+    border-color: #FBBF24;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.85), 0 0 24px rgba(251, 191, 36, 0.6), inset 0 0 6px rgba(245, 158, 11, 0.25);
   }
   100% {
-    border-color: #ff2378;
-    box-shadow: 0 0 5px rgba(255, 35, 120, 0.4), inset 0 0 4px rgba(255, 35, 120, 0.2);
+    border-color: #F59E0B;
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.45), inset 0 0 4px rgba(245, 158, 11, 0.15);
   }
 }
 
 .combobox-trigger-text {
-  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
   color: #3b221a;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
-/* Pink Pill Toggle Indicator in trigger (Idéntico a Agregar al Carrito) */
-.combobox-gold-pill {
-  width: 40px;
-  height: 22px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #ff2378 0%, #ff4b93 100%) !important;
-  box-shadow: 0 2px 8px rgba(255, 35, 120, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+/* Flechita chevron hacia abajo idéntica a la imagen de referencia */
+.combobox-chevron {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 3px;
-  transition: transform 0.25s ease, background 0.25s ease;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: #4A2E18;
+  transition: transform 0.25s ease;
 }
 
-.custom-combobox-trigger.is-open .combobox-gold-pill {
-  background: linear-gradient(135deg, #e6196e 0%, #ff2378 100%) !important;
+.custom-combobox-trigger.is-open .combobox-chevron {
   transform: rotate(180deg);
 }
 
@@ -1170,21 +1221,21 @@ select {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 35, 120, 0.6);
 }
 
-/* Sugerencia rosa amigable cuando falta seleccionar talla */
+/* Sugerencia ámbar/naranja cálido cuando falta seleccionar talla (sin fucsia) */
 .neon-pulse-talla.has-size-error .custom-combobox-trigger,
 .neon-pulse-talla.has-size-error .common-select {
-  border-color: #ff2378 !important;
-  animation: neonPinkErrorPulse 0.6s ease-in-out infinite alternate !important;
+  border-color: #F59E0B !important;
+  animation: sizeSelectErrorPulse 0.55s ease-in-out infinite alternate !important;
 }
 
-@keyframes neonPinkErrorPulse {
+@keyframes sizeSelectErrorPulse {
   0% {
-    border-color: #ff2378 !important;
-    box-shadow: 0 0 8px rgba(255, 35, 120, 0.6), inset 0 0 4px rgba(255, 35, 120, 0.3);
+    border-color: #EA580C !important;
+    box-shadow: 0 0 6px rgba(234, 88, 12, 0.6), inset 0 0 4px rgba(234, 88, 12, 0.25);
   }
   100% {
-    border-color: #ff5da0 !important;
-    box-shadow: 0 0 22px rgba(255, 35, 120, 1), 0 0 32px rgba(255, 93, 160, 0.8), inset 0 0 8px rgba(255, 35, 120, 0.4);
+    border-color: #F59E0B !important;
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.95), 0 0 28px rgba(251, 191, 36, 0.75), inset 0 0 7px rgba(245, 158, 11, 0.35);
   }
 }
 
@@ -1194,26 +1245,24 @@ select {
   width: 100%;
 }
 
-/* Sugerencia temporal rosa abajo de seleccionar talla con estrellas */
+/* Sugerencia temporal dorado/naranja cálido idéntico a la referencia del usuario */
 .size-alert-below {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 4px;
+  position: relative;
+  width: 100%;
+  margin: 10px 0 6px 0;
   z-index: 30;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #ff2378 0%, #ff4b93 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+  color: #ffffff !important;
   font-weight: 800;
-  font-size: 0.88rem;
-  padding: 6px 16px;
+  font-size: 0.92rem;
+  padding: 8px 18px;
   border-radius: 9999px;
-  box-shadow: 0 4px 18px rgba(255, 35, 120, 0.5), 0 0 16px rgba(255, 75, 147, 0.4);
-  border: 1.8px solid #ffffff;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.55), 0 0 16px rgba(217, 119, 6, 0.4) !important;
+  border: 1.8px solid #FDE68A !important;
   pointer-events: none;
   animation: sizeAlertPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   letter-spacing: 0.2px;
@@ -1241,7 +1290,7 @@ select {
   100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-/* Botón Agregar al Carrito: Rosa con parpadeo idéntico al combobox */
+/* Botón Agregar al Carrito: Rosa vibrante */
 .btn-add-cart-large {
   width: 100%;
   height: 50px;
@@ -1259,11 +1308,24 @@ select {
   gap: 8px;
   box-shadow: 0 4px 14px rgba(255, 35, 120, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: none;
+  will-change: transform, box-shadow;
 }
 
-/* Solo parpadea cuando la talla ya fue seleccionada */
+/* Solo palpita cuando la talla ya fue seleccionada - Idéntico al botón de Confirmar Pedido */
 .btn-add-cart-large.pulse-active {
-  animation: neonSelectPulse 1.6s ease-in-out infinite alternate !important;
+  animation: btnAddToCartPulse 1.9s ease-in-out infinite !important;
+}
+
+@keyframes btnAddToCartPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 14px rgba(255, 35, 120, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 8px 24px rgba(255, 35, 120, 0.7), 0 0 16px rgba(255, 75, 147, 0.5);
+  }
 }
 
 .btn-add-cart-large:hover {
@@ -1619,7 +1681,7 @@ select {
   box-shadow: -6px 0 28px rgba(0, 0, 0, 0.28);
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  overflow: hidden;
+  overflow: visible;
   z-index: 610;
   transform: translateX(100%);
   transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
@@ -1929,6 +1991,7 @@ select {
 }
 
 .cart-checkout-actions {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1963,6 +2026,69 @@ select {
   color: #ff2378;
   transform: none;
   box-shadow: none;
+}
+
+/* Floating Shipping Pill overlapping checkout row (extending out to the left beyond drawer boundaries) */
+.cart-shipping-bottom-pill {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 35, 120, 0.5);
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22), 0 0 12px rgba(255, 35, 120, 0.25);
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  animation: pillSlideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.cart-shipping-bottom-pill:hover {
+  transform: scale(1.03);
+}
+
+.cart-shipping-bottom-pill.fading-out {
+  animation: pillFadeOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+.cart-shipping-bottom-pill .shipping-tag-text {
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #2b1712;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+@keyframes pillSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate(-14px, -50%) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, -50%) scale(1);
+  }
+}
+
+@keyframes pillFadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(0, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-10px, -50%) scale(0.92);
+  }
 }
 
 .btn-checkout {

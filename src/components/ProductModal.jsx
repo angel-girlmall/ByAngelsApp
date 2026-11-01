@@ -115,7 +115,7 @@ function ProductModal({
   const handleAddToCart = (e) => {
     if (!selectedSize || selectedSize.trim() === '') {
       setSizeError(true);
-      setAlertMessage(language === 'es' ? 'Elige tu talla ideal para ti' : 'Choose your favorite size');
+      setAlertMessage(language === 'es' ? 'Elige tu talla por favor' : 'Please select your size');
       setTimeout(() => {
         setAlertMessage('');
       }, 3500);
@@ -219,6 +219,7 @@ function ProductModal({
             <ComboBox
               id="modal-size-select"
               name="size"
+              prefix="Talla: "
               label={language === 'es' ? 'Talla' : 'Size'}
               value={selectedSize}
               placeholder={language === 'es' ? 'Seleccionar talla' : 'Select size'}
@@ -245,7 +246,7 @@ function ProductModal({
               <div className="size-alert-below" role="status">
                 <span className="star-sparkle">✨</span>
                 <span>{alertMessage}</span>
-                <span className="star-sparkle">⭐</span>
+                <span className="star-sparkle">✨</span>
               </div>
             )}
           </div>

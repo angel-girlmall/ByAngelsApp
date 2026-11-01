@@ -32,6 +32,7 @@ function ComboBox({
   id,
   required = false,
   className = '',
+  prefix = '',
   placement = 'top',
   ...props
 }) {
@@ -65,6 +66,10 @@ function ComboBox({
 
   const selectedOption = options.find((o) => String(o.value) === String(value));
 
+  const displayText = selectedOption
+    ? (prefix ? `${prefix}${selectedOption.label}` : selectedOption.label)
+    : (placeholder || 'Seleccionar');
+
   return (
     <div
       ref={containerRef}
@@ -88,10 +93,10 @@ function ComboBox({
           aria-haspopup="listbox"
         >
           <span className="combobox-trigger-text">
-            {selectedOption ? `Talla: ${selectedOption.label}` : (placeholder || 'Seleccionar talla')}
+            {displayText}
           </span>
-          <span className="combobox-gold-pill" aria-hidden="true">
-            <span className="gold-pill-knob" />
+          <span className={`combobox-chevron ${isOpen ? 'is-open' : ''}`} aria-hidden="true">
+            <i className="fa-solid fa-chevron-down"></i>
           </span>
         </button>
 

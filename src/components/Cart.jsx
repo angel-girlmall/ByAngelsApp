@@ -51,6 +51,36 @@ function Cart({
     }
   }, [visible]);
 
+  // Mensaje flotante de envíos al costado del botón verde (desaparece a los 5 segundos de abrir el carrito)
+  const [showShippingAlert, setShowShippingAlert] = React.useState(false);
+  const [isAlertFading, setIsAlertFading] = React.useState(false);
+
+  React.useEffect(() => {
+    let hideTimer;
+    let removeTimer;
+
+    if (visible) {
+      setShowShippingAlert(true);
+      setIsAlertFading(false);
+
+      hideTimer = setTimeout(() => {
+        setIsAlertFading(true);
+        removeTimer = setTimeout(() => {
+          setShowShippingAlert(false);
+          setIsAlertFading(false);
+        }, 400);
+      }, 5000);
+    } else {
+      setShowShippingAlert(false);
+      setIsAlertFading(false);
+    }
+
+    return () => {
+      if (hideTimer) clearTimeout(hideTimer);
+      if (removeTimer) clearTimeout(removeTimer);
+    };
+  }, [visible]);
+
 
 
   // Gestos en vivo cuando el carrito está ABIERTO: SOLO desliza a la DERECHA para ocultar
@@ -409,7 +439,7 @@ function Cart({
 
     const header = labels.whatsappMessage || 'Hola, quiero realizar el siguiente pedido:';
 
-    const orderHeader = `🛍️ *BYANGELS E-COMMERCE* 🛍️\n📌 *${language === 'es' ? 'Código de Pedido' : 'Order Code'}:* \`${orderCode}\`\n🕒 *${language === 'es' ? 'Fecha y Hora' : 'Date & Time'}:* ${formattedDate}\n`;
+    const orderHeader = `🛍️ *LUAMILA E-COMMERCE* 🛍️\n📌 *${language === 'es' ? 'Código de Pedido' : 'Order Code'}:* \`${orderCode}\`\n🕒 *${language === 'es' ? 'Fecha y Hora' : 'Date & Time'}:* ${formattedDate}\n`;
 
     let summaryText = `\n----------------------------\n`;
     if (discountAmount > 0) {
@@ -648,6 +678,18 @@ function Cart({
               >
                 <i className="fa-brands fa-whatsapp"></i> {language === 'es' ? 'Confirmar Pedido' : 'Confirm Order'}
               </button>
+
+              {/* Mensaje flotante de envíos superpuesto exactamente en la barra de botones */}
+              {showShippingAlert && (
+                <div
+                  className={`cart-shipping-bottom-pill ${isAlertFading ? 'fading-out' : ''}`}
+                  onClick={() => setIsAlertFading(true)}
+                  role="status"
+                  title="Click para ocultar"
+                >
+                  <span className="shipping-tag-text">ENVÍOS : LIMA 🛵 PROVINCIA 🚚</span>
+                </div>
+              )}
             </div>
           </div>
         )}

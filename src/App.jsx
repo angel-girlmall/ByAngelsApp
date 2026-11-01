@@ -72,64 +72,6 @@ function App() {
     }
   }, [showPasarelaModal]);
 
-  // Floating Announcement System (Right above Mi Carrito button)
-  const [announcement, setAnnouncement] = useState(null);
-  const [isAnnouncementFading, setIsAnnouncementFading] = useState(false);
-  const announcementTimerRef = useRef(null);
-  const announcementFadeTimerRef = useRef(null);
-
-  const showAnnouncement = useCallback((text, duration = 5000) => {
-    if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
-    if (announcementFadeTimerRef.current) clearTimeout(announcementFadeTimerRef.current);
-
-    setIsAnnouncementFading(false);
-    setAnnouncement(text);
-
-    announcementTimerRef.current = setTimeout(() => {
-      setIsAnnouncementFading(true);
-      announcementFadeTimerRef.current = setTimeout(() => {
-        setAnnouncement(null);
-        setIsAnnouncementFading(false);
-      }, 400);
-    }, duration);
-  }, []);
-
-  const dismissAnnouncement = useCallback(() => {
-    if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
-    setIsAnnouncementFading(true);
-    announcementFadeTimerRef.current = setTimeout(() => {
-      setAnnouncement(null);
-      setIsAnnouncementFading(false);
-    }, 400);
-  }, []);
-
-  // Recurring announcement "lima 🛵.     Provincia 🚚" every 15 seconds
-  useEffect(() => {
-    if (!showWelcome) {
-      // First announcement right after entering
-      const initialTimer = setTimeout(() => {
-        showAnnouncement('lima 🛵.     Provincia 🚚', 5000);
-      }, 600);
-
-      // Re-trigger announcement every 15 seconds
-      const interval = setInterval(() => {
-        showAnnouncement('lima 🛵.     Provincia 🚚', 5000);
-      }, 15000);
-
-      return () => {
-        clearTimeout(initialTimer);
-        clearInterval(interval);
-      };
-    }
-  }, [showWelcome, showAnnouncement]);
-
-  useEffect(() => {
-    return () => {
-      if (announcementTimerRef.current) clearTimeout(announcementTimerRef.current);
-      if (announcementFadeTimerRef.current) clearTimeout(announcementFadeTimerRef.current);
-    };
-  }, []);
-
   // Shopping Cart state
   const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
@@ -513,6 +455,16 @@ function App() {
           p.Tendencia === 'true' || 
           (typeof p.Tendencia === 'string' && (p.Tendencia.toLowerCase() === 'si' || p.Tendencia.toLowerCase() === 'yes' || p.Tendencia.toLowerCase() === 'true'))
         );
+      } else if (filter === 'urbano' || filter === 'streetwear') {
+        result = result.filter(p => {
+          const cat = (p.Categoria || '').toLowerCase().trim();
+          return cat === 'urbano' || cat === 'streetwear';
+        });
+      } else if (filter === 'deportivo' || filter === 'athleisure') {
+        result = result.filter(p => {
+          const cat = (p.Categoria || '').toLowerCase().trim();
+          return cat === 'deportivo' || cat === 'athleisure';
+        });
       } else {
         result = result.filter(p => p.Categoria && p.Categoria.toLowerCase() === filter);
       }
@@ -948,20 +900,6 @@ function App() {
           )}
 
           {/* Anuncio Flotante Temporal (desaparece a los 5s) justo arriba de Mi Carrito */}
-          {announcement && (
-            <div
-              className={`floating-cart-announcement-toast ${isAnnouncementFading ? 'fading-out' : ''}`}
-              onClick={dismissAnnouncement}
-              role="status"
-              aria-live="polite"
-              title="Click para cerrar"
-            >
-              <div className="cart-announcement-content">
-                <span className="announcement-text">{announcement}</span>
-              </div>
-            </div>
-          )}
-
           {/* 2. Botón Mi Carrito ABAJO (siempre rosa con borde blanco) */}
           <button
             type="button"

@@ -1,4 +1,5 @@
 import React from 'react';
+import ComboBox from './common/ComboBox';
 
 /**
  * SearchFilter Component
@@ -23,6 +24,14 @@ function SearchFilter({
   onSearchChange, 
   onStyleChange 
 }) {
+  const filterOptions = [
+    { value: '', label: allLabel },
+    ...Object.entries(options).map(([key, label]) => ({
+      value: key,
+      label: label
+    }))
+  ];
+
   return (
     <div className="filters-container">
       {/* Search Input Box */}
@@ -37,21 +46,18 @@ function SearchFilter({
         />
       </div>
 
-      {/* Styles Select Dropdown */}
+      {/* Styles Custom ComboBox (Matches ProductModal ComboBox design) */}
       <div className="styles-combobox-wrapper">
-        <select
+        <ComboBox
           id="style-select-dropdown"
-          className="combobox-styles"
+          name="style"
           value={selectedStyle}
+          placeholder={allLabel}
+          options={filterOptions}
+          placement="bottom"
           onChange={(e) => onStyleChange && onStyleChange(e.target.value)}
-        >
-          <option value="">{allLabel}</option>
-          {Object.entries(options).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+          className="filter-combobox"
+        />
       </div>
     </div>
   );
