@@ -355,7 +355,7 @@ select {
   margin: -2px 0 0 0;
   padding: 0;
   font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
-  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  font-size: clamp(1.26rem, 2.35vw, 1.68rem);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2211,7 +2211,7 @@ select {
   }
 
   .brand-lua-mila-text {
-    font-size: 1.35rem !important;
+    font-size: 1.22rem !important;
     letter-spacing: 0.06em !important;
     gap: 0.2em !important;
     margin: -3px 0 0 0 !important;
