@@ -35,6 +35,37 @@ function App() {
   const rightPanelRef = useRef(null);
   const catalogGridRef = useRef(null);
 
+  // Custom persistent scrollbar indicator state (0 to 100%)
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollThumbWidth, setScrollThumbWidth] = useState(25);
+
+  const updateScrollProgress = useCallback(() => {
+    const el = catalogGridRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll > 0) {
+      const pct = (el.scrollLeft / maxScroll) * 100;
+      setScrollProgress(Math.min(100, Math.max(0, pct)));
+      const visibleRatio = Math.max(0.15, Math.min(0.5, el.clientWidth / el.scrollWidth));
+      setScrollThumbWidth(visibleRatio * 100);
+    } else {
+      setScrollProgress(0);
+      setScrollThumbWidth(100);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = catalogGridRef.current;
+    if (!el) return;
+    updateScrollProgress();
+    el.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', updateScrollProgress);
+    return () => {
+      el.removeEventListener('scroll', updateScrollProgress);
+      window.removeEventListener('resize', updateScrollProgress);
+    };
+  }, [updateScrollProgress, products, styleFilter, searchQuery]);
+
   // Reset scroll instantly to top on any filter or sorting change
   useEffect(() => {
     if (rightPanelRef.current) {
@@ -812,8 +843,9 @@ function App() {
             <h3>Loading Catalog...</h3>
           </div>
         ) : (
-          /* Clothing Reel Cards Grid */
-          <div className="catalog-grid" ref={catalogGridRef}>
+          <>
+            {/* Clothing Reel Cards Grid */}
+            <div className="catalog-grid" ref={catalogGridRef}>
             {filteredProductsList.map((productItem) => (
               <ProductCard
                 key={productItem.id}
@@ -847,6 +879,32 @@ function App() {
               </div>
             )}
           </div>
+
+            {/* Barra de scroll horizontal siempre visible abajo del reel */}
+            {filteredProductsList.length > 2 && (
+              <div 
+                className="catalog-custom-scrollbar-track"
+                onClick={(e) => {
+                  const track = e.currentTarget;
+                  const rect = track.getBoundingClientRect();
+                  const clickX = e.clientX - rect.left;
+                  const clickRatio = clickX / rect.width;
+                  if (catalogGridRef.current) {
+                    const maxScroll = catalogGridRef.current.scrollWidth - catalogGridRef.current.clientWidth;
+                    catalogGridRef.current.scrollTo({ left: clickRatio * maxScroll, behavior: 'smooth' });
+                  }
+                }}
+              >
+                <div 
+                  className="catalog-custom-scrollbar-thumb"
+                  style={{
+                    width: `${scrollThumbWidth}%`,
+                    left: `${(scrollProgress * (100 - scrollThumbWidth)) / 100}%`
+                  }}
+                />
+              </div>
+            )}
+          </>
         )}
 
       </section>
