@@ -8,6 +8,7 @@ import MusicPlayer from './components/MusicPlayer';
 import Cart from './components/Cart';
 import WelcomeScreen from './components/WelcomeScreen';
 import NoticeModal from './components/NoticeModal';
+import HelpInfoModal from './components/HelpInfoModal';
 import CountdownTimer from './components/CountdownTimer';
 import PullToRefresh from './components/PullToRefresh';
 import PasarelaModal from './components/PasarelaModal';
@@ -25,6 +26,7 @@ function App() {
   // Welcome Screen, Notice Modal, and Pasarela Modal state
   const [showWelcome, setShowWelcome] = useState(true);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [showPasarelaModal, setShowPasarelaModal] = useState(false);
 
   // Filter & Search state
@@ -817,6 +819,7 @@ function App() {
         cartBadgeCount={cartTotalQuantity}
         onLanguageToggle={() => setLanguage(language === 'es' ? 'en' : 'es')}
         onNoticeClick={() => setShowNoticeModal(true)}
+        onHelpClick={() => setShowHelpModal(true)}
         onVideoClick={() => setShowPasarelaModal(true)}
         skinToneMode={skinToneMode}
         onSkinToneToggle={handleSkinToneToggle}
@@ -845,6 +848,7 @@ function App() {
         ) : (
           <>
             {/* Clothing Reel Cards Grid */}
+            <div className="catalog-reel-wrapper">
             <div className="catalog-grid" ref={catalogGridRef}>
             {filteredProductsList.map((productItem) => (
               <ProductCard
@@ -879,31 +883,25 @@ function App() {
               </div>
             )}
           </div>
-
-            {/* Barra de scroll horizontal siempre visible abajo del reel */}
-            {filteredProductsList.length > 2 && (
-              <div 
-                className="catalog-custom-scrollbar-track"
-                onClick={(e) => {
-                  const track = e.currentTarget;
-                  const rect = track.getBoundingClientRect();
-                  const clickX = e.clientX - rect.left;
-                  const clickRatio = clickX / rect.width;
+            {/* Indicador de flecha triangular cafe en la separacion de filas */}
+            {filteredProductsList.length > 2 && scrollProgress < 95 && (
+              <button 
+                type="button"
+                className="catalog-scroll-arrow-indicator"
+                aria-label="Deslizar catálogo"
+                onClick={() => {
                   if (catalogGridRef.current) {
-                    const maxScroll = catalogGridRef.current.scrollWidth - catalogGridRef.current.clientWidth;
-                    catalogGridRef.current.scrollTo({ left: clickRatio * maxScroll, behavior: 'smooth' });
+                    const scrollAmount = catalogGridRef.current.clientWidth * 0.85;
+                    catalogGridRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                   }
                 }}
               >
-                <div 
-                  className="catalog-custom-scrollbar-thumb"
-                  style={{
-                    width: `${scrollThumbWidth}%`,
-                    left: `${(scrollProgress * (100 - scrollThumbWidth)) / 100}%`
-                  }}
-                />
-              </div>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="#4A2E2B">
+                  <path d="M7 4l12 8-12 8V4z"/>
+                </svg>
+              </button>
             )}
+          </div>
           </>
         )}
 
@@ -1035,6 +1033,13 @@ function App() {
         onClose={() => setShowNoticeModal(false)}
       />
 
+      {/* Guia Informativa / Como usar Lua Mila */}
+      <HelpInfoModal
+        visible={showHelpModal}
+        language={language}
+        onClose={() => setShowHelpModal(false)}
+      />
+
       {/* Pasarela Virtual Video Modal - mounted strictly on demand */}
       {showPasarelaModal && (
         <PasarelaModal
@@ -1053,7 +1058,17 @@ function App() {
           apiUrl={apiBaseUrl}
           onEnter={() => {
             setShowWelcome(false);
-            setShowNoticeModal(true);
+            
+            // Auto-abrir modal noticias solo una vez cada 5 horas
+            const FIVE_HOURS_MS = 5 * 60 * 60 * 1000;
+            const lastShownTime = localStorage.getItem('byangels_last_notice_shown');
+            const now = Date.now();
+
+            if (!lastShownTime || (now - Number(lastShownTime)) > FIVE_HOURS_MS) {
+              setShowNoticeModal(true);
+              localStorage.setItem('byangels_last_notice_shown', String(now));
+            }
+
             // Autoplay music upon click on 'Entrar' (valid user gesture)
             if (musics.length > 0) {
               setIsPlayingMusic(true);

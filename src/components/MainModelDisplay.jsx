@@ -22,6 +22,7 @@ function MainModelDisplay({
   cartBadgeCount = 0,
   onLanguageToggle,
   onNoticeClick,
+  onHelpClick,
   onVideoClick,
   skinToneMode = 'clara',
   onSkinToneToggle
@@ -350,18 +351,12 @@ function MainModelDisplay({
             variant="rotate-icon"
           />
 
-          {/* Cart toggle button */}
+          {/* Information / Help toggle button (!) */}
           <Button
-            onClick={() => {
-              if (cartBadgeCount > 0 && onCartClick) {
-                onCartClick();
-              }
-            }}
-            title={language === 'es' ? 'Ver Carrito' : 'View Cart'}
-            icon="fa-solid fa-cart-shopping"
+            onClick={onHelpClick}
+            title={language === 'es' ? '¿Cómo usar Lua Mila?' : 'How to use Lua Mila?'}
+            icon="fa-solid fa-circle-info"
             variant="rotate-icon"
-            badge={cartBadgeCount}
-            className={cartBadgeCount > 0 ? 'cart-has-items-green' : ''}
             style={{ position: 'relative' }}
           />
 

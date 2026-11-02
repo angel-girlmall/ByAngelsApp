@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ComboBox from './common/ComboBox';
+import SizeGuideModal from './SizeGuideModal';
 
 const sizeOptions = [
   { value: 'XS', label: 'XS' },
@@ -32,6 +33,7 @@ function ProductModal({
   const [selectedSize, setSelectedSize] = useState('');
   const [sizeError, setSizeError] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -216,11 +218,23 @@ function ProductModal({
 
           {/* Selector de Talla con contenedor relativo para alerta estática abajo */}
           <div className="size-select-wrapper-relative">
+            <div className="size-label-row">
+              <span className="size-main-label">{language === 'es' ? 'Talla' : 'Size'}</span>
+              <button 
+                type="button" 
+                className="btn-size-guide-pill"
+                onClick={() => setShowSizeGuide(true)}
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                <span>{language === 'es' ? 'Guía de tallas' : 'Size guide'}</span>
+              </button>
+            </div>
             <ComboBox
               id="modal-size-select"
               name="size"
               prefix="Talla: "
-              label={language === 'es' ? 'Talla' : 'Size'}
               value={selectedSize}
               placeholder={language === 'es' ? 'Seleccionar talla' : 'Select size'}
               options={sizeOptions}
@@ -272,6 +286,14 @@ function ProductModal({
         </div>
 
       </div>
+
+      {/* Modal Guía de Tallas */}
+      <SizeGuideModal
+        visible={showSizeGuide}
+        language={language}
+        selectedSize={selectedSize}
+        onClose={() => setShowSizeGuide(false)}
+      />
     </div>
   );
 }
