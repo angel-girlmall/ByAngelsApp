@@ -242,7 +242,7 @@ select {
 }
 
 .lua-mila-moon-wrapper {
-  width: clamp(92px, 12.5vw, 130px);
+  width: clamp(75px, 10vw, 105px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -355,7 +355,7 @@ select {
   margin: -2px 0 0 0;
   padding: 0;
   font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
-  font-size: clamp(1.22rem, 2.25vw, 1.6rem);
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2207,11 +2207,11 @@ select {
   }
 
   .lua-mila-moon-wrapper {
-    width: 78px !important;
+    width: 64px !important;
   }
 
   .brand-lua-mila-text {
-    font-size: 1.18rem !important;
+    font-size: 1.35rem !important;
     letter-spacing: 0.06em !important;
     gap: 0.2em !important;
     margin: -3px 0 0 0 !important;
@@ -2503,26 +2503,7 @@ select {
     -webkit-transform: translateZ(0);
   }
 
-  /* Disable expensive constant pulse keyframes on mobile to free GPU cycles */
-  .ribbon-new {
-    animation: none !important;
-  }
 
-  .ribbon-new::after {
-    animation: none !important;
-    display: none !important;
-  }
-
-  .neon-pulse-talla .custom-combobox-trigger,
-  .neon-pulse-talla .common-select {
-    animation: none !important;
-    border-color: #F59E0B !important;
-  }
-
-  .btn-add-cart-large.pulse-active {
-    animation: none !important;
-    transform: none !important;
-  }
 }
 
 /* Model Loading Placeholder & Spinner Animation */
