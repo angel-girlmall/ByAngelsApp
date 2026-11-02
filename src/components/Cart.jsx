@@ -621,6 +621,18 @@ function Cart({
         {/* Pricing Subtotal Summary and Checkout Trigger */}
         {cartItems.length > 0 && (
           <div className="cart-summary">
+            {/* Mensaje flotante de envíos justo en la línea divisoria / sobre el resumen */}
+            {showShippingAlert && (
+              <div
+                className={`cart-shipping-bottom-pill ${isAlertFading ? 'fading-out' : ''}`}
+                onClick={() => setIsAlertFading(true)}
+                role="status"
+                title="Click para ocultar"
+              >
+                <span className="shipping-tag-text">ENVÍOS : LIMA 🛵 PROVINCIA 🚚</span>
+              </div>
+            )}
+
             {/* Upsell Discount Alert Banner when 1 garment away from next threshold */}
             {nextUpsellThreshold && (
               <div className="cart-upsell-alert-banner">
@@ -679,17 +691,7 @@ function Cart({
                 <i className="fa-brands fa-whatsapp"></i> {language === 'es' ? 'Confirmar Pedido' : 'Confirm Order'}
               </button>
 
-              {/* Mensaje flotante de envíos superpuesto exactamente en la barra de botones */}
-              {showShippingAlert && (
-                <div
-                  className={`cart-shipping-bottom-pill ${isAlertFading ? 'fading-out' : ''}`}
-                  onClick={() => setIsAlertFading(true)}
-                  role="status"
-                  title="Click para ocultar"
-                >
-                  <span className="shipping-tag-text">ENVÍOS : LIMA 🛵 PROVINCIA 🚚</span>
-                </div>
-              )}
+
             </div>
           </div>
         )}

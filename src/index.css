@@ -242,7 +242,7 @@ select {
 }
 
 .lua-mila-moon-wrapper {
-  width: clamp(80px, 11vw, 115px);
+  width: clamp(92px, 12.5vw, 130px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -355,7 +355,7 @@ select {
   margin: -2px 0 0 0;
   padding: 0;
   font-family: 'Cinzel', 'Cormorant Garamond', 'Playfair Display', serif;
-  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-size: clamp(1.22rem, 2.25vw, 1.6rem);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -504,12 +504,22 @@ select {
   z-index: 501 !important;
 }
 
+.filter-combobox {
+  margin-bottom: 0 !important;
+}
+
+.filter-combobox .custom-combobox-wrapper {
+  margin-bottom: 0 !important;
+}
+
 .filter-combobox .custom-combobox-trigger {
-  height: 48px;
+  height: 43px;
+  min-height: 43px;
   background: rgba(253, 245, 242, 0.45);
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
-  border-radius: 14px !important;
+  border: 1px solid rgba(97, 64, 55, 0.15);
+  border-radius: var(--radius-md) !important;
   padding: 0 14px;
+  box-sizing: border-box !important;
 }
 
 .filter-combobox .custom-combobox-trigger:hover {
@@ -1950,6 +1960,7 @@ select {
 
 /* Checkout Summary Section */
 .cart-summary {
+  position: relative;
   padding: 16px 14px calc(16px + env(safe-area-inset-bottom)) 14px;
   border-top: 1px solid rgba(97, 64, 55, 0.1);
   background: rgba(253, 245, 242, 0.6);
@@ -2031,9 +2042,10 @@ select {
 /* Floating Shipping Pill overlapping checkout row (extending out to the left beyond drawer boundaries) */
 .cart-shipping-bottom-pill {
   position: absolute;
-  left: -50px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -46px;
+  left: 14px;
+  right: auto;
+  transform: none;
   z-index: 9999 !important;
   display: inline-flex;
   align-items: center;
@@ -2041,8 +2053,8 @@ select {
   background: #ffffff;
   border: 1.5px solid rgba(255, 35, 120, 0.5);
   border-radius: 999px;
-  padding: 8px 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22), 0 0 12px rgba(255, 35, 120, 0.25);
+  padding: 6px 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 0 12px rgba(255, 35, 120, 0.2);
   cursor: pointer;
   user-select: none;
   pointer-events: auto;
@@ -2072,22 +2084,22 @@ select {
 @keyframes pillSlideIn {
   0% {
     opacity: 0;
-    transform: translate(-14px, -50%) scale(0.92);
+    transform: translateX(-16px) scale(0.92);
   }
   100% {
     opacity: 1;
-    transform: translate(0, -50%) scale(1);
+    transform: translateX(0) scale(1);
   }
 }
 
 @keyframes pillFadeOut {
   0% {
     opacity: 1;
-    transform: translate(0, -50%) scale(1);
+    transform: translateX(0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(-10px, -50%) scale(0.92);
+    transform: translateX(-14px) scale(0.92);
   }
 }
 
@@ -2195,14 +2207,14 @@ select {
   }
 
   .lua-mila-moon-wrapper {
-    width: 68px !important;
+    width: 78px !important;
   }
 
   .brand-lua-mila-text {
-    font-size: 1.05rem !important;
+    font-size: 1.18rem !important;
     letter-spacing: 0.06em !important;
     gap: 0.2em !important;
-    margin: -4px 0 0 0 !important;
+    margin: -3px 0 0 0 !important;
   }
 
   .pose-rotator-overlay {
@@ -2274,6 +2286,13 @@ select {
 
   .styles-combobox-wrapper {
     flex: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .filter-combobox {
+    margin-bottom: 0 !important;
+    width: 100% !important;
   }
 
   .search-input,
@@ -2281,6 +2300,25 @@ select {
     padding: 6px 10px !important;
     font-size: 0.8rem !important;
     border-radius: 8px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-combobox .custom-combobox-trigger {
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-combobox .combobox-trigger-text {
+    font-size: 0.8rem !important;
+  }
+
+  .filter-combobox .combobox-chevron {
+    font-size: 0.85rem !important;
   }
 
   /* Horizontal scrolling 2-row grid (fits exactly 2 columns side-by-side) */
