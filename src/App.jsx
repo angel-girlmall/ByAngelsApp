@@ -37,36 +37,34 @@ function App() {
   const rightPanelRef = useRef(null);
   const catalogGridRef = useRef(null);
 
-  // Custom persistent scrollbar indicator state (0 to 100%)
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrollThumbWidth, setScrollThumbWidth] = useState(25);
+  // Optimized: Only store a boolean for whether arrow is visible (eliminates 60fps re-renders of the whole App)
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollRafId = useRef(null);
 
-  const updateScrollProgress = useCallback(() => {
-    const el = catalogGridRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll > 0) {
-      const pct = (el.scrollLeft / maxScroll) * 100;
-      setScrollProgress(Math.min(100, Math.max(0, pct)));
-      const visibleRatio = Math.max(0.15, Math.min(0.5, el.clientWidth / el.scrollWidth));
-      setScrollThumbWidth(visibleRatio * 100);
-    } else {
-      setScrollProgress(0);
-      setScrollThumbWidth(100);
-    }
+  const checkScrollRight = useCallback(() => {
+    if (scrollRafId.current) return;
+    scrollRafId.current = requestAnimationFrame(() => {
+      scrollRafId.current = null;
+      const el = catalogGridRef.current;
+      if (!el) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      const hasMore = maxScroll > 10 && el.scrollLeft < (maxScroll - 25);
+      setCanScrollRight((prev) => (prev !== hasMore ? hasMore : prev));
+    });
   }, []);
 
   useEffect(() => {
     const el = catalogGridRef.current;
     if (!el) return;
-    updateScrollProgress();
-    el.addEventListener('scroll', updateScrollProgress, { passive: true });
-    window.addEventListener('resize', updateScrollProgress);
+    checkScrollRight();
+    el.addEventListener('scroll', checkScrollRight, { passive: true });
+    window.addEventListener('resize', checkScrollRight);
     return () => {
-      el.removeEventListener('scroll', updateScrollProgress);
-      window.removeEventListener('resize', updateScrollProgress);
+      if (scrollRafId.current) cancelAnimationFrame(scrollRafId.current);
+      el.removeEventListener('scroll', checkScrollRight);
+      window.removeEventListener('resize', checkScrollRight);
     };
-  }, [updateScrollProgress, products, styleFilter, searchQuery]);
+  }, [checkScrollRight, products, styleFilter, searchQuery]);
 
   // Reset scroll instantly to top on any filter or sorting change
   useEffect(() => {
@@ -884,7 +882,7 @@ function App() {
             )}
           </div>
             {/* Indicador de flecha triangular cafe en la separacion de filas */}
-            {filteredProductsList.length > 2 && scrollProgress < 95 && (
+            {filteredProductsList.length > 2 && canScrollRight && (
               <button 
                 type="button"
                 className="catalog-scroll-arrow-indicator"

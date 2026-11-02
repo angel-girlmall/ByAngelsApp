@@ -240,16 +240,11 @@ function ProductModal({
               options={sizeOptions}
               onChange={(e) => {
                 const val = e.target.value;
-                if (e.target && typeof e.target.blur === 'function') {
-                  e.target.blur();
+                setSelectedSize(val);
+                if (sizeError) {
+                  setSizeError(false);
+                  setAlertMessage('');
                 }
-                setTimeout(() => {
-                  setSelectedSize(val);
-                  if (sizeError) {
-                    setSizeError(false);
-                    setAlertMessage('');
-                  }
-                }, 40);
               }}
               error={sizeError}
               className={`${!selectedSize ? 'neon-pulse-talla' : 'size-selected'} ${sizeError ? 'has-size-error' : ''}`}

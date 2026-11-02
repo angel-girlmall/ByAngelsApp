@@ -2487,6 +2487,42 @@ select {
   .btn-ctrl {
     backdrop-filter: none !important;
   }
+
+  /* GPU Layer Promotion & Hardware Acceleration for 60/120fps mobile scrolling */
+  .catalog-grid {
+    will-change: scroll-position;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    contain: layout paint;
+  }
+
+  .product-card {
+    will-change: auto;
+    contain: content;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Disable expensive constant pulse keyframes on mobile to free GPU cycles */
+  .ribbon-new {
+    animation: none !important;
+  }
+
+  .ribbon-new::after {
+    animation: none !important;
+    display: none !important;
+  }
+
+  .neon-pulse-talla .custom-combobox-trigger,
+  .neon-pulse-talla .common-select {
+    animation: none !important;
+    border-color: #F59E0B !important;
+  }
+
+  .btn-add-cart-large.pulse-active {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* Model Loading Placeholder & Spinner Animation */

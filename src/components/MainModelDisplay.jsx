@@ -383,5 +383,5 @@ function MainModelDisplay({
   );
 }
 
-export default MainModelDisplay;
+export default React.memo(MainModelDisplay);
 
