@@ -439,7 +439,7 @@ function Cart({
 
     const header = labels.whatsappMessage || 'Hola, quiero realizar el siguiente pedido:';
 
-    const orderHeader = `🛍️ *LUAMILA E-COMMERCE* 🛍️\n📌 *${language === 'es' ? 'Código de Pedido' : 'Order Code'}:* \`${orderCode}\`\n🕒 *${language === 'es' ? 'Fecha y Hora' : 'Date & Time'}:* ${formattedDate}\n`;
+    const orderHeader = `🌙 *LUAMILA BOUTIQUE | App Oficial* 🛍️\n📌 *${language === 'es' ? 'Código de Pedido' : 'Order Code'}:* \`${orderCode}\`\n🕒 *${language === 'es' ? 'Fecha y Hora' : 'Date & Time'}:* ${formattedDate}\n`;
 
     let summaryText = `\n----------------------------\n`;
     if (discountAmount > 0) {
