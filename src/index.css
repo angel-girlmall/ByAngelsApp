@@ -5481,3 +5481,31 @@ img.welcome-bg-image {
   font-style: italic;
   text-align: center;
 }
+
+/* Footer SEO & Derechos */
+.catalog-footer {
+  width: 100%;
+  padding: 14px 10px 8px 10px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.catalog-footer-text {
+  margin: 0;
+  font-size: 0.76rem;
+  color: rgba(97, 64, 55, 0.72);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 767px) {
+  .catalog-footer {
+    padding: 2px 8px 4px 8px !important;
+  }
+  .catalog-footer-text {
+    font-size: 0.65rem !important;
+    line-height: 1.25 !important;
+  }
+}

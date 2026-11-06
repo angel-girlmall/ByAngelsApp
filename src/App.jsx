@@ -900,6 +900,13 @@ function App() {
               </button>
             )}
           </div>
+
+          {/* Footer SEO & Derechos */}
+          <footer className="catalog-footer">
+            <p className="catalog-footer-text">
+              © 2026 LUA MILA - También conocida como LM, Lua, Luamila - Angel Girl - Gamarra, Lima Perú
+            </p>
+          </footer>
           </>
         )}
 
